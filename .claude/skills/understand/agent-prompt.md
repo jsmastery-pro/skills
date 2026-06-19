@@ -160,7 +160,7 @@ Do not warrant: the area is a simple CRUD module with no surprises, or it is alr
 
 ## Root CLAUDE.md template
 
-```markdown
+=== ROOT CLAUDE.md TEMPLATE START ===
 # <Project name>
 
 ## Stack
@@ -200,7 +200,8 @@ Stored in `docs/adr/`. Format: `docs/adr/NNNN-title.md`.
 ## Context files
 
 <!-- Nested CLAUDE.md files are listed here as they are created -->
-```
+
+=== ROOT CLAUDE.md TEMPLATE END ===
 
 ---
 

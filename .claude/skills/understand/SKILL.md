@@ -55,7 +55,10 @@ Never create a nested CLAUDE.md for every subfolder — only where distinct conv
 find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" \
   -o -name "*.py" -o -name "*.go" -o -name "*.rs" -o -name "*.java" -o -name "*.rb" \
   -o -name "*.swift" -o -name "*.kt" \) \
-  -not -path '*/node_modules/*' -not -path '*/.git/*' -not -path '*/dist/*' | wc -l
+  -not -path '*/node_modules/*' -not -path '*/.git/*' -not -path '*/dist/*' \
+  -not -name "next.config.*" -not -name "tailwind.config.*" -not -name "postcss.config.*" \
+  -not -name "vite.config.*" -not -name "vitest.config.*" -not -name "jest.config.*" \
+  -not -name "eslint.config.*" -not -name "prettier.config.*" | wc -l
 ```
 
 Use the results to pick the phase below.
@@ -64,7 +67,7 @@ Use the results to pick the phase below.
 
 ### Phase 1 — Greenfield setup
 
-**Trigger**: root CLAUDE.md is missing AND source file count < 5.
+**Trigger**: root CLAUDE.md is missing AND source file count < 10.
 
 **Step 1 — Ask coding patterns** (main model calls `AskUserQuestion`):
 
@@ -81,9 +84,9 @@ Question 2 — Additional standards (multi-select):
 - `Conventional commits` — `feat:`, `fix:`, `chore:` prefix on all commits
 - `Documented APIs` — JSDoc/docstrings required on all public interfaces
 
-**Step 2 — Inject selected pattern content** (main model already has all four files in memory from Step 1 — do not re-read them):
-- If the engineer selected a named pattern: use the full content of the matching file as `SELECTED_PATTERNS`.
-- If the engineer selected "Other" (free-text input): use their exact typed text as `SELECTED_PATTERNS`. There is no file to read — pass the text directly.
+**Step 2 — Inject selected pattern content**:
+- If a named pattern was selected: the main model already read all four files in Step 1 — do not re-read. Use the full content of the matching file as `SELECTED_PATTERNS`.
+- If "Other" was selected (free-text input): no pattern files were read in Step 1. Use the engineer's exact typed text as `SELECTED_PATTERNS` — pass it directly, no file to read.
 
 **Step 3 — Spawn subagent** with:
 - `model: "sonnet"`
@@ -126,6 +129,8 @@ Question 2 — Additional standards (multi-select):
 - Tools: `Read`, `Bash`, `Write`, `Edit`
 - `prompt`: filled `agent-prompt.md` with `PHASE=area`, `AREA=<path>`, root and nested CLAUDE.md contents injected
 
+Note: the subagent adds the nested CLAUDE.md pointer to root using the **Edit** tool — it does not re-create root CLAUDE.md. If root was just created in this same session (Phase 2 ran first), the subagent will still Edit it safely since Write was used for the initial creation and Edit only touches the pointer line.
+
 **After subagent runs**, parse the report for the `Root gaps flagged` section:
 - If `ROOT_GAPS: none` → relay the full report, done.
 - If gaps exist → call `AskUserQuestion`:
@@ -134,7 +139,7 @@ Question 2 — Additional standards (multi-select):
   - Option 2: `Show me the diff` — description: "Print exactly what would change; I'll apply it manually"
   - Option 3: `Skip for now` — description: "Leave root CLAUDE.md as-is"
 
-  - If `Add them now`: use the **Edit** tool to insert each ROOT_GAPS addition into the correct section of root CLAUDE.md, using the exact text from the report. Do not paraphrase.
+  - If `Add them now`: parse the subagent report — locate the `ROOT_GAPS:` block and extract each line starting with `- `. Each line contains the exact markdown to insert and the target section (`— target section: ## <section>`). Apply one **Edit** tool call per gap, inserting the exact text into the named section. Do not paraphrase.
   - If `Show me the diff`: print each addition as a fenced markdown block with the target section labelled. Do not write.
   - If `Skip for now`: do nothing.
 
