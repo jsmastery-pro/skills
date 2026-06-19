@@ -104,7 +104,7 @@ In the ADR's `## Decision` section, after the chosen option sentence, fill in th
 **Implementation skills**: `stripe` (`.claude/skills/stripe/`) · `nextjs` (`.claude/skills/nextjs/`)
 ```
 
-List every installed community skill that shaped this design. This is how /plan knows which skill conventions to apply during implementation — it reads the ADR and then reads each listed skill. Do NOT copy-paste skill content into the ADR. The field is a pointer, not a paste.
+List every installed community skill that shaped this design. During implementation the engineer reads the ADR alongside each listed skill to apply the right conventions. Do NOT copy-paste skill content into the ADR. The field is a pointer, not a paste.
 
 **3. Add Follow-up items for any skill not yet in CLAUDE.md.**
 

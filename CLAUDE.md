@@ -6,8 +6,6 @@ A collection of Claude Code skills encoding a tiered, phase-based engineering wo
 
 - Skills: `.claude/skills/<name>/SKILL.md`
 - Decision records: `docs/adr/`
-- Plans: `docs/plans/`
-- Handoff notes: `docs/handoff/`
 
 ## Tiers
 

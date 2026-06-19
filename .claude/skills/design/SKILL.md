@@ -20,7 +20,7 @@ Runs a structured discovery process, weighs options, and writes or updates an Ar
 - **Update**: evolving an existing decision → edit existing ADR in place
 - **Supersede**: replacing a past decision → new ADR + update old ADR's status line
 
-Does not write code. Does not create plans (/plan owns that). Does not update CLAUDE.md (/sync owns that).
+Does not write code. Does not update CLAUDE.md (/sync owns that).
 
 ## Asks vs acts
 
@@ -75,7 +75,7 @@ From the ADR list:
 
 From the community skill scan:
 
-**Workflow skills** (never treat as community skills): `triage`, `understand`, `design`, `plan`, `test`, `review`, `harden`, `document`, `debug`, `migrate`, `handoff`, `sync`, `ui`.
+**Workflow skills** (never treat as community skills): `triage`, `understand`, `design`, `test`, `review`, `harden`, `document`, `debug`, `migrate`, `sync`, `ui`.
 
 This list is complete for the 13 workflow skills in this system. As additional workflow skills are added to `.claude/skills/`, update this list immediately or they will appear as community skills.
 

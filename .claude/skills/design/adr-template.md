@@ -48,7 +48,7 @@ deciding? 2–4 paragraphs. Do not mention options here — only the problem spa
 <One sentence stating the decision clearly.>
 
 **Implementation skills**: `<skill-name>` (`.claude/skills/<skill-name>/`) · `<skill-name>` (`.claude/skills/<skill-name>/`)
-<!-- List every installed community skill that informed this design. /plan reads this field to know which skill conventions to apply during implementation. Omit line entirely if no community skills were used. -->
+<!-- List every installed community skill that informed this design. The engineer reads this field during implementation to know which skill conventions to apply. Omit line entirely if no community skills were used. -->
 
 ## Rationale
 

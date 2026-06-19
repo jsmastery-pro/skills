@@ -20,7 +20,7 @@ Playbook: *(no skills — act directly)*
 - Low blast radius; easy to revert
 - Does not touch auth, payments, migrations, or shared infra
 
-Playbook: `/plan` → `/test` → `/document`
+Playbook: `/test` → `/document`
 
 ---
 
@@ -31,7 +31,7 @@ Playbook: `/plan` → `/test` → `/document`
 - Touches shared state, APIs, or data models
 - Moderate blast radius or non-trivial rollback
 
-Playbook: `/understand` → `/design` → `/plan` → `/test` → `/review` → `/document`
+Playbook: `/understand` → `/design` → `/test` → `/review` → `/document`
 
 ---
 
@@ -43,7 +43,7 @@ Playbook: `/understand` → `/design` → `/plan` → `/test` → `/review` → 
 - High blast radius; difficult or risky to reverse
 - Security-sensitive surface
 
-Playbook: `/understand` → `/design` → `/plan` → `/test` → `/harden` → `/review` → `/document` → `/sync`
+Playbook: `/understand` → `/design` → `/test` → `/harden` → `/review` → `/document` → `/sync`
 
 ---
 
