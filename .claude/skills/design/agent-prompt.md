@@ -244,7 +244,7 @@ For each option: describe it honestly, list at least one real Pro and at least o
 
 **Step 4 — Write the ADR**
 
-Use `.claude/skills/design/adr-template.md`. Include `## Feature design` section after `## Rationale`. Every field below is required — do not leave any as a placeholder:
+Use the ADR template structure (its full text was injected into this prompt by the main agent — do not try to open `adr-template.md` yourself). Include `## Feature design` section after `## Rationale`. Every field below is required — do not leave any as a placeholder:
 
 ```markdown
 ## Feature design

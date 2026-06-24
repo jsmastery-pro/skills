@@ -1,6 +1,13 @@
 # Review Subagent Prompt Template (lean)
 
-The main model fills this template and passes it as the review subagent's prompt — **spawned on a model different from the one that wrote the code**. It is deliberately short: the full rubric, severity definitions, and findings format live in `review-guide.md`, which the subagent reads itself, so that bulk never passes through the main model's context. Placeholders are in ALL_CAPS.
+The main model fills this template and passes it as the review subagent's prompt — **spawned on a model different from the one that wrote the code**. The full rubric, severity definitions, and findings format live in `review-guide.md`; the main model **inlines that file's full text** into `REVIEW_GUIDE` below before spawning, so the subagent never resolves a skill path (portable across any agent/OS). Placeholders are in ALL_CAPS.
+
+---
+
+## Review guide (your rubric — follow it exactly)
+
+REVIEW_GUIDE
+<!-- The main model pastes the full contents of review-guide.md here. -->
 
 ---
 
@@ -39,7 +46,7 @@ OUTPUT_PATH   (e.g. docs/reviews/2026-06-20-main.md — create the docs/reviews 
 
 ## How to proceed
 
-1. **Read `.claude/skills/review/review-guide.md` in full first.** It is your rubric: what to inspect, the severity scale, how to judge test adequacy, and the exact findings format for both the file and your summary.
+1. **Follow the Review guide above** — it's your rubric: what to inspect, the severity scale, how to judge test adequacy, and the exact findings format for both the file and your summary.
 2. Run the diff command to see exactly what changed. Read each changed file in full for context — a diff hunk alone hides the surrounding code that determines whether the change is correct.
 3. Read an ADR path only if it governs the changed code. Check the change against CLAUDE.md conventions.
 4. If the project has tests, check whether the change is actually covered — untested new logic is a finding.

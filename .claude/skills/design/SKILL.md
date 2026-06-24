@@ -1,7 +1,6 @@
-# /design
-
 ---
 name: design
+compatibility: Built for Claude Code — uses subagents, model selection, and interactive questions. Installs on any Agent Skills client but is tuned for Claude Code.
 description: Use this skill to get expert system design guidance and document an architectural or technical decision before writing code. Run /design when facing a meaningful choice between approaches, when designing a new feature from scratch, when selecting a tech stack for a new project, or when the triage playbook lists /design as a step. This skill acts as a Staff Engineer and Principal Architect: it challenges bad directions, applies industry best practices, calls out named anti-patterns, and recommends the right answer rather than presenting a neutral menu of options. It runs two rounds of targeted MCQ questions, researches options, writes a draft ADR to docs/adr/, and presents it for confirmation. It owns all ADR files. Do not run /understand after /design has written an ADR for the same scope.
 ---
 
@@ -31,6 +30,12 @@ Does not write code. Does not update CLAUDE.md (/sync owns that).
 `docs/adr/NNNN-title.md` — created or updated by this skill only. Never writes outside `docs/adr/`.
 
 ---
+
+## Portability (any OS, any agent)
+
+Written for any Agent Skills client on macOS, Linux, or Windows:
+- **Commands**: `git` is the only required CLI and behaves the same on every OS. Other shell snippets (`mkdir -p`, `date`, `find`, `ls`, `cat`, `wc`) are POSIX **reference**, not literal scripts — use your agent's own cross-platform file tools (read, search/glob, write, create-dir) and your knowledge of today's date instead. Creating `docs/adr/` should use your write tool, not `mkdir`.
+- **Bundled files**: the Round-2 question files (`questions/*.md`), `agent-prompt.md`, and `adr-template.md` are referenced by paths relative to this skill's folder. The main agent reads them; the question files drive the MCQ prompts, and the **ADR template text is injected into the subagent prompt** (subagents can't resolve skill-relative paths).
 
 ## Execution
 
@@ -191,10 +196,10 @@ Based on Q1 from Round 1, read the relevant question file and present those ques
 
 | Q1 answer | File to read |
 |---|---|
-| `Feature design` | `.claude/skills/design/questions/feature.md` |
-| `Architecture selection` | `.claude/skills/design/questions/architecture.md` |
-| `System enhancement` | `.claude/skills/design/questions/enhancement.md` |
-| `Cross-cutting standard` | `.claude/skills/design/questions/cross-cutting.md` |
+| `Feature design` | `questions/feature.md` |
+| `Architecture selection` | `questions/architecture.md` |
+| `System enhancement` | `questions/enhancement.md` |
+| `Cross-cutting standard` | `questions/cross-cutting.md` |
 
 Each file contains a ready-to-present set of 3–4 questions with labels, descriptions, and options. Present them via `AskUserQuestion` exactly as structured in the file.
 
@@ -212,12 +217,12 @@ Wait for their answer. If (A): re-run the source file count for the given path. 
 
 ### Round 2 → Subagent spawn
 
-After both rounds, read `.claude/skills/design/agent-prompt.md`, fill the template, then spawn:
+After both rounds, read `agent-prompt.md` and `adr-template.md` (relative paths — the main agent resolves them). Fill the template **and inline the full `adr-template.md` text into the prompt** — the subagent writes the ADR from that structure and can't resolve skill paths itself. Then spawn:
 
 - `model: "sonnet"`
 - `description: "Design: <mode> — research and draft ADR"`
 - Tools: `Read`, `Bash`, `Write`, `Edit`
-- `prompt`: filled template with all engineer answers, context, and the determined mode
+- `prompt`: filled template with all engineer answers, context, the determined mode, and the injected ADR template
 
 **Map Q1 answer to the exact MODE string to inject:**
 
@@ -287,6 +292,6 @@ If the task is to update or supersede an **existing** ADR:
 
 ## Reference files
 
-- ADR template: `.claude/skills/design/adr-template.md`
-- Research subagent prompt: `.claude/skills/design/agent-prompt.md`
-- Round 2 questions: `.claude/skills/design/questions/`
+- ADR template: `adr-template.md`
+- Research subagent prompt: `agent-prompt.md`
+- Round 2 questions: `questions/`

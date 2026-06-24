@@ -1,7 +1,6 @@
-# /test
-
 ---
 name: test
+compatibility: Built for Claude Code — uses subagents, model selection, and interactive questions. Installs on any Agent Skills client but is tuned for Claude Code.
 description: Use this skill to write a test suite for code you just built or changed. Run /test after implementing a feature, component, API route, or bug fix. It tests the files changed and not yet committed in git (working tree + staged + untracked) — no need to name files. Reads saved preferences from test-preferences.json at the project root; if absent it asks which framework to use, checks if it is installed, installs it with confirmation, then saves preferences for future runs. Acts as a senior test engineer, choosing the right test strategy per file: happy path, edge cases, error states, and accessibility where relevant.
 ---
 
@@ -37,25 +36,22 @@ No scope question. The git working tree defines the scope.
 
 ---
 
+## Portability (any OS, any agent)
+
+This skill targets any Agent Skills client on macOS, Linux, or Windows:
+- **Commands**: `git` is the only required CLI and behaves identically on every OS — run the `git` lines as shown. All other shell snippets are POSIX **reference**, not literal scripts: do not assume `find`, `grep`, `sed`, `cat`, `test`/`[ ]`, `xargs`, `mkdir -p`, or `node -e` exist. Use your agent's own cross-platform file tools (read, search/glob, write) to list files, check existence, read, and search, and apply any branching logic yourself rather than via shell `if`/variables/redirects.
+- **Bundled files**: referenced by path relative to this skill's own folder. The main agent reads them; anything a subagent needs is passed **into its prompt** as text — subagents can't resolve skill-relative paths.
+
 ## Execution
 
 ### Pre-flight (main model)
 
 #### 1. Determine scope from git (do this first — if empty, no point asking anything)
 
-```bash
-# Tracked changes vs last commit (staged + unstaged), excluding deletions
-git diff --name-only --diff-filter=ACMR HEAD 2>/dev/null
-
-# Untracked, non-ignored files (newly generated feature files)
-git ls-files --others --exclude-standard 2>/dev/null
-```
-
-If `git diff HEAD` errors because the repo has no commits yet, fall back to:
-```bash
-git diff --name-only --cached --diff-filter=ACMR 2>/dev/null
-git ls-files --others --exclude-standard 2>/dev/null
-```
+Get the changed-but-uncommitted files (run these `git` commands — cross-platform):
+- Tracked changes vs last commit (staged + unstaged), excluding deletions: `git diff --name-only --diff-filter=ACMR HEAD`
+- Untracked, non-ignored files: `git ls-files --others --exclude-standard`
+- If the repo has no commits yet (`git diff HEAD` errors), use `git diff --name-only --diff-filter=ACMR --cached` instead.
 
 Combine and de-duplicate the two lists. Then **filter out non-testable files**:
 - Test files themselves: `*.test.*`, `*.spec.*`, `test_*.py`, `*_test.go`, anything under `__tests__/`, `e2e/`, `tests/`, `cypress/`
@@ -103,9 +99,7 @@ AskUserQuestion — "<N> changed files is a lot for one pass. How should I focus
 
 #### 2. Load preferences
 
-```bash
-cat test-preferences.json 2>/dev/null || echo "NO_PREFS"
-```
+Read `test-preferences.json` at the project root (use your file tool; treat "not found" as no prefs).
 
 **If found**: load `tool`, `additionalTools`, `e2eTool`, `testDir`, `filePattern`, `packageManager`. Skip to **Step 5 — Installation check**.
 
@@ -129,7 +123,7 @@ AskUserQuestion — "No uncommitted source changes found. What should I test?"
       description: "Stop — I'll run /test after I make changes"
 ```
 
-- **Last commit**: scope = `git diff --name-only --diff-filter=ACMR HEAD~1 HEAD`, then re-run Step 1b classification.
+- **Last commit**: scope = `git diff --name-only --diff-filter=ACMR HEAD~1 HEAD` (cross-platform git), then re-run Step 1b classification.
 - **Specific files**: use the named files, classify them, continue.
 - **Nothing**: stop cleanly.
 
@@ -137,21 +131,10 @@ AskUserQuestion — "No uncommitted source changes found. What should I test?"
 
 #### 4. Stack detection and first-run questions (only when `NO_PREFS`)
 
-```bash
-# Package manager
-[ -f pnpm-lock.yaml ] && echo "PKG=pnpm"; [ -f yarn.lock ] && echo "PKG=yarn"
-[ -f bun.lockb ] && echo "PKG=bun"; [ -f package-lock.json ] && echo "PKG=npm"
-
-# JS/TS framework + already-installed test tools
-cat package.json 2>/dev/null | grep -E '"next"|"vite"|"nuxt"|"svelte"|"react"' | head -3
-cat package.json 2>/dev/null | grep -E '"vitest|"jest|"@playwright|"cypress|"@testing-library' | head -8
-
-# Other languages
-[ -f pyproject.toml ] && grep -E 'pytest|unittest' pyproject.toml | head -2
-[ -f go.mod ] && echo "LANG=go"; [ -f Cargo.toml ] && echo "LANG=rust"
-```
-
-Determine the **language**, **framework**, and **already-installed tools**.
+Using your file tools (not shell utilities), determine:
+- **Package manager** — by which lockfile is present: `pnpm-lock.yaml` → pnpm, `yarn.lock` → yarn, `bun.lockb` → bun, `package-lock.json` → npm.
+- **Language & framework** — read `package.json` and look for `next`/`vite`/`nuxt`/`svelte`/`react`; or `pyproject.toml` (pytest/unittest) → Python; `go.mod` → Go; `Cargo.toml` → Rust.
+- **Already-installed test tools** — in `package.json` look for `vitest`/`jest`/`@playwright/test`/`cypress`/`@testing-library/*`.
 
 **Q1 — Framework for unit/integration** (always asked on first run)
 
@@ -205,16 +188,10 @@ Skip Q3 entirely if scope is logic/api/cli only — no component tooling needed.
 
 #### 5. Installation check
 
-For the chosen unit tool, E2E tool (if any), and addon (if any):
-
-```bash
-# JS/TS — check node_modules for the package
-[ -d node_modules/<pkg> ] && echo "<pkg> INSTALLED" || echo "<pkg> MISSING"
-# Python
-pip show <tool> 2>/dev/null | grep -q "Name:" && echo "INSTALLED" || echo "MISSING"
-# Go testify
-grep -q "stretchr/testify" go.sum 2>/dev/null && echo "INSTALLED" || echo "MISSING"
-```
+For the chosen unit tool, E2E tool (if any), and addon (if any), check whether it's installed using your file tools:
+- **JS/TS** — is the package present under `node_modules/<pkg>`, or listed in `package.json` devDependencies?
+- **Python** — is the tool in `pyproject.toml`/`requirements.txt` (or run `pip show <tool>` where Python is available)?
+- **Go** — does `go.sum` contain `stretchr/testify`?
 
 **All present** → Step 6.
 
@@ -281,14 +258,10 @@ Then tell the engineer:
 
 The main model stays lean — it discovers **paths and cheap signals only** and lets the subagent do the heavy reading. Reading ADRs and `design.md` in full here would pin large content in the main context and then duplicate it into the subagent prompt; don't.
 
-```bash
-# Paths only — not contents
-find docs/adr -name "*.md" 2>/dev/null | xargs ls -t 2>/dev/null | head -3   # 3 most-recent ADR paths
-[ -f design.md ] && echo "design.md" || echo "NO_DESIGN"
-
-# Project's own test script — resolved here because it's a one-liner and decides RUN_COMMAND
-node -e "try{console.log(require('./package.json').scripts?.test||'NO_TEST_SCRIPT')}catch{console.log('NO_TEST_SCRIPT')}" 2>/dev/null
-```
+Using your file tools:
+- List the 3 most-recently-modified ADR files under `docs/adr/` (paths only — don't read them).
+- Note whether `design.md` exists at the project root.
+- Read `package.json` and note its `scripts.test` value (decides `RUN_COMMAND`), if any.
 
 What the main model passes to the subagent:
 - **CLAUDE.md**: inline its contents (it's short by design and already in session context — cheap, and consistent with the other skills).
@@ -316,19 +289,20 @@ Set `RUN_AFTER = yes | no` from the answer and pass it to the subagent.
 
 #### 8. Spawn subagent
 
-Read `.claude/skills/test/agent-prompt.md` (a **lean** spawn template — the heavy tool rules live in `writing-guide.md`, which the subagent reads itself, so they never enter the main context). Fill it, then spawn:
+Read two bundled files from this skill's folder (relative paths — you, the main agent, can resolve them): `agent-prompt.md` (the spawn template) and `writing-guide.md` (the strategy/rules/report rubric). Fill the template **and inline the full `writing-guide.md` text into it** — the subagent cannot resolve skill paths itself, so it must receive the guide as prompt text. Then spawn:
 
 - `model: "sonnet"`
 - `description: "Test: <tool> suite for <N> changed files"`
 - Tools: `Read`, `Bash`, `Write`, `Edit`
 - `prompt`: filled template with:
-  1. Unit tool, E2E tool, additional tools, `INSTALL` state
-  2. `testDir`, `filePattern`, package manager, stack/framework, `packageRoot`
-  3. **Classified scope** — each file path with its class (logic / component / page-flow / api-server / cli)
-  4. `RUN_COMMAND` (resolved in Step 7), `RUN_AFTER` flag
-  5. **CLAUDE.md contents** inline (short — the only inlined artifact)
-  6. **ADR paths** — the 3 recent paths (subagent reads if relevant), or `none`
-  7. **design.md path** — only if component/page scope, else `none` (subagent reads it)
+  1. The full `writing-guide.md` content (injected, not referenced)
+  2. Unit tool, E2E tool, additional tools, `INSTALL` state
+  3. `testDir`, `filePattern`, package manager, stack/framework, `packageRoot`
+  4. **Classified scope** — each file path with its class (logic / component / page-flow / api-server / cli)
+  5. `RUN_COMMAND` (resolved in Step 7), `RUN_AFTER` flag
+  6. **CLAUDE.md contents** inline (short)
+  7. **ADR paths** — the 3 recent paths, or `none`. (If the subagent has no file access in your client, read and inline the relevant ADR text instead.)
+  8. **design.md path** — only if component/page scope, else `none`
 
 **Monorepo (multiple package roots from Step 1b)**: spawn **one subagent per root in parallel** with `run_in_background: true`, each scoped to that root's files, tool, and package manager. Isolated contexts keep each subagent lean and prevent one root's files from bleeding into another's. Collect all reports before relaying. For a single root (the common case), spawn one subagent in the foreground.
 
@@ -393,7 +367,7 @@ Omit the harden line entirely when `HARDEN_FLAG=no`. This skill is complete afte
 
 ---
 
-## Reference files
+## Reference files (in this skill's folder; referenced by relative path)
 
-- `.claude/skills/test/agent-prompt.md` — lean spawn template the main model fills (read by the main model)
-- `.claude/skills/test/writing-guide.md` — strategy, tool rules, iteration loop, report format (read by the **subagent**, not the main model — keeps the bulk out of main context)
+- `agent-prompt.md` — lean spawn template the main model fills
+- `writing-guide.md` — strategy, tool rules, iteration loop, report format. The main model reads this and **injects its text into the subagent prompt** (subagents can't resolve skill paths), so it stays portable across agents.

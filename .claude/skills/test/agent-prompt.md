@@ -1,6 +1,13 @@
-# Test Subagent Prompt Template (lean)
+# Test Subagent Prompt Template
 
-The main model fills this template and passes it as the subagent's prompt. It is deliberately short: the detailed rules, strategies, iteration loop, and report format live in `writing-guide.md`, which the subagent reads itself — so that bulk never passes through the main model's context. Placeholders are in ALL_CAPS.
+The main model fills this template and passes it as the subagent's prompt. The detailed rules, strategies, iteration loop, and report format live in `writing-guide.md`; the main model **inlines that file's full text** into `WRITING_GUIDE` below before spawning, so the subagent never has to resolve a skill path (portable across any agent/OS). Placeholders are in ALL_CAPS.
+
+---
+
+## Writing guide (your rulebook — follow it exactly)
+
+WRITING_GUIDE
+<!-- The main model pastes the full contents of writing-guide.md here. -->
 
 ---
 
@@ -45,8 +52,8 @@ CLAUDE_MD
 
 ## How to proceed
 
-1. **Read `.claude/skills/test/writing-guide.md` in full first.** It is your rulebook: strategy per file class, coverage priorities, expert rules, tool-specific rules, accessibility cases, file placement, the run/iterate loop, and the exact report format you must output.
-2. Read each source file in scope. Read ADR/design pointers only when they bear on what you're testing.
+1. **Follow the Writing guide above** — it's your rulebook: strategy per file class, coverage priorities, expert rules, tool-specific rules, accessibility cases, file placement, the run/iterate loop, and the exact report format you must output.
+2. Read each source file in scope. Read ADR/design pointers only when they bear on what you're testing (their contents may be inlined below if your client gives subagents no file access).
 3. For each file, check for an existing test file and **extend it** rather than duplicate (per the guide).
 4. Write or extend the tests using the strategy for each file's class.
 5. If `RUN_AFTER = yes`, run and iterate per the guide (terse reporter; re-run only failing files). Never modify application source to make a test pass.

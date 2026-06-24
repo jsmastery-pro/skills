@@ -1,7 +1,6 @@
-# /understand
-
 ---
 name: understand
+compatibility: Built for Claude Code — uses subagents, model selection, and interactive questions. Installs on any Agent Skills client but is tuned for Claude Code.
 description: Use this skill to comprehend a repository or a specific area of the codebase before designing or planning a change. Run /understand when starting a medium or full task (per the triage playbook), when no CLAUDE.md context files exist yet, or when you need a reliable map of an area before making changes. This skill creates context files the first time — root CLAUDE.md for the repo, or a nested CLAUDE.md for a focused area. It does not maintain existing files after changes; that is /sync's job. Do not run /understand after /design has already written an ADR for the same scope.
 ---
 
@@ -43,6 +42,12 @@ Never create a nested CLAUDE.md for every subfolder — only where distinct conv
 
 ---
 
+## Portability (any OS, any agent)
+
+Written for any Agent Skills client on macOS, Linux, or Windows:
+- **Commands**: `git` is the only required CLI and behaves the same on every OS. Other shell snippets (file counts, `find`, `[ -f ]`) are POSIX **reference**, not literal scripts — use your agent's own cross-platform file tools (search/glob, read, write) to list and count source files and check existence instead.
+- **Bundled files**: the pattern presets (`patterns/*.md`) and `agent-prompt.md` are referenced by paths relative to this skill's folder; the main agent reads them and injects the needed text **into the subagent prompt** — subagents can't resolve skill-relative paths.
+
 ## Execution
 
 ### Pre-flight (main model does this before anything else)
@@ -72,10 +77,10 @@ Use the results to pick the phase below.
 **Step 1 — Ask coding patterns** (main model calls `AskUserQuestion`):
 
 Question 1 — Architecture style (single-select):
-- Read `.claude/skills/understand/patterns/clean-architecture.md` for label/description
-- Read `.claude/skills/understand/patterns/functional.md`
-- Read `.claude/skills/understand/patterns/domain-driven.md`
-- Read `.claude/skills/understand/patterns/solid-oop.md`
+- Read `patterns/clean-architecture.md` for label/description
+- Read `patterns/functional.md`
+- Read `patterns/domain-driven.md`
+- Read `patterns/solid-oop.md`
 - Present all four as options
 
 Question 2 — Additional standards (multi-select):
@@ -156,8 +161,8 @@ Relay the subagent's report:
 
 ## Pattern presets
 
-See `.claude/skills/understand/patterns/` for the four coding style presets used in Phase 1.
+See `patterns/` for the four coding style presets used in Phase 1.
 
 ## Subagent prompt template
 
-See `.claude/skills/understand/agent-prompt.md`.
+See `agent-prompt.md`.

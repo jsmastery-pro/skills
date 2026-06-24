@@ -1,7 +1,6 @@
-# /document
-
 ---
 name: document
+compatibility: Built for Claude Code — uses subagents, model selection, and interactive questions. Installs on any Agent Skills client but is tuned for Claude Code.
 description: Use this skill to write the human-facing prose about a change — a pull request description, a changelog entry, user-facing release notes, or an incident postmortem. Run /document when you need any of those written from the actual change (commits, diff) rather than by hand. Pass the type as an argument (/document pr | changelog | release-note | postmortem) or let it ask. It acts as a precise technical writer, drafting from the real history, and writes to the right place (PR body, CHANGELOG.md, docs/releases/, docs/postmortems/). It owns these documents; it does not write code, tests, ADRs, or CLAUDE.md.
 ---
 
@@ -23,6 +22,12 @@ Acts. Asks at most one question (which type) when it can't be inferred, and — 
 PR text, `CHANGELOG.md`, `docs/releases/`, `docs/postmortems/` — owned by this skill. It writes nothing else.
 
 ---
+
+## Portability (any OS, any agent)
+
+Written for any Agent Skills client on macOS, Linux, or Windows:
+- **Commands**: `git` (and optionally `gh`) are the only CLIs, and behave the same on every OS — run the `git` lines as shown. Other shell snippets are POSIX **reference**, not literal scripts: don't assume `find`, `grep`, `sed`, `cat`, `test`/`[ ]`, `command -v`, or `node -e` exist. Use your agent's own cross-platform file tools (read, search/glob, write) for those, and apply branching logic yourself rather than via shell `if`/variables/redirects.
+- **Bundled files**: referenced by paths relative to this skill's folder; the main agent reads them and passes the chosen template's text **into the subagent prompt** — subagents can't resolve skill-relative paths.
 
 ## Execution
 
@@ -72,8 +77,8 @@ gh pr view --json number -q .number 2>/dev/null && echo "PR_EXISTS"   # prints t
 
 ### 3. Spawn the document subagent
 
-Read `.claude/skills/document/agent-prompt.md` (lean) and the **one** template for the chosen type:
-`.claude/skills/document/templates/<type>.md`. Fill and spawn:
+Read `agent-prompt.md` (lean) and the **one** template for the chosen type:
+`templates/<type>.md`. Fill and spawn:
 
 - `model`: `"haiku"` for `pr`, `changelog`, `release-note` (drafting from real material is well-bounded). **`"sonnet"` for `postmortem`** — root-cause synthesis and contributing-factor analysis need stronger reasoning than a cheap model gives.
 - `description: "Document: <type>"`
@@ -106,5 +111,5 @@ For `pr`, always show the full text in chat (so it's usable even without `gh`). 
 
 ## Reference files
 
-- `.claude/skills/document/agent-prompt.md` — lean spawn template
-- `.claude/skills/document/templates/` — one structure file per type (`pr.md`, `changelog.md`, `release-note.md`, `postmortem.md`); the subagent reads only the chosen one
+- `agent-prompt.md` — lean spawn template
+- `templates/` — one structure file per type (`pr.md`, `changelog.md`, `release-note.md`, `postmortem.md`); the subagent reads only the chosen one

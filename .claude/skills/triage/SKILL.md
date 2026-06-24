@@ -1,7 +1,6 @@
-# /triage
-
 ---
 name: triage
+compatibility: Built for Claude Code — uses subagents, model selection, and interactive questions. Installs on any Agent Skills client but is tuned for Claude Code.
 description: Use this skill when starting any new task, change, bug fix, or feature to determine the appropriate risk tier, workflow playbook, and severity before touching any code. Run /triage first to get a recommendation on whether to proceed as just-do-it, lean, medium, or full, and to understand which downstream skills to invoke.
 ---
 
@@ -89,13 +88,17 @@ Triage locked.
 
 Do not output code. Do not touch files at any point.
 
+## Portability (any OS, any agent)
+
+Written for any Agent Skills client on macOS, Linux, or Windows. Bundled files (`tier-guide.md`, `agent-prompt.md`) are referenced by paths relative to this skill's folder; the **main agent reads them and injects their text** into the subagent prompt (the haiku subagent has no file tools, so it can't resolve skill paths). No POSIX-only shell utilities are required — use your agent's own cross-platform file tools to read files.
+
 ## Execution — spawn a haiku subagent
 
 ### Pre-flight (main model does this before spawning)
 
 1. Read `CLAUDE.md` at the repo root. If missing, note "no CLAUDE.md found".
-2. Read `.claude/skills/triage/tier-guide.md`.
-3. Read `.claude/skills/triage/agent-prompt.md` to get the prompt template.
+2. Read `tier-guide.md`.
+3. Read `agent-prompt.md` to get the prompt template.
 4. Fill the template with: task description, CLAUDE.md contents, tier-guide contents.
 
 ### Spawning
@@ -131,11 +134,11 @@ If unexpected complexity surfaces during execution — a lean task turns out to 
 
 ## Tier decision guide
 
-See `.claude/skills/triage/tier-guide.md`.
+See `tier-guide.md`.
 
 ## Subagent prompt template
 
-See `.claude/skills/triage/agent-prompt.md`.
+See `agent-prompt.md`.
 
 ## Artifact
 

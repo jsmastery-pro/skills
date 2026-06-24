@@ -1,7 +1,6 @@
-# /review
-
 ---
 name: review
+compatibility: Built for Claude Code — uses subagents, model selection, and interactive questions. Installs on any Agent Skills client but is tuned for Claude Code.
 description: Use this skill to get a rigorous, senior-level code review of a change before it merges. Run /review after implementing a feature or bug fix, before opening a PR, or when the triage playbook lists /review. The review always runs on a DIFFERENT Claude model than the one that wrote the code — spawned automatically as a subagent, no API keys or setup — because a fresh model catches mistakes the author model is blind to. It acts as a Staff Engineer reviewing a colleague's PR: severity-ranked, actionable findings on correctness, security, performance, maintainability, and test adequacy. It reviews the branch's change set (vs the base branch) plus any uncommitted work. It reports findings and writes them to docs/reviews/ — it does not modify your code.
 ---
 
@@ -26,6 +25,12 @@ You may steer it: `/review` (default contrasting model), `/review with opus` (fo
 `docs/reviews/<YYYY-MM-DD>-<branch>.md` — created by this skill only. The subagent writes it; the main model relays a summary.
 
 ---
+
+## Portability (any OS, any agent)
+
+Written for any Agent Skills client on macOS, Linux, or Windows:
+- **Commands**: `git` is the only required CLI and behaves the same on every OS — run the `git` lines as shown. Other shell snippets are POSIX **reference**, not literal scripts: don't assume `find`, `grep`, `sed`, `cat`, `test`/`[ ]`, `ls`, `xargs`, or `for` exist. Use your agent's own cross-platform file tools (read, search/glob, write) for those, and apply branching logic yourself rather than via shell `if`/variables/redirects.
+- **Bundled files**: referenced by paths relative to this skill's folder; the main agent reads them. Anything a subagent needs is passed **into its prompt as text** — subagents can't resolve skill-relative paths.
 
 ## Execution
 
@@ -110,28 +115,24 @@ De-duplicate the file list. Exclude lock files and generated output (`dist/`, `b
 
 ### 3. Gather lightweight pointers (do NOT read heavy files here)
 
-Paths and cheap signals only — the subagent reads on demand.
-
-```bash
-find docs/adr -name "*.md" 2>/dev/null | xargs ls -t 2>/dev/null | head -3   # recent ADR paths
-[ -f test-preferences.json ] && echo "HAS_TESTS_CONFIG"                       # is the project tested?
-```
+Paths and cheap signals only — the subagent reads on demand. Using your file tools: list the 3 most-recent ADR files under `docs/adr/` (paths only), and note whether `test-preferences.json` exists (is the project tested?).
 
 Pass to the subagent: CLAUDE.md contents inline (short), the 3 recent ADR **paths**, the base ref / merge-base, and the diff scope. The subagent reads ADRs only if they govern the changed code, runs `git diff` itself, and reads the changed files and their tests.
 
 ### 4. Spawn the review subagent — on the contrasting Claude model
 
-Read `.claude/skills/review/agent-prompt.md` (lean template; the full rubric lives in `review-guide.md`, which the subagent reads itself). Fill and spawn:
+Read two bundled files from this skill's folder (relative paths — you, the main agent, can resolve them): `agent-prompt.md` (the spawn template) and `review-guide.md` (the rubric). Fill the template **and inline the full `review-guide.md` text into it** — the subagent can't resolve skill paths, so it must receive the rubric as prompt text. Then spawn:
 
 - `model`: **the reviewer model chosen in Step 1** (different family from the author)
 - `description`: `"Review: <N> changed files on <reviewer-model>"`
 - Tools: `Read`, `Bash`, `Grep`, `Glob`, `Write` — **no `Edit`** (the reviewer reports, it does not change code)
 - `prompt`: filled template with:
-  1. Diff scope: `MODE`, `BASE`, `MERGE_BASE`, and the changed-file list with the exact `git diff` command to run
-  2. CLAUDE.md contents (inline) — project conventions the review must enforce
-  3. Recent ADR paths (read if relevant) — the decisions the change must respect
-  4. Whether the project has tests configured (so it can judge test adequacy)
-  5. Output path for findings: `docs/reviews/<date>-<branch>.md`
+  1. The full `review-guide.md` content (injected, not referenced)
+  2. Diff scope: `MODE`, `BASE`, `MERGE_BASE`, and the changed-file list with the exact `git diff` command to run
+  3. CLAUDE.md contents (inline) — project conventions the review must enforce
+  4. Recent ADR paths (read if relevant), or inline the relevant ADR text if your client gives subagents no file access
+  5. Whether the project has tests configured (so it can judge test adequacy)
+  6. Output path for findings: `docs/reviews/<date>-<branch>.md`
 
 ### 5. Relay the result
 
@@ -166,7 +167,7 @@ This skill is complete after relaying. It does not fix the findings (the impleme
 
 ---
 
-## Reference files
+## Reference files (in this skill's folder; relative paths)
 
-- `.claude/skills/review/agent-prompt.md` — lean spawn template the main model fills
-- `.claude/skills/review/review-guide.md` — review rubric, severity definitions, and findings format (read by the **subagent**, not the main model)
+- `agent-prompt.md` — lean spawn template the main model fills
+- `review-guide.md` — rubric, severity, findings format. The main model reads it and **injects its text into the subagent prompt** (portable across agents).

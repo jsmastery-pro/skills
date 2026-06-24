@@ -1,7 +1,6 @@
-# /harden
-
 ---
 name: harden
+compatibility: Built for Claude Code — uses subagents, model selection, and interactive questions. Installs on any Agent Skills client but is tuned for Claude Code.
 description: Use this skill to stress-test a change against the failure modes that only show up in production — edge cases, concurrency, scale, and security. Run /harden after the code works and is tested (typically the last step before merge on medium/full tier, or when /test or /review flagged a hardening concern). It acts as a systems-level principal engineer — the person who has debugged outages at 3am — and probes the change for the ways it breaks under load, adversarial input, partial failure, and time. It produces a prioritised hardening checklist in docs/hardening/ with concrete, verifiable items; it does not rewrite your code.
 ---
 
@@ -24,6 +23,12 @@ Owns the hardening checklist (`docs/hardening/`). Does not write tests (/test), 
 `docs/hardening/<YYYY-MM-DD>-<branch>.md` — created by this skill only. The subagent writes it; the main model relays a summary.
 
 ---
+
+## Portability (any OS, any agent)
+
+Written for any Agent Skills client on macOS, Linux, or Windows:
+- **Commands**: `git` is the only required CLI and behaves the same on every OS — run the `git` lines as shown. Other shell snippets are POSIX **reference**, not literal scripts: don't assume `find`, `grep`, `sed`, `cat`, `test`/`[ ]`, `ls`, `xargs`, or `for` exist. Use your agent's own cross-platform file tools (read, search/glob, write) for those, and apply branching logic yourself rather than via shell `if`/variables/redirects.
+- **Bundled files**: referenced by paths relative to this skill's folder; the main agent reads them. Anything a subagent needs is passed **into its prompt as text** — subagents can't resolve skill-relative paths.
 
 ## Execution
 
@@ -48,29 +53,24 @@ De-duplicate; drop lock/generated files from the count. **If the change set is e
 
 ### 2. Gather lightweight pointers (do NOT read heavy files here)
 
-Paths and cheap signals only.
+Paths and cheap signals only. Using your file tools: list the 3 most-recent ADR files under `docs/adr/` (paths only), note whether `test-preferences.json` exists (`HAS_TESTS`), and find the latest file under `docs/reviews/` (its findings inform what's already known).
 
-```bash
-find docs/adr -name "*.md" 2>/dev/null | xargs ls -t 2>/dev/null | head -3   # recent ADR paths
-[ -f test-preferences.json ] && echo "HAS_TESTS"                              # are there tests to extend?
-find docs/reviews -name "*.md" 2>/dev/null | xargs ls -t 2>/dev/null | head -1  # latest review, if any
-```
-
-Pass to the subagent: CLAUDE.md contents inline (short), the recent ADR **paths**, the latest review **path** (its findings inform what's already known), the diff scope, and whether tests exist.
+Pass to the subagent: CLAUDE.md contents inline (short), the recent ADR **paths**, the latest review **path**, the diff scope, and whether tests exist.
 
 ### 3. Spawn the hardening subagent
 
-Read `.claude/skills/harden/agent-prompt.md` (lean template; the full threat rubric lives in `harden-guide.md`, which the subagent reads itself). Fill and spawn:
+Read two bundled files from this skill's folder (relative paths — you, the main agent, can resolve them): `agent-prompt.md` (the spawn template) and `harden-guide.md` (the threat rubric). Fill the template **and inline the full `harden-guide.md` text into it** — the subagent can't resolve skill paths, so it must receive the rubric as prompt text. Then spawn:
 
 - `model: "sonnet"`  (override to `opus` only if triage marked the change `critical` — deeper reasoning for high blast radius)
 - `description: "Harden: <N> changed files"`
 - Tools: `Read`, `Bash`, `Grep`, `Glob`, `Write` — **no `Edit`** by default (it produces a checklist, not edits). If the engineer later approves a specific fix, re-spawn with `Edit` for that one item.
 - `prompt`: filled template with:
-  1. Diff scope: `MODE`, `BASE`, `MERGE_BASE`, changed-file list + the exact `git diff` command
-  2. CLAUDE.md contents (inline)
-  3. Recent ADR paths + latest review path (read if relevant)
-  4. `HAS_TESTS` (so it can say "add a test for this" vs "no test harness")
-  5. Output path: `docs/hardening/<date>-<branch>.md`
+  1. The full `harden-guide.md` content (injected, not referenced)
+  2. Diff scope: `MODE`, `BASE`, `MERGE_BASE`, changed-file list + the exact `git diff` command
+  3. CLAUDE.md contents (inline)
+  4. Recent ADR paths + latest review path (read if relevant; inline their text if your client gives subagents no file access)
+  5. `HAS_TESTS` (so it can say "add a test for this" vs "no test harness")
+  6. Output path: `docs/hardening/<date>-<branch>.md`
 
 ### 4. Relay the result
 
@@ -100,5 +100,5 @@ Show all **must-fix** items in chat; collapse should-harden and watch to counts 
 
 ## Reference files
 
-- `.claude/skills/harden/agent-prompt.md` — lean spawn template the main model fills
-- `.claude/skills/harden/harden-guide.md` — systems threat rubric, severity, and checklist format (read by the **subagent**, not the main model)
+- `agent-prompt.md` — lean spawn template the main model fills
+- `harden-guide.md` — systems threat rubric, severity, and checklist format. The main model reads it and **injects its text into the subagent prompt** (portable across agents).

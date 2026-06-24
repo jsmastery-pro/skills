@@ -1,7 +1,6 @@
-# /sync
-
 ---
 name: sync
+compatibility: Built for Claude Code — uses subagents, model selection, and interactive questions. Installs on any Agent Skills client but is tuned for Claude Code.
 description: Use this skill after a change is complete to keep the project's durable knowledge current — update existing root and nested CLAUDE.md files to reflect what changed, and flag any ADR the change may have made stale. Run /sync as the last step on medium or full tier work, before or just after merge. It maintains context files that already exist; it never creates new CLAUDE.md files (that is /understand's job) and never edits ADRs (that is /design's job) — it only flags stale ones. Conservative by default: surgical, additive edits that preserve curated content.
 ---
 
@@ -37,6 +36,12 @@ The dividing line on creation is **context, not policy**: create only when this 
 Maintains root `CLAUDE.md` and existing nested `<area>/CLAUDE.md`; **creates** nested `<area>/CLAUDE.md` only for an area net-new in this change. Never creates or restructures root (that's /understand). Writes nothing else.
 
 ---
+
+## Portability (any OS, any agent)
+
+Written for any Agent Skills client on macOS, Linux, or Windows:
+- **Commands**: `git` is the only required CLI and behaves the same on every OS — run the `git` lines as shown. Other shell snippets are POSIX **reference**, not literal scripts: don't assume `find`, `grep`, `sed`, `cat`, `test`/`[ ]`, `ls`, or `xargs` exist. Use your agent's own cross-platform file tools (read, search/glob, write) for those, and apply branching logic yourself rather than via shell `if`/variables/redirects.
+- **Bundled files**: referenced by paths relative to this skill's folder; the main agent reads them. Anything a subagent needs is passed **into its prompt as text** — subagents can't resolve skill-relative paths.
 
 ## Execution
 
@@ -80,7 +85,7 @@ For each changed file, note its nearest enclosing directory that has a `CLAUDE.m
 
 ### 3. Spawn the sync subagent
 
-Read `.claude/skills/sync/agent-prompt.md`, fill it, then spawn:
+Read `agent-prompt.md`, fill it, then spawn:
 
 - `model: "haiku"`  (cheap — this is bounded maintenance, not open-ended reasoning)
 - `description: "Sync: update CLAUDE.md + flag stale ADRs"`
@@ -126,4 +131,4 @@ Omit any section with no items. If everything was already current and nothing is
 
 ## Subagent prompt template
 
-See `.claude/skills/sync/agent-prompt.md`.
+See `agent-prompt.md`.

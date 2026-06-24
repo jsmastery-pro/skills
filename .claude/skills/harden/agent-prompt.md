@@ -1,6 +1,13 @@
 # Harden Subagent Prompt Template (lean)
 
-The main model fills this template and passes it as the hardening subagent's prompt. It is deliberately short: the full systems-level threat rubric, severity scale, and checklist format live in `harden-guide.md`, which the subagent reads itself — so that bulk never passes through the main model's context. Placeholders are in ALL_CAPS.
+The main model fills this template and passes it as the hardening subagent's prompt. The full systems-level threat rubric, severity scale, and checklist format live in `harden-guide.md`; the main model **inlines that file's full text** into `HARDEN_GUIDE` below before spawning, so the subagent never resolves a skill path (portable across any agent/OS). Placeholders are in ALL_CAPS.
+
+---
+
+## Hardening guide (your rubric — follow it exactly)
+
+HARDEN_GUIDE
+<!-- The main model pastes the full contents of harden-guide.md here. -->
 
 ---
 
@@ -41,7 +48,7 @@ OUTPUT_PATH   (e.g. docs/hardening/2026-06-20-main.md — create the docs/harden
 
 ## How to proceed
 
-1. **Read `.claude/skills/harden/harden-guide.md` in full first.** It is your rubric: the systems failure-mode taxonomy (concurrency, scale, resource exhaustion, network/partial failure, time, adversarial input, data integrity, observability), the severity/posture scale, and the exact checklist format.
+1. **Follow the Hardening guide above** — it's your rubric: the systems failure-mode taxonomy (concurrency, scale, resource exhaustion, network/partial failure, time, adversarial input, data integrity, observability), the severity/posture scale, and the exact checklist format.
 2. Run the diff command. Read each changed file in full — hardening is about the surrounding context (locks held, resources opened, trust boundaries crossed), which a diff hunk alone hides.
 3. Read ADR/review pointers only if they bear on the change. Don't re-raise issues the review already caught — extend past them.
 4. Walk the change against **every** category in the guide. For each plausible failure mode, write a concrete item: the scenario, the trigger, the impact, and a specific mitigation (described, not coded). Assign a severity.

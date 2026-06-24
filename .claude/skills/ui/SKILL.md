@@ -1,7 +1,6 @@
-# /ui
-
 ---
 name: ui
+compatibility: Built for Claude Code — uses interactive questions and stack detection. Installs on any Agent Skills client but is tuned for Claude Code.
 description: Use this skill to implement any web UI — components, pages, or full layouts — using semantic HTML, design tokens, and strict accessibility standards. Works on any web stack (Next.js, Vite, Nuxt, Svelte, plain HTML). If the project has a design.md at the root, enforces it as the single source of truth. Run /ui with a screenshot for pixel-perfect replication, or without one to choose from 5 curated design templates, paste a design.md URL, or describe a style. Do not use for backend logic, API routes, server actions, or data fetching.
 ---
 
@@ -16,6 +15,10 @@ Three entry points — checked in order:
 All paths: **component-or-screen → stack detection → styling library → dark mode → token sync → font → five phases**.
 
 ---
+
+## Portability (any OS, any agent)
+
+Written for any Agent Skills client on macOS, Linux, or Windows. The detection snippets (`find`, `cat | grep`, `cp`) are POSIX **reference**, not literal scripts — don't assume those utilities exist. Use your agent's own cross-platform file tools to find files, read `package.json`/config, and copy a template to `design.md`. Bundled files (`templates/*.md`, `checklist.md`) are referenced by paths relative to this skill's folder and read by the main agent (this skill runs inline — no subagent). This skill writes app code/CSS, which is inherently cross-platform.
 
 ## Step 0 — Check for existing design.md
 
@@ -201,11 +204,11 @@ Find existing token files. If conflicts exist between current values and the ima
 
 Read only the **frontmatter (first 30 lines)** of each template for the picker — not the full file:
 ```
-.claude/skills/ui/templates/stripe.md    (lines 1–30)
-.claude/skills/ui/templates/posthog.md   (lines 1–30)
-.claude/skills/ui/templates/nike.md      (lines 1–30)
-.claude/skills/ui/templates/supabase.md  (lines 1–30)
-.claude/skills/ui/templates/raycast.md   (lines 1–30)
+templates/stripe.md    (lines 1–30)
+templates/posthog.md   (lines 1–30)
+templates/nike.md      (lines 1–30)
+templates/supabase.md  (lines 1–30)
+templates/raycast.md   (lines 1–30)
 ```
 Read the full selected file in B2, after the user chooses.
 
@@ -226,7 +229,7 @@ AskUserQuestion 2 — (only for Light or Bold)
 
 ### B2 — Acquire the design system
 
-**Template selected** → read the full file, then `cp .claude/skills/ui/templates/<name>.md ./design.md`.
+**Template selected** → read the full file, then copy it to `./design.md` (use your write tool — read `templates/<name>.md` and write its contents to `design.md`; don't rely on `cp`).
 
 **URL provided** → fetch, validate it has `colors:` and `typography:`, save as `./design.md`.
 
@@ -586,6 +589,6 @@ Use CSS logical properties instead of physical ones so layouts work correctly fo
 
 ## Reference files
 
-- Accessibility checklist: `.claude/skills/ui/checklist.md`
-- Design templates: `.claude/skills/ui/templates/`
+- Accessibility checklist: `checklist.md`
+- Design templates: `templates/`
 - Project design system: `./design.md`
