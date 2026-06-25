@@ -8,8 +8,9 @@ description: "Use this skill when starting any new task, change, bug fix, or fea
 
 Analyses the stated task and recommends:
 
+- **Task shape**: `build` (a feature/change) or `fix` (a defect — something broken/failing/wrong). A fix routes to the `/debug` path, not the build playbook (see `tier-guide.md`).
 - **Tier**: `just-do-it` | `lean` | `medium` | `full`
-- **Playbook**: the ordered list of skills to run for that tier
+- **Playbook**: the ordered list of skills to run for that tier and shape
 - **Severity**: `low` | `medium` | `high` | `critical` (impact if this goes wrong)
 - **Rationale**: one short paragraph explaining why
 

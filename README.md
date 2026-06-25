@@ -52,6 +52,7 @@ These skills follow the open Agent Skills format and are written to be **portabl
 | `harden` | Verify | Systems-level pass for concurrency, scale, and security failure modes. |
 | `document` | Ship | PR text, changelog, release notes, or postmortem from the real diff. |
 | `sync` | Close | Keeps `AGENTS.md` current, reconciles the roadmap, and flags stale ADRs after a change. |
+| `status` | Orient | Reads git + roadmap + ADRs to show where things stand and what's safe to pick up (session/team). |
 
 ## Tiers
 

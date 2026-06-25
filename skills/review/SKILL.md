@@ -24,6 +24,8 @@ You may steer it: `/review` (default contrasting model), `/review with opus` (fo
 
 `docs/reviews/<YYYY-MM-DD>-<branch>.md` — created by this skill only. The subagent writes it; the main model relays a summary.
 
+**Artifact base.** Review findings live under `docs/` by default. If `docs/` is a *published* docs site (`docusaurus.config.*`, `.vitepress/`, `mkdocs.yml`, Astro Starlight, or Nextra detected), use `.workflow/` instead (`.workflow/reviews/`). **Always follow whichever base — `docs/` or `.workflow/` — already exists** (paths here assume `docs/`).
+
 ---
 
 ## Portability (any OS, any agent)

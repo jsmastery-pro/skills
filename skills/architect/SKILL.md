@@ -35,6 +35,8 @@ Round 1 is a **quick** pass for the un-inferable framing context (constraints, h
 
 `docs/adr/NNNN-title.md` — created or updated by this skill only. **One narrow exception:** after the ADR is confirmed, it fills in the matching feature's `ADR` pointer cell in `docs/features/index.md` (a single-cell link update, not a rewrite) so the roadmap and the decision are connected. It touches nothing else in that file — status and sub-tasks stay owned by `/mvp`, `/develop`, and `/sync`.
 
+**Artifact base.** ADRs live under `docs/` by default. If `docs/` is a *published* docs site (`docusaurus.config.*`, `.vitepress/`, `mkdocs.yml`, Astro Starlight, or Nextra detected), use `.workflow/` instead (`.workflow/adr/`) so workflow files don't ship to the site. **Always follow whichever base — `docs/` or `.workflow/` — already exists** (paths in this skill assume `docs/`).
+
 ---
 
 ## Portability (any OS, any agent)
@@ -81,14 +83,14 @@ find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.py" 
 ```
 
 From the ADR list:
-- **Next number**: highest existing number + 1, zero-padded to 4 digits; `0001` if none exist.
+- **Next number**: highest existing number + 1, zero-padded to 4 digits; `0001` if none exist. **Collision guard (teams):** another session or teammate may add an ADR between now and the write. Immediately before the subagent writes, re-list `docs/adr/`; if the chosen `NNNN` already exists, bump to the next free number. **Never overwrite an existing ADR file** — and after writing, confirm you didn't land on a number a concurrent run also took (if the file you wrote isn't the only one with that number, renumber yours).
 - **Filename title**: from the design topic, generate a kebab-case slug — max 5 words, no articles (a/an/the), lowercase. E.g. "We need a notification system" → `notification-system-approach`. Combine: `docs/adr/NNNN-kebab-title.md`.
 - **Related ADRs**: read the first 20 lines of each existing ADR — enough to capture the title, status, and opening paragraph of Context — to check for overlap with the current design topic. Flag any that match.
 - **Update/supersede detection**: if any existing ADR clearly overlaps the current design topic (same domain, same system, same decision), **before asking Round 1 questions**, present it to the engineer: "I found an existing ADR that may be relevant: `[path]` — [title]. Is this a **new** decision (creates a new ADR) or are you **updating/superseding** the existing one?" Wait for their answer. If update or supersede: set OPERATION accordingly, read the existing ADR in full, and skip Round 2 questions for in-place updates.
 
 From the community skill scan:
 
-**Workflow skills** (never treat as community skills): `triage`, `audit`, `architect`, `mvp`, `develop`, `verify`, `test`, `review`, `harden`, `document`, `debug`, `sync`.
+**Workflow skills** (never treat as community skills): `triage`, `audit`, `architect`, `mvp`, `develop`, `verify`, `test`, `review`, `harden`, `document`, `debug`, `sync`, `status`.
 
 This list is the workflow skills in this system. As additional workflow skills are added, update this list immediately or they will appear as community skills.
 

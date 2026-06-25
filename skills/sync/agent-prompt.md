@@ -68,7 +68,7 @@ Make the edit **only if** it is:
 **Stack consistency:** if root AGENTS.md has a `## Stack` and an architecture ADR (one with `## Proposed stack`) exists, check they agree. If root's stack is **missing the decided stack** (e.g. greenfield root was seeded before the ADR), add it surgically. If they **contradict** (root says one thing, the ADR another), do not rewrite curated stack lines — flag it under `CONFLICTS` for a human, noting which ADR.
 
 Rules you must not break:
-- **Idempotent — check before you add.** Read the target doc first. If the fact, command, or pointer is already present (even worded differently), do **not** add it again. Running /sync twice on the same change must produce zero new edits the second time. This is critical — the same branch gets synced repeatedly.
+- **Idempotent — check before you add.** Read the target doc first (re-read it now, not a stale earlier copy — a teammate or another session may have edited it). If the fact, command, or pointer is already present (even worded differently), do **not** add it again. Running /sync twice on the same change must produce zero new edits the second time. This is critical — the same branch gets synced repeatedly, and concurrently with teammate edits; re-reading + add-only-what's-absent is what makes that safe.
 - **Never overwrite or rewrite curated prose.** If keeping the doc accurate would require rewriting an author's curated paragraph, do not do it — record it under `CONFLICTS` for a human.
 - Keep root AGENTS.md short and globally relevant. Do not add area-specific detail to root; that belongs in a nested doc.
 
@@ -104,6 +104,7 @@ Be **strict** to avoid false positives — noise here erodes trust. Read an ADR 
 Read `docs/features/index.md`. Bring its status to match what the diff **actually shipped** — nothing more:
 - For each feature whose code area the diff touched, tick (`[ ]` → `[x]`) the build sub-tasks the diff completed, and update the feature's **Status** (`planned` → `in-progress`, or → `done` only when every sub-task is checked).
 - **Strictly status only.** Never add, remove, rename, or reorder features or sub-tasks — that's /mvp's. Never invent a feature for code that has no row; if shipped code clearly matches no row, note it under `ROADMAP_RECONCILED` as "unmapped: <area>" so a human can decide.
+- **Attribution when a diff spans features.** A single diff may touch several features (team branches, or a change crossing areas). Only tick a sub-task when the changed file→feature mapping is **unambiguous** (the file lives in that feature's code area and matches that sub-task). If a changed file/area maps to **more than one** feature, do **not** guess which one it advances — leave both untouched and note `ambiguous: <area> → <featureA> / <featureB>` under `ROADMAP_RECONCILED` for a human.
 - **Idempotent**: a box already `[x]` stays `[x]`; re-running on the same diff changes nothing.
 - **Conservative**: only tick a sub-task you can see completed in the diff. When unsure, leave it.
 

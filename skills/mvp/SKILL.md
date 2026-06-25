@@ -28,6 +28,10 @@ It does one decomposition pass and hands you a detailed, checkable plan. Walking
 
 Status lifecycle other skills advance: `/mvp` seeds sub-tasks as **todo**; `/develop` flips one to **in-progress**/**done**; `/sync` reconciles after a change ships.
 
+**Artifact base.** The roadmap lives under `docs/` by default. If `docs/` is a *published* docs site (`docusaurus.config.*`, `.vitepress/`, `mkdocs.yml`, Astro Starlight, or Nextra detected), use `.workflow/` instead (`.workflow/features/index.md`). **Always follow whichever base — `docs/` or `.workflow/` — already exists** (paths here assume `docs/`).
+
+**Concurrency & collaboration.** The roadmap is shared across sessions and teammates. **Re-read it immediately before writing** (it may have changed since you last looked); make **surgical** edits (append new rows in order, never rewrite the file); and if it isn't in the state you expected, **flag rather than clobber**. Append new features with the next free numbers so two people adding features don't collide on a row.
+
 ---
 
 ## Portability (any OS, any agent)

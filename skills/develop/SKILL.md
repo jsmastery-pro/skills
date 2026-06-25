@@ -23,6 +23,10 @@ Because building is where decisions get silently made, `/develop` **gates on the
 
 Writes **app code** (and CSS/tokens for UI). Advances the feature's row in `docs/features/index.md` — `planned` → `in-progress` on start, `done` when the build lands — and fills in its `Code area` (and `ADR`) pointers. Never writes ADRs (flags the need and defers to `/architect`); never restructures root `AGENTS.md` (that's `/audit`); records new area conventions only via `/sync` afterwards.
 
+**Artifact base.** The roadmap and ADRs it reads live under `docs/` by default, or `.workflow/` if `docs/` is a published docs site. **Read from whichever base — `docs/` or `.workflow/` — exists in the repo** (paths here assume `docs/`).
+
+**Concurrency & collaboration.** The roadmap is shared. **Re-read it right before ticking a sub-task** (a teammate or `/sync` may have updated it), edit only the specific checkbox/cell/row (never rewrite the file), and if the row isn't as you expected — e.g. someone already marked it `done`, or the feature was reworked — **flag it rather than overwrite**. Before building, a quick `git fetch` + behind-check is worth it: if you're behind the remote, surface it so you don't rebuild what a teammate just shipped (this is what `/status` reports).
+
 ---
 
 ## Portability (any OS, any agent)
@@ -30,6 +34,14 @@ Writes **app code** (and CSS/tokens for UI). Advances the feature's row in `docs
 Written for any Agent Skills client on macOS, Linux, or Windows. Detection snippets are POSIX **reference** — use your agent's own cross-platform file tools to find files, read `package.json`/config, and read the ADR and `AGENTS.md`. This skill runs inline (no subagent) and writes app code, which is inherently cross-platform. Bundled guides (`ui-guide.md`, `logical-guide.md`, `checklist.md`, `templates/`) are referenced by paths relative to this skill's folder; the main agent reads them. If your tool has no interactive-question picker, ask the prompts as plain text with the same options.
 
 ## Execution
+
+### Pre-check — the project must already exist
+
+`/develop` builds *into* a scaffolded project; it does not scaffold one. If there's no project skeleton at all (no `package.json`/`pyproject.toml`/`go.mod`/manifest, no source tree), **stop** and tell the engineer:
+
+> No project found to build into. Scaffold it first — `create-next-app`, `npm init`, `vite`, `cargo new`, etc. (per your architecture ADR) — then re-run `/develop`.
+
+If a project exists (even a bare scaffold), proceed.
 
 ### Step 0 — The ADR gate (always first)
 
@@ -112,7 +124,8 @@ Then build the track(s):
 
 ### Step 4 — Update the roadmap and report
 
-- In `docs/features/index.md`: tick the build sub-task(s) you completed (`[ ]` → `[x]`), fill in the feature's `Code area` (and `ADR`) pointers, and set its **Status** to `done` only when every sub-task is checked — otherwise leave it `in-progress`.
+- **Only mark what actually landed.** Before ticking anything, confirm the work is really there — files written, build subagent returned success (not an error or empty result), code present. If the build **failed or came back partial** (subagent errored, was interrupted, or left a sub-task half-done): leave that sub-task **unchecked**, keep the feature **`in-progress`**, and report exactly what's incomplete and why. Never mark a sub-task `done` on an unverified or failed build — a roadmap that claims work that isn't there is worse than one that's behind.
+- In `docs/features/index.md`: tick the build sub-task(s) you **verified** complete (`[ ]` → `[x]`), fill in the feature's `Code area` (and `ADR`) pointers, and set its **Status** to `done` only when every sub-task is checked — otherwise leave it `in-progress`.
 - Relay the track's report (the `## /develop complete` block from `ui-guide.md` and/or `logical-guide.md`).
 - Recommend the next step per tier: usually `/test`, then `/sync` to promote any new area conventions into `AGENTS.md`.
 

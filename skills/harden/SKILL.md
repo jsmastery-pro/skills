@@ -22,6 +22,8 @@ Owns the hardening checklist (`docs/hardening/`). Does not write tests (/test), 
 
 `docs/hardening/<YYYY-MM-DD>-<branch>.md` — created by this skill only. The subagent writes it; the main model relays a summary.
 
+**Artifact base.** Hardening checklists live under `docs/` by default. If `docs/` is a *published* docs site (`docusaurus.config.*`, `.vitepress/`, `mkdocs.yml`, Astro Starlight, or Nextra detected), use `.workflow/` instead (`.workflow/hardening/`). **Always follow whichever base — `docs/` or `.workflow/` — already exists** (paths here assume `docs/`).
+
 ---
 
 ## Portability (any OS, any agent)

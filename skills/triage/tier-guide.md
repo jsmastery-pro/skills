@@ -15,6 +15,16 @@ The first two steps **invert** depending on whether code exists yet:
 
 Either way the stack stays correct: `/audit` reconciles root `AGENTS.md`'s `## Stack` from the architecture ADR whenever it runs, and `/sync` flags it if root drifts from the ADR — so a wrong order self-corrects on the next pass.
 
+## Task shape — build vs fix
+
+Before sizing the tier, decide what *kind* of task this is — they take different paths:
+
+- **Build** (a feature, change, or addition): use the tiered playbooks below.
+- **Fix** (something is broken, failing, throwing, or behaving wrong — "fix the bug where…", "X errors when…", "the test fails", "it's not working"): this is a **defect**, not a build. Route it to **`/debug`** (root-cause investigation) first, then `/test` (regression) → `/sync`. Don't send a bug down the build playbook — `/develop` assumes you know what to build; `/debug` assumes you don't yet know why it broke.
+  - Fix playbook: `/debug` → `/test` → `/sync` (add `/verify` if the fix touches a user-facing flow; escalate to `/architect` only if the bug exposes a flawed decision rather than a coding mistake).
+
+The tiers below still apply to a fix for **severity/process** (a payments bug is `full`), but the *skill path* is the fix playbook, not build.
+
 ## Tier definitions
 
 ### just-do-it
@@ -61,6 +71,8 @@ Playbook: `/audit` → `/architect` → `/develop` → `/verify` → `/test` →
 Playbook: `/audit` → `/architect` → `/develop` → `/verify` → `/test` → `/harden` → `/review` → `/document` → `/sync`
 
 `/debug` is **on-demand**, not a playbook step: invoke it whenever `/verify` or `/test` surfaces a failure, or any time behavior is wrong and the cause isn't obvious.
+
+`/status` is also **on-demand**: run it to orient before starting (especially when resuming a paused session or working in a shared repo) — it reports git state, roadmap progress, and collaboration hazards (behind the remote, a feature someone else is mid-build on).
 
 ---
 

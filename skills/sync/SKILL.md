@@ -39,6 +39,8 @@ The dividing line on creation is **context, not policy**: create only when this 
 
 Maintains root `AGENTS.md` and existing nested `<area>/AGENTS.md`; **creates** nested `<area>/AGENTS.md` only for an area net-new in this change. Never creates or restructures root (that's /audit). Also **reconciles `docs/features/index.md`** — ticking sub-task checkboxes and advancing feature status to match what the diff actually shipped — but never adds, removes, or reorders features/sub-tasks (that's /mvp). Writes nothing else.
 
+**Artifact base.** The ADRs and roadmap it reads/reconciles live under `docs/` by default, or `.workflow/` if `docs/` is a published docs site. **Use whichever base — `docs/` or `.workflow/` — exists in the repo** (paths here assume `docs/`).
+
 ---
 
 ## Portability (any OS, any agent)
