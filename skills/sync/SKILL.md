@@ -86,7 +86,7 @@ De-duplicate. Then **filter the list to source files** the subagent should sync 
 [ -f AGENTS.md ] && echo "root: AGENTS.md"
 find . -name AGENTS.md -not -path './node_modules/*' -not -path './.git/*' 2>/dev/null   # root + nested
 find docs/adr -name "[0-9]*.md" 2>/dev/null | sort                                        # all ADRs
-ls docs/mvp/*.md 2>/dev/null                                                       # feature roadmap(s) — one or more numbered files
+find docs/mvp -name "*.md" 2>/dev/null                                             # feature roadmap(s) — incl. per-workspace subdirs in a monorepo (docs/mvp/<workspace>/)
 ```
 
 The subagent reads these itself. The main model passes the **paths** (plus the changed-file list and diff command). The one inline exception is root AGENTS.md contents — short and useful for the subagent to anchor on.

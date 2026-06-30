@@ -121,7 +121,7 @@ Why this order (both learned from dry-running it):
 - **Doc commits inflate history.** On greenfield, `/mvp` and `/architect` commit a roadmap and an ADR *before* any code — so "≥2 commits → established" would misroute a code-less project to Phase 2 and skip the standards questions. Gating greenfield on **no source AND no manifest** ignores doc commits.
 - **File count alone misreads a scaffold.** A `create-next-app` scaffold has 10+ files but **one** commit — git history is what separates it from a built codebase, and history works for languages the `find` doesn't recognize. A shallow clone / squash-merge repo showing ≤1 commit falls to Phase 0, where one question resolves it safely.
 
-**Monorepo (`MONOREPO=yes`)**: in Phase 2/4, treat **each app/package as its own area** — give each a nested `AGENTS.md` carrying its stack/commands/conventions, and keep the repo-root `AGENTS.md` to monorepo-wide concerns only (workspace tooling, shared conventions). Note `MONOREPO=yes` + the app list in the subagent prompt.
+**Monorepo (`MONOREPO=yes`)**: in **every phase that creates `AGENTS.md` — greenfield Phase 1 included** — treat each app/package as its own area: give each a nested `AGENTS.md` carrying *its* stack, commands, and conventions, and keep the repo-root `AGENTS.md` to monorepo-wide concerns only (workspace tooling, shared conventions). On a **freshly-scaffolded** monorepo this matters most: each `apps/*`/`packages/*` already declares its stack in its own manifest, so seed the per-workspace nested docs from those scaffolds **now** — `/architect` and `/develop` read a workspace's stack from its nested `AGENTS.md`, and it won't exist if greenfield only wrote root. Note `MONOREPO=yes` + the app list in the subagent prompt.
 
 ---
 
@@ -165,7 +165,7 @@ Question 2 — Additional standards (multi-select):
 - `model: "sonnet"`
 - `description: "Audit: greenfield setup — create root AGENTS.md + CLAUDE.md pointer"`
 - Tools: `Read`, `Bash`, `Write`
-- `prompt`: filled `agent-prompt.md` template with `PHASE=greenfield`, `SELECTED_PATTERNS=<file contents>`, `ADDITIONAL_STANDARDS=<selections>`. The subagent writes the content to `AGENTS.md` and creates the `CLAUDE.md` pointer beside it.
+- `prompt`: filled `agent-prompt.md` template with `PHASE=greenfield`, `SELECTED_PATTERNS=<file contents>`, `ADDITIONAL_STANDARDS=<selections>`, and **`MONOREPO_OR_NO`** (`yes — apps: web, api, …` if detected). The subagent writes root `AGENTS.md` + its `CLAUDE.md` pointer — **and, if `MONOREPO=yes`, a nested `AGENTS.md` (+ pointer) per workspace** seeded from each scaffold's manifest, with the root pointers baked in.
 
 ---
 

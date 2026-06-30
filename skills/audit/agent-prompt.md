@@ -98,7 +98,17 @@ Use the template below. Populate `## Stack` from the architecture ADR if one exi
 
 For `## Rules`: use the SELECTED_PATTERNS content injected above as the basis. If the engineer selected "Other" (free-text) instead of a named pattern, treat their exact text as the conventions and include it verbatim under `## Rules` — do not interpret or reformat it. Append ADDITIONAL_STANDARDS as extra bullet points at the end of `## Rules`. If nothing was found for stack, write placeholders like `<to be filled>`.
 
-**Step 3 — Report** (use the report format at the bottom of this file).
+**On a monorepo**, keep this root doc to **monorepo-wide** concerns — the workspace tooling (`pnpm`/`turbo`/`nx`), shared standards, and a `## Context files` section pointing at each workspace's nested doc. The per-app stack does **not** go in root.
+
+**Step 2b — Per-workspace nested AGENTS.md (monorepo only)**
+
+If `MONOREPO_OR_NO` is `yes`, then for **each** workspace listed (`apps/*`, `packages/*`):
+```bash
+cat <workspace>/package.json 2>/dev/null   # (or its manifest) — read its stack, deps, scripts
+```
+Even though no features are built yet, the scaffold declares the workspace's **stack and commands** — capture them so `/architect` and `/develop` can read that workspace's stack from *its* doc (they won't look in root). Write `<workspace>/AGENTS.md` using the nested template: `## Stack` from its manifest, `## Commands` from its scripts (scoped — e.g. `pnpm --filter <name> dev`), and inherit the root's `## Rules` by reference. Create the sibling `<workspace>/CLAUDE.md` pointer, and add a pointer line for each under root's `## Context files`. Skip a workspace that's an empty placeholder with no manifest.
+
+**Step 3 — Report** (use the report format at the bottom of this file). List every per-workspace doc created.
 
 ---
 

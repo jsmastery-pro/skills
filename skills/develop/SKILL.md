@@ -121,6 +121,8 @@ Before building, read:
 2. **The nearest `AGENTS.md`** to the target code area (proximity — Claude Code auto-loads it; read it explicitly to be sure). This carries decisions synced from earlier features, so you **don't re-ask** what's already settled.
 3. **`design.md`** (UI track only) — the visual source of truth.
 
+**Monorepo — work inside the target workspace.** If this is a monorepo (workspaces config, or `apps/*`/`packages/*` manifests), identify which workspace the feature belongs to (its `Code area` in the roadmap, or the task path) and **operate there**: read *that workspace's* nested `AGENTS.md` and `design.md`, use its `package.json`/stack, write into its tree, and run **its** commands (the workspace's `dev`/`build`/`test`, e.g. `pnpm --filter <workspace> …` or `turbo run … --filter`). The scaffold and freshness pre-checks apply to that workspace. Its roadmap is at `docs/mvp/<workspace>/`.
+
 **Precedence when they conflict:** the **ADR wins for the feature it governs** — it's the specific, ratified decision; `AGENTS.md` is the general project convention. So if `AGENTS.md` says "tests use Jest" but this feature's ADR says "Vitest for this," follow the ADR *for this feature* — and **flag the conflict** ("ADR <NNNN> diverges from `AGENTS.md` on X — `/sync` should reconcile") rather than silently picking one. (If the ADR is silent on a point, `AGENTS.md` governs.)
 
 This step is why `/develop auth functionality` doesn't re-ask the stack chosen during `/develop auth pages`: `/architect` decided it, `/sync` wrote it into `AGENTS.md`, and you read it here.

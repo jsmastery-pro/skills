@@ -156,7 +156,8 @@ A design topic is **decision-scoped** if it names a specific component, feature,
 
 - **Mode** — `FEATURE` (new feature) · `ARCHITECTURE` (foundational stack) · `ENHANCEMENT` (changing something that exists) · `CROSS-CUTTING` (a project-wide standard). Infer from the topic and whether the thing already exists in the code. Confirm only if genuinely ambiguous.
 - **Platform** — web · mobile · API/backend · a mix. Infer from the stack in `AGENTS.md` (**never assume web**) — it changes the questions (mobile auth, offline, push differ from web).
-- **Stack & conventions** — language, framework, DB, and the community skills the project uses, from `AGENTS.md` (inferred, never asked).
+- **Workspace (monorepo)** — if this is a monorepo (workspaces config, or `apps/*`/`packages/*` manifests), identify **which workspace** this feature belongs to (from the topic, the path, or the roadmap row's `Code area`; ask if unclear). Read **that workspace's** nested `AGENTS.md` for *its* stack — apps in a monorepo often differ (Next.js web, Go api, React Native mobile), so don't assume the root stack. Note the workspace in the ADR's Context (and whether the decision is app-specific or repo-wide).
+- **Stack & conventions** — language, framework, DB, and the community skills the project uses, from `AGENTS.md` (the target workspace's, in a monorepo) — inferred, never asked.
 - **Constraints** — team size, scale, and compliance: infer from `AGENTS.md` / the product. Raise a **per-feature** compliance question only when *this* feature touches regulated data (payments, PII, health) — not as a generic deadline/team menu.
 
 State it: *"Reading this as a new **FEATURE** on your **Next.js + Supabase** stack (web) — correct me if not."* Then begin the deep questioning.

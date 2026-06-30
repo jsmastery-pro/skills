@@ -43,6 +43,8 @@ From the changed files, write the **2–5 concrete things a human could watch** 
 
 ### Step 2 — Determine how to run the app
 
+**Monorepo:** run the **specific affected app**, not the repo root — find the workspace the change lives in (`apps/<x>/…`) and use *its* run command (e.g. `pnpm --filter <x> dev`, `turbo run dev --filter <x>`, or the script in that workspace's `package.json`). If the change touches a shared package, run the app(s) that consume it.
+
 In order:
 1. **A project run skill / documented command** — check for a project-specific "run/start" skill, then `AGENTS.md`, then `package.json` scripts (`dev`, `start`), `Makefile`, `Procfile`, `docker-compose`. Prefer what the project already uses.
 2. **Built-in patterns by project type** if nothing is documented:
