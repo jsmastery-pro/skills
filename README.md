@@ -40,7 +40,7 @@ These skills follow the open Agent Skills format and are written to be **portabl
 
 | Skill | Phase | What it does |
 |---|---|---|
-| `mvp` | Scope | Turns an idea into a prioritized feature roadmap (`docs/features/index.md`). |
+| `mvp` | Scope | Turns an idea into a prioritized feature roadmap (`docs/mvp/`). |
 | `triage` | Plan | Recommends a risk tier, playbook, and severity before any code is touched. |
 | `audit` | Comprehend | Audits the codebase (or seeds standards on greenfield) and writes the context files (root / nested `AGENTS.md`). |
 | `architect` | Decide | Staff-engineer system design with feature-specific questioning; writes an ADR to `docs/adr/`. |
@@ -67,7 +67,7 @@ The amount of process scales with risk. `/triage` picks the tier and the subset 
 
 ## Artifacts
 
-Each skill owns one artifact: the feature roadmap (`docs/features/index.md`, `mvp`), ADRs (`docs/adr/`, `architect`), app code (`develop`), tests (`test`), review findings (`docs/reviews/`, `review`), hardening checklists (`docs/hardening/`, `harden`), docs (`document`), and the `AGENTS.md` context files (`audit` creates, `sync` maintains).
+Each skill owns one artifact: the feature roadmap (`docs/mvp/`, `mvp`), ADRs (`docs/adr/`, `architect`), app code (`develop`), tests (`test`), review findings (`docs/reviews/`, `review`), hardening checklists (`docs/hardening/`, `harden`), docs (`document`), and the `AGENTS.md` context files (`audit` creates, `sync` maintains).
 
 ## Local development
 

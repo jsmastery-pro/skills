@@ -315,7 +315,7 @@ If a required section is missing or a field is blank/placeholder, add this line 
 
 2. Do not rewrite the ADR from scratch on feedback. Use the **Edit** tool to apply targeted changes to the specific sections the engineer called out.
 3. After any edits, confirm: "ADR updated. Confirm with `yes` or give further feedback."
-4. **Link the roadmap (after confirmation).** If `docs/mvp/01-mvp.md` exists and has a row for this feature, update that row's `ADR` cell to point at the new file — the roadmap is in `docs/mvp/` and the ADR in `docs/adr/`, so the link is `[0007](../adr/0007-auth-approach.md)` and, if the feature's first sub-task is "Decision (ADR)", tick it `[x]`. Edit only that cell/checkbox — never status or other rows. If there's no matching row, skip silently (an ad-hoc decision outside the roadmap).
+4. **Link the roadmap (after confirmation).** If `docs/mvp/01-mvp.md` exists and has a row for this feature, update that row's `ADR` cell to point at the new file — the roadmap is in `docs/mvp/` and the ADR in `docs/adr/`, so the link is `[0007](../adr/0007-auth-approach.md)` and, if the feature's first sub-task is "Decision (ADR)", tick it `[x]`. Edit only that cell/checkbox — never status or other rows. If there's **no matching row** (an ad-hoc decision outside the roadmap), don't edit the roadmap — but **note it** in your final message: "This ADR isn't tied to a roadmap feature — run `/mvp` to add a row if you're tracking this as a feature." (Silent orphan ADRs are exactly the drift `/status` later has to surface.)
 
 /architect is complete when the engineer confirms the ADR. It does not invoke other skills.
 

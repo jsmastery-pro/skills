@@ -70,6 +70,13 @@ ls docs/mvp/*.md 2>/dev/null | sort        # existing roadmap files — note the
   2. **Plan the next slice** as `planned` features with full breakdowns. Don't write build plans for features already complete (`existing`).
   - If there's no root `AGENTS.md`, note in the report that `/audit` should run first to give this real context.
 
+**If roadmap files already exist (a re-run) — read the *union*, don't duplicate or fragment:**
+- **Read every file** under `docs/mvp/` and build the **full set of features already on the roadmap** — at *any* status (`planned`, `in-progress`, `done`, `existing`, `dropped`), across all numbered files. This is your dedup baseline.
+- **Dedup against all of it.** Do not add a feature that already exists in any file in any status. If the engineer's request overlaps an existing `planned` feature, **extend that feature** (add missing sub-tasks to its row) rather than creating a duplicate. Only genuinely-new features get new rows.
+- **Reconcile drift.** While reading the codebase, if you find **shipped work or ADRs that no roadmap feature covers** (the engineer built something off-plan), enroll them — completed work as `existing`/`done`, an unfinished thing as `in-progress` — so the plan reflects reality. Note these in the report as "drift enrolled".
+- **State what you found** in the report: how many existing plans/features, how many new features you're adding, how many drift items you enrolled, and which file you wrote to.
+- **Prefer consolidating** into the latest plan over spawning another file (see Step 6) — keep the roadmap from fragmenting across many files.
+
 ### Step 2 — Round 1: product & business (generate, then `AskUserQuestion`)
 
 Generate questions tailored to *this* idea; infer and skip what's stated. Cover:
@@ -154,7 +161,7 @@ Deviate only when a page genuinely can't be prototyped without real data (rare �
   - **Continuing the same plan** — the latest file still has unfinished/`planned` features you're extending → **merge** into that latest file: append new features/sub-tasks, leave existing rows and checkbox states untouched. If a previously-`planned` feature is now **out of scope** (a pivot), set its status to **`dropped`** — don't delete the row.
   - **A distinct new slice/batch** — a separate planning pass → create the **next number**: highest existing `NN` + 1, zero-padded to two digits, with a kebab slug — e.g. `docs/mvp/02-checkout-and-orders.md`. Re-list `docs/mvp/` immediately before writing (a teammate may have added one); use the next free number; **never overwrite an existing roadmap file**.
 
-When unsure between merge and new-file, prefer a **new numbered file** — it's append-only and merge-safe. Then write that file with two parts — an overview table and the detailed breakdown:
+When unsure between merge and new-file, **prefer merging into the latest plan** — keep the roadmap from fragmenting across many files. Only spin up a new numbered file when the slice is a **genuinely distinct epic/area** (e.g. you finished v1 and are now planning a separate "mobile app" or "billing v2" effort). A re-run on overlapping scope should land in the existing plan, not a new file. Then write the chosen file with two parts — an overview table and the detailed breakdown:
 
 ```markdown
 # Feature Roadmap
@@ -233,9 +240,11 @@ On a brownfield merge: append new features/sub-tasks; leave existing rows and ch
 ## /mvp complete
 
 **Product**: <one line>
-**Roadmap file**: <docs/mvp/NN-name.md> — <created new | merged into existing | new slice (next number) because <reason>>
+**Roadmap file**: <docs/mvp/NN-name.md> — <created new | merged into latest | new slice (next number) because <reason>>
+**Existing plans read** (re-run): <N files, M features already on the roadmap — or "none (first plan)">
 **Existing features enrolled** (brownfield): <count as `existing` + count as `in-progress` (partial) — or "n/a (greenfield)">
-**Scope (this plan)**: <N> features to build (<P0 count> P0, <deferred count> deferred), <total sub-task count> build sub-tasks
+**Drift enrolled** (off-plan work found in the code/ADRs): <count — or "none">
+**Scope (this plan)**: <N> NEW features to build (deduped against existing), <total sub-task count> build sub-tasks
 **Cross-cutting in scope**: <SEO / analytics / i18n / compliance — or "none">
 **Build order**: <feature 1> → <feature 2> → …
 **First step**: <recommended next command — usually `/architect <first feature>`, or `/audit` first if brownfield has no root AGENTS.md>

@@ -115,7 +115,7 @@ Evidence per sub-task type (tick `[ ]` → `[x]` when the evidence is clearly pr
 
 Then update the feature's **Status** (`planned` → `in-progress`, or → `done` only when **every** sub-task is checked).
 
-- **Strictly status only.** Never add, remove, rename, or reorder features or sub-tasks — that's /mvp's. Skip `existing` and `dropped` rows entirely (no sub-tasks to advance). Never invent a feature for code that has no row; if shipped code clearly matches no row, note it under `ROADMAP_RECONCILED` as "unmapped: <area>" so a human can decide.
+- **Strictly status only.** Never add, remove, rename, or reorder features or sub-tasks — that's /mvp's. Skip `existing` and `dropped` rows entirely (no sub-tasks to advance). Never invent a feature for code that has no row; if shipped code clearly matches no row, note it under `ROADMAP_RECONCILED` as "unmapped: <area> — run /mvp to enroll this off-plan work" (this is drift the roadmap should absorb).
 - **Attribution when a diff spans features.** A single diff may touch several features (team branches, or a change crossing areas). Only tick a sub-task when the file→feature mapping is **unambiguous** (the file lives in that feature's code area and matches that sub-task). If an area maps to **more than one** feature, do **not** guess — note `ambiguous: <area> → <featureA> / <featureB>` under `ROADMAP_RECONCILED`.
 - **Idempotent**: a box already `[x]` stays `[x]`; re-running changes nothing.
 - **Conservative**: only tick a sub-task whose completion evidence is clearly present. When unsure, leave it.

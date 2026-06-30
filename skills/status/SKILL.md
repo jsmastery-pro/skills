@@ -66,6 +66,15 @@ Surface anything that makes it unsafe to just dive in:
 - **Proposed ADR being built** → "*<feature>* is in-progress but ADR <NNNN> is still `Proposed`, not `Accepted`."
 - **Detached HEAD / non-feature branch** → note it.
 
+### Step 4b — Drift (plan vs reality)
+
+People go off-plan — they redo UI, add a feature the roadmap doesn't mention, or write an ADR for something not tracked. `/status` is where that surfaces. Cross-check the roadmap against the code and ADRs:
+- **Unplanned code** → significant code areas/modules (use `AGENTS.md` nested areas + top-level dirs) that **no roadmap feature's `Code area` points to**. That's shipped work the plan doesn't know about.
+- **Orphan ADRs** → files in `docs/adr/` that **no roadmap feature's `ADR` cell links to**. Decisions made outside the plan.
+- **Stale `done`** (light touch) → a feature marked `done`/`existing` whose code area has substantial recent churn — its "done" may no longer match reality. Only flag if obvious; don't over-reach.
+
+Report these and the one-command fix: **`/mvp`** to enroll unplanned work / re-run to reconcile drift, **`/architect`** (or a `/mvp` row) to link an orphan ADR. Be conservative — only flag a real mismatch, not every file without a row.
+
 ### Step 5 — Report
 
 ```
@@ -74,13 +83,18 @@ Surface anything that makes it unsafe to just dive in:
 **Branch**: <name>  ·  <ahead> ahead / <behind> behind `origin/<base>`
 **Working tree**: clean | <N> files changed (<areas>)
 
-**Roadmap** (`<base path>/mvp/01-mvp.md`):
-- done: <n>  ·  in-progress: <n>  ·  planned: <n>  ·  existing: <n> (pre-workflow)
+**Roadmap** (`<base path>/mvp/`):
+- done: <n>  ·  in-progress: <n>  ·  planned: <n>  ·  existing: <n> (pre-workflow)  ·  dropped: <n>
 - In progress:
   - <feature> — <c>/<t> sub-tasks · resume at **<first unchecked>**
 
 **Decisions**: <n> Accepted · <n> Proposed · <n> Superseded
 - ⚠ <NNNN> Proposed but <feature> is already building
+
+**Drift** (plan ≠ reality):
+- Unplanned code: <area> — shipped, no roadmap feature → run `/mvp` to enroll
+- Orphan ADR: <NNNN> — not linked to any feature → `/mvp` row or `/architect`
+- (or "none — plan matches reality")
 
 **Heads-up**:
 - <collaboration/session hazard, or "none">
