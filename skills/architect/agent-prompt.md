@@ -40,15 +40,14 @@ Your job is **not** to present a neutral menu of options. Your job is to guide t
 **Design topic**: DESIGN_TOPIC
 **Today's date**: TODAYS_DATE
 
-**Engineer's answers — Round 1:**
-- What type of decision: ANSWER_R1_Q1
-- Primary users: ANSWER_R1_Q2
-- Key constraints: ANSWER_R1_Q3
-- Direction settled: ANSWER_R1_Q4
+**Inferred framing** (from the topic + AGENTS.md + codebase — not asked):
+- Platform: PLATFORM
+- Stack & conventions: STACK_AND_CONVENTIONS
+- Constraints / compliance: CONSTRAINTS_OR_NONE
 
-**Engineer's answers — Round 2:**
+**Engineer's answers — deep questioning (feature-specific):**
 ANSWER_R2_ALL
-<!-- Round 2 questions were generated specifically for this feature. ANSWER_R2_ALL has two parts:
+<!-- These questions were generated specifically for this feature. ANSWER_R2_ALL has two parts:
      (1) ASK answers — the engineer's selections; treat as fixed requirements.
      (2) RECOMMEND items — feature-specific decisions assigned to YOU. These are NOT answered.
          You must make each call, state the pick + one-line rationale + the runner-up in
@@ -182,7 +181,7 @@ Then proceed with the design. The engineer may override your challenge — that 
 **Also check for these before proceeding:**
 
 - **Scope too large?** A single ADR captures one decision. If the design topic spans 3+ independently-implementable decisions (e.g. "design the whole auth system" — that's login flow, MFA, OAuth, session management, permissions), write in the Premise note: "This topic spans [N] distinct decisions. This ADR focuses on [most critical one]. Recommend separate ADRs for: [list the others]." Then proceed with the narrowed scope only.
-- **Compliance/security constraint active?** If ANSWER_R1_Q3 includes `Compliance / security`: (1) name the compliance scope explicitly in `## Context` — state which standard applies (GDPR, SOC2, HIPAA, PCI-DSS); (2) treat the Security model field in `## Feature design` as mandatory, not optional; (3) audit logs are non-negotiable — state this explicitly in Consequences.
+- **Compliance/security constraint active?** If the feature touches regulated data (a compliance scope in the inferred framing or the answers — GDPR/SOC2/HIPAA/PCI-DSS): (1) name the compliance scope explicitly in `## Context` — state which standard applies (GDPR, SOC2, HIPAA, PCI-DSS); (2) treat the Security model field in `## Feature design` as mandatory, not optional; (3) audit logs are non-negotiable — state this explicitly in Consequences.
 - **Unresolved prerequisites?** (FEATURE mode only) Does this feature depend on a decision that has no ADR in EXISTING_ADR_SUMMARIES? Common prerequisites: auth/session approach, core entity data model, multi-tenancy or org isolation model, billing/subscription model, permission system. If a critical prerequisite is missing, add to the Premise note: "This feature assumes [X] — e.g. JWT-based auth with per-user tokens. This assumption has no ADR. State these assumptions explicitly as constraints in ## Context, and add a Follow-up item to design [X] before implementation." Then proceed, making every assumption explicit rather than implicit.
 
 **Known anti-patterns to watch for:**
@@ -271,7 +270,7 @@ Use the ADR template structure (its full text was injected into this prompt by t
 <Rules that must always hold — enforced at application or DB layer. E.g. "order total = sum of line items", "email is unique per account">
 
 **Security model**:
-<Who can read/write what. Roles, ownership rules, public/private. If ANSWER_R1_Q3 includes Compliance/security, name the compliance scope here.>
+<Who can read/write what. Roles, ownership rules, public/private. If the feature touches regulated data, name the compliance scope here.>
 
 **Configuration required**:
 - `ENV_VAR_NAME` — purpose (e.g. `STRIPE_SECRET_KEY` — Stripe secret key for charge creation)
@@ -384,7 +383,7 @@ Read: files directly related to the thing being changed, RELATED_ADR_PATHS in fu
 
 Establish:
 - Exactly how the current solution works (not how it was intended to work — how it actually works)
-- The root cause of the failure or gap (tie to engineer's Round 2 answer)
+- The root cause of the failure or gap (tie to the engineer's answers)
 - What constraints the existing system imposes (data format, API contracts, team knowledge, migration risk)
 
 **Step 3 — Identify options with migration reality**
@@ -493,7 +492,7 @@ Standard format. Include a `## Standard definition` section after `## Rationale`
 
 ## Expert rules that apply to all modes
 
-**On documenting an existing decision (Q4 = "Documenting a made decision" or documentation context provided):**
+**On documenting an existing decision (the documentation path — `DOCUMENTATION_CONTEXT` provided):**
 - The decision is already made. Do not re-evaluate options from scratch or write an analytical ADR.
 - If SOURCE_FILE_COUNT > 0: read the relevant existing code to understand how it was actually implemented. Document what was built, not what could have been built.
 - If DOCUMENTATION_CONTEXT was provided: use the engineer's stated reasoning for Context, Rationale, and Consequences. Do not invent alternatives they didn't mention.
@@ -502,7 +501,7 @@ Standard format. Include a `## Standard definition` section after `## Rationale`
 
 **On making the recommendation:**
 - You are the expert. Make a clear recommendation. Do not hide behind "the team should decide."
-- If the engineer's stated preference (Round 1 Q4) conflicts with the right answer, say so in Rationale: "The engineer expressed a preference for X. However, based on [specific force from Context], Y is the more appropriate choice because [reason]. X would work but requires [specific tradeoff they should consciously accept]."
+- If the engineer's stated preference conflicts with the right answer, say so in Rationale: "The engineer expressed a preference for X. However, based on [specific force from Context], Y is the more appropriate choice because [reason]. X would work but requires [specific tradeoff they should consciously accept]."
 - The chosen option's Rationale must reference specific forces from Context. "It is the best option" is not a rationale.
 
 **On the quality of the ADR:**

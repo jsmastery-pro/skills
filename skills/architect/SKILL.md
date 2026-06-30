@@ -26,10 +26,12 @@ Does not write code. Does not update the `AGENTS.md`/`CLAUDE.md` context files (
 Asks targeted questions before spawning any subagent — but **spends the question budget on substance, not ceremony.** Every question is sorted into one of three buckets:
 
 - **INFER** — anything the prompt or codebase already reveals: feature-vs-architecture, the stack in use, whether UI is in scope, an already-chosen provider. **Do not ask these** — derive them. Asking what you can read wastes the engineer's attention and reads as incompetent.
-- **ASK** — only what the engineer alone knows: requirements, preferences, business rules, compliance scope. This is what Round 1 and Round 2 are *for*.
+- **ASK** — only what the engineer alone knows: requirements, preferences, business rules, compliance scope. This is what the deep questioning is *for*.
 - **RECOMMEND** — anything expertise can settle: which provider/library/pattern is best for their constraints. **Decide it and propose** — state the pick, a one-line why, and the runner-up, and let them override. Never present a neutral menu, never silently decide for them.
 
-Round 1 is a **quick** pass for the un-inferable framing context (constraints, how settled the direction is) — not the place for depth, and not a business questionnaire. The depth lives in **Round 2**, which **generates questions specific to this feature** — no fixed list, no hardcoded domains — and asks **as many batched rounds as it takes** to pin every load-bearing dimension (data, API, auth, rules, integrations, edge cases, security, …), so the ADR is a *complete* build spec. The generic mode files exist only as a structural fallback when the feature is too vague to generate from.
+**Grill the engineer on the feature — ask a lot, and make every question feature-specific.** This is the heart of the skill: pin down the feature's data model, business rules, behavior, scale, library/provider choice, and (when UI is involved) what each screen contains and which sections it has. Generate the questions from *this* feature — an auth feature and a reviews feature share none — and keep asking, in as many batched rounds as it takes, until the ADR is a complete build spec. **The less the engineer specified, the more you ask.** Framing (stack, platform, team/constraints) you *infer* from `AGENTS.md` and the codebase rather than ask — spend the whole question budget on the feature itself.
+
+**Recommendations align with the stack already in use** — if the project runs on a BaaS, prefer its auth/storage over a new external tool; reuse beats sprawl. Works for **web or mobile** alike — infer the platform, never assume web.
 
 ## Artifact ownership
 
@@ -43,7 +45,7 @@ Round 1 is a **quick** pass for the un-inferable framing context (constraints, h
 
 Written for any Agent Skills client on macOS, Linux, or Windows:
 - **Commands**: `git` is the only required CLI and behaves the same on every OS. Other shell snippets (`mkdir -p`, `date`, `find`, `ls`, `cat`, `wc`) are POSIX **reference**, not literal scripts — use your agent's own cross-platform file tools (read, search/glob, write, create-dir) and your knowledge of today's date instead. Creating `docs/adr/` should use your write tool, not `mkdir`.
-- **Bundled files**: the Round-2 question files (`questions/*.md`), `agent-prompt.md`, and `adr-template.md` are referenced by paths relative to this skill's folder. The main agent reads them; the question files drive the MCQ prompts, and the **ADR template text is injected into the subagent prompt** (subagents can't resolve skill-relative paths).
+- **Bundled files**: the fallback question files (`questions/*.md`), `agent-prompt.md`, and `adr-template.md` are referenced by paths relative to this skill's folder. The main agent reads them; the **ADR template text is injected into the subagent prompt** (subagents can't resolve skill-relative paths).
 - **No subagent / interactive-question support?** The spawn-a-subagent steps assume a Task/subagent tool, and the multiple-choice rounds assume an interactive picker — both Claude Code features. On a tool without them: do the research/drafting inline yourself, and ask the question rounds as plain text with the same options.
 
 ## Execution
@@ -74,52 +76,34 @@ find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.py" 
   -o -name "*.go" -o -name "*.rs" -o -name "*.java" \) \
   -not -path '*/node_modules/*' -not -path '*/.git/*' -not -path '*/dist/*' | wc -l
 
-# Detect installed community skills (exclude workflow skills) — check every agent's skills dir,
-# since skills install per-tool: list the subfolders of .claude/skills/, .agents/skills/, and skills/
-# (use your file tools). De-duplicate by skill name.
+# Read project context — this is the source of truth for the stack and the project's community skills.
+#   read root AGENTS.md (fall back to CLAUDE.md, else MISSING), AND the nested <area>/AGENTS.md for
+#   this feature's area if one exists (e.g. src/auth/AGENTS.md for an auth feature).
 
-# Read project context — AGENTS.md is canonical; fall back to CLAUDE.md (use your file tool)
-#   read AGENTS.md if present, else CLAUDE.md, else treat as MISSING
+# (Optional) list installed skills dirs for AVAILABILITY only — .claude/skills/, .agents/skills/, skills/
+#   relevance is decided by AGENTS.md + the feature, not by name-matching this list.
 ```
 
 From the ADR list:
 - **Next number**: highest existing number + 1, zero-padded to 4 digits; `0001` if none exist. **Collision guard (teams):** another session or teammate may add an ADR between now and the write. Immediately before the subagent writes, re-list `docs/adr/`; if the chosen `NNNN` already exists, bump to the next free number. **Never overwrite an existing ADR file** — and after writing, confirm you didn't land on a number a concurrent run also took (if the file you wrote isn't the only one with that number, renumber yours).
 - **Filename title**: from the design topic, generate a kebab-case slug — max 5 words, no articles (a/an/the), lowercase. E.g. "We need a notification system" → `notification-system-approach`. Combine: `docs/adr/NNNN-kebab-title.md`.
 - **Related ADRs**: read the first 20 lines of each existing ADR — enough to capture the title, status, and opening paragraph of Context — to check for overlap with the current design topic. Flag any that match.
-- **Update/supersede detection**: if any existing ADR clearly overlaps the current design topic (same domain, same system, same decision), **before asking Round 1 questions**, present it to the engineer: "I found an existing ADR that may be relevant: `[path]` — [title]. Is this a **new** decision (creates a new ADR) or are you **updating/superseding** the existing one?" Wait for their answer. If update or supersede: set OPERATION accordingly, read the existing ADR in full, and skip Round 2 questions for in-place updates.
+- **Update/supersede detection**: if any existing ADR clearly overlaps the current design topic (same domain, same system, same decision), **before the deep questioning**, present it to the engineer: "I found an existing ADR that may be relevant: `[path]` — [title]. Is this a **new** decision (creates a new ADR) or are you **updating/superseding** the existing one?" Wait for their answer. If update or supersede: set OPERATION accordingly, read the existing ADR in full, and skip the deep questioning for in-place updates.
 
-From the community skill scan:
+**Community skills — read them from the project's `AGENTS.md`, not from a hardcoded name table** (skill names and stacks change). `AGENTS.md` is the source of truth for what the project uses: project-wide skills/conventions in **root `AGENTS.md`**, area-specific ones in the relevant **nested `<area>/AGENTS.md`** (maintained by `/audit` and `/sync`). So:
 
-**Workflow skills** (never treat as community skills): `triage`, `audit`, `architect`, `mvp`, `develop`, `verify`, `test`, `review`, `harden`, `document`, `debug`, `sync`, `status`.
+1. **Read root `AGENTS.md` and the nested `AGENTS.md` for this feature's area** (e.g. `src/auth/AGENTS.md` for an auth feature, `src/payments/AGENTS.md` for billing). These tell you the stack and which community skills the project relies on.
+2. **Load only the skills relevant to *this* feature** — for each one those context files reference that bears on the feature, read its `SKILL.md` and inject its conventions into the subagent. Don't pull in skills the feature doesn't touch.
+3. **(Available ≠ relevant.)** You may also list the installed skills dirs (`.claude/skills/`, `.agents/skills/`, `skills/`) to see what's *available* — but relevance is decided by the feature + `AGENTS.md`, not by name-matching a list. If a clearly-relevant skill is installed but **not yet referenced in `AGENTS.md`**, use it anyway and flag (ADR Follow-up) that it should be added to the right context file — **root** if it's project-wide, **nested `<area>/AGENTS.md`** if it's specific to one area.
+4. **This is load-bearing for your recommendation.** Whatever the context files show the project already uses (a BaaS, an ORM, a payment provider, an auth library) is what your library/provider recommendation must build on or prefer — not an unrelated external tool. If a genuinely-better option isn't installed, note it as an ADR Follow-up suggestion rather than silently assuming it.
 
-This list is the workflow skills in this system. As additional workflow skills are added, update this list immediately or they will appear as community skills.
-
-**Relevant community skills**: from the installed skill list, identify any whose name matches a technology involved in the design topic. Match heuristics:
-
-| Design topic involves | Look for skills named |
-|---|---|
-| Next.js, React, UI, frontend, pages | `nextjs`, `react`, `tailwind`, `shadcn`, `radix` |
-| Supabase | `supabase` |
-| PostgreSQL, database, DB | `postgres`, `postgresql`, `prisma`, `drizzle` |
-| Auth, login, sessions | `clerk`, `auth0`, `nextauth`, `lucia` |
-| Payments | `stripe`, `lemonsqueezy` |
-| Deployment, hosting | `vercel`, `railway`, `fly` |
-| Testing | `vitest`, `playwright`, `jest` |
-
-For each relevant installed skill found:
-1. Read its `SKILL.md` in full (or first 120 lines if longer)
-2. Mark it as **installed and relevant** — inject its content into the subagent prompt
-3. Note which area its conventions should live in (root `AGENTS.md` or a nested `AGENTS.md`)
-4. Check if root `AGENTS.md` already references this skill under `## Context files` or `## Rules` — if not, flag it as missing from the context files
-
-For each **relevant but NOT installed** skill:
-- Note it as a suggested install — will appear in ADR Follow-up
+**Workflow skills** (never treat as community skills): `triage`, `audit`, `architect`, `mvp`, `develop`, `verify`, `test`, `review`, `harden`, `document`, `debug`, `sync`, `status` — add new workflow skills here as they're created.
 
 ---
 
-### Scope validation (before Round 1)
+### Scope validation (before Framing)
 
-Before asking any MCQ questions, run these two checks **in order**. Check B must run before Check A.
+Before any questioning, run these two checks **in order**. Check B must run before Check A.
 
 ---
 
@@ -136,11 +120,10 @@ If they reply `yes`:
    - "What was the main reason you chose this over the alternatives?"
    - "What tradeoffs is the team accepting with this decision? What does it make harder?"
 2. Wait for their answers.
-3. Set Q4-equivalent to `Documenting a made decision`. Skip Round 2. Inject their answers as `DOCUMENTATION_CONTEXT` alongside the design topic.
-4. Since Round 1 was skipped entirely on this path, inject R1 placeholder values as: `ANSWER_R1_Q1=N/A (documentation path)`, `ANSWER_R1_Q2=N/A`, `ANSWER_R1_Q3=N/A`, `ANSWER_R1_Q4=Documenting a made decision`.
-5. Spawn the subagent with a note: "This is a documentation task. DOCUMENTATION_CONTEXT contains the engineer's account of the decision. Read existing code if SOURCE_FILE_COUNT > 0 to verify and supplement. Write the ADR documenting what was built — not re-evaluating options."
+3. Take the **documentation path**: skip the deep questioning. Inject their answers as `DOCUMENTATION_CONTEXT` alongside the design topic, and inject the deep-questioning slot as `"skipped — documenting an already-made decision"`. Still infer and inject the **framing** (MODE, platform, stack) from the topic + `AGENTS.md`.
+4. Spawn the subagent with a note: "This is a documentation task. DOCUMENTATION_CONTEXT contains the engineer's account of the decision. Read existing code if SOURCE_FILE_COUNT > 0 to verify and supplement. Write the ADR documenting what was built — not re-evaluating options."
 
-If they reply `no`: proceed to Check A and then Round 1 normally.
+If they reply `no`: proceed to Check A, then Framing and the deep questioning normally.
 
 ---
 
@@ -154,55 +137,30 @@ A design topic is **product-scoped** if:
 
 A design topic is **decision-scoped** if it names a specific component, feature, or technical concern (e.g. "auth approach", "notification service", "team invitations feature", "should we use PostgreSQL or MongoDB").
 
-**If product-scoped**: do not ask Round 1 yet. Instead:
+**If product-scoped**: do not start the deep questioning yet. Instead:
 
 1. Tell the engineer: "This describes a full product — /architect works one decision at a time. Let me help you pick the first foundational decision."
-2. Based on the product type, generate 4 first-decision options and ask via `AskUserQuestion`:
-   - question: "Which foundational decision should we design first?"
-   - header: "First decision"
-   - Options must be specific and relevant to the stated product type. Tailor them to what the engineer described:
-     - **B2B SaaS**: Tech stack and deployment architecture / Multi-tenancy model (how organisations are isolated) / Auth and identity approach / Core domain data model (teams, users, roles)
-     - **E-commerce**: Tech stack and deployment / Product catalogue and inventory model / Payment and checkout approach / Auth and user accounts
-     - **Mobile app**: Tech stack and backend approach / Offline behaviour and sync strategy / Auth and identity / Push notification approach
-     - **Data platform / analytics**: Ingestion architecture / Storage and warehouse strategy / Processing approach (batch vs stream) / Serving and query layer
-     - **Generic fallback**: Tech stack and deployment architecture / Auth and identity approach / Core domain data model / [most important product-specific concern]
-3. After the engineer selects: update the design topic to that specific decision and proceed to Round 1.
+2. Generate 4 **foundational first-decision** options tailored to the product type and ask via `AskUserQuestion` (question: "Which foundational decision should we design first?", header: "First decision"). For most products these are the tech stack/architecture, the auth/identity approach, the core domain data model, and the single most important product-specific concern — worded for what the engineer described.
+3. After the engineer selects: update the design topic to that specific decision and proceed to Framing.
 
 ---
 
-### Round 1 — Foundational questions (main model calls `AskUserQuestion`)
+### Framing — infer, don't interrogate (no fixed question round)
 
-**Infer before asking.** Q1 (decision type) and Q2 (users) are usually derivable from the topic + codebase — infer them and *skip the question*. Only ask Q1/Q2 when genuinely ambiguous. **Q3 (constraints) and Q4 (settledness) are user-only — always ask these.** State your inferences back to the engineer in one line ("Reading this as a *feature* for *B2B* users — correct me if not") so a wrong inference is cheap to fix.
+**Infer** the framing from the topic + `AGENTS.md` + codebase — don't ask it (these aren't feature questions, and asking them wastes the budget). State it back in a line or two so a wrong read is cheap to correct, then spend all your questions on the feature:
 
-**Q1 — What type of decision is this?** (single-select — infer if possible)
-- `Feature design` — designing a new feature from scratch
-- `Architecture selection` — choosing tech stack or foundational architecture
-- `System enhancement` — improving or changing something existing
-- `Cross-cutting standard` — a pattern that affects the whole codebase (error handling, auth, logging)
+- **Mode** — `FEATURE` (new feature) · `ARCHITECTURE` (foundational stack) · `ENHANCEMENT` (changing something that exists) · `CROSS-CUTTING` (a project-wide standard). Infer from the topic and whether the thing already exists in the code. Confirm only if genuinely ambiguous.
+- **Platform** — web · mobile · API/backend · a mix. Infer from the stack in `AGENTS.md` (**never assume web**) — it changes the questions (mobile auth, offline, push differ from web).
+- **Stack & conventions** — language, framework, DB, and the community skills the project uses, from `AGENTS.md` (inferred, never asked).
+- **Constraints** — team size, scale, and compliance: infer from `AGENTS.md` / the product. Raise a **per-feature** compliance question only when *this* feature touches regulated data (payments, PII, health) — not as a generic deadline/team menu.
 
-**Q2 — Who are the primary users?** (single-select)
-- `End consumers (B2C)` — public users, variable scale, UX matters most
-- `Business users (B2B)` — company/internal users, power features matter
-- `Developers (API / SDK)` — technical consumers, DX and reliability matter
-- `Internal team only` — small fixed audience, rough edges acceptable
-
-**Q3 — Which constraints matter most?** (multi-select)
-- `Tight deadline` — speed of delivery is critical
-- `Small team or limited expertise` — team is ≤ 5 engineers and/or must stay in known territory; minimize operational overhead
-- `Cost or budget` — infra, licensing, or operational cost is a real constraint
-- `Compliance / security` — GDPR, SOC2, HIPAA, or similar requirement applies
-
-**Q4 — How settled is the direction?** (single-select)
-- `Open exploration` — no preference; need full analysis and recommendation
-- `Leaning one way` — have a preference but need validation and alternatives
-- `Specific candidates` — choosing between 2–3 named options
-- `Documenting a made decision` — decision is final; just write the ADR
+State it: *"Reading this as a new **FEATURE** on your **Next.js + Supabase** stack (web) — correct me if not."* Then begin the deep questioning.
 
 ---
 
-### Round 2 — Deep questions (main model generates, then calls `AskUserQuestion`)
+### Deep questioning — feature-specific, technical (main model generates, then calls `AskUserQuestion`)
 
-**Generate the questions from the feature — do not read them from a list.** The whole point is that the questions are specific to whatever is being designed. A fixed question bank is what made the old version feel generic. So:
+**Generate the questions from the feature** — specific to whatever is being designed, never from a fixed list.
 
 **Your mandate (senior+ role):** you are the Staff/Principal engineer who will be blamed if this feature ships wrong. The ADR you produce is the **complete build spec** `/develop` implements from — every load-bearing decision must be settled here. Any dimension you leave blank becomes a question `/develop` is forced to ask mid-build, or worse, an assumption it guesses wrong. **Leaving a gap is the failure mode.** So be exhaustive, not minimal — cover *everything* a senior engineer would pin down before writing code.
 
@@ -215,6 +173,7 @@ A design topic is **decision-scoped** if it names a specific component, feature,
 - **Authentication & authorization** — who may do what; ownership, roles, multi-tenant scoping
 - **Validation & business rules** — limits, quotas, invariants that must always hold
 - **External integrations** — providers, webhooks, idempotency, reconciliation
+- **Library / provider & build-vs-buy** — for any feature with a real implementation choice (auth, payments, search, storage, email, realtime), this is central. Present the **concrete, current options** (e.g. for auth: the project's existing BaaS auth · Clerk · Auth.js/NextAuth · Better Auth · roll-your-own) with a one-line tradeoff each, **recommend the one that aligns with the stack already in use** (from `AGENTS.md` — a BaaS already in the project usually wins over a new external tool), and let the engineer override. Never silently pick, and never ignore what's already there.
 - **Failure & edge cases** — concurrency, retries, timeouts, partial failure, empty/error/loading states
 - **Performance & scale** — expected volume, pagination, async-vs-sync, caching
 - **Security & compliance** — PII, encryption, audit logging, rate limiting, regulatory scope
@@ -240,44 +199,44 @@ A design topic is **decision-scoped** if it names a specific component, feature,
 
 **Step D — Collect the RECOMMEND items** (the decisions you deferred to the subagent) as a list to inject into its prompt — it must decide each, state the pick + one-line why + the runner-up, and never echo it back as an open question.
 
-**Fallback only:** if the feature is too vague to generate good questions from (rare — usually means Round 1 should have narrowed it), use the generic mode file keyed on Q1 as scaffolding: `questions/feature.md`, `questions/architecture.md`, `questions/enhancement.md`, `questions/cross-cutting.md`.
+**What good, feature-specific grilling looks like** (illustrations of *depth* — not a script to copy; generate the equivalent for whatever feature you're given):
+- `/architect auth` (first time, no auth yet) → which sign-in methods (email+password · magic link · OAuth providers · passkeys · SSO)? · expected scale (hundreds / thousands / millions of users)? · **which library** — present options aligned to the stack (*you already use Supabase → Supabase Auth is the aligned default*; vs Clerk, Auth.js, Better Auth, roll-your-own) and recommend · session model · roles (customer/admin)? · password reset & verification? · for mobile: token storage, biometric, deep-link callback.
+- `/architect reviews` → reviews table (`userId`, `bookId`, `rating 1–5`, `body`, `createdAt`)? · **one review per user per book** (unique constraint) or many? · must the user have **borrowed/purchased** the book to review? · how is `books.rating` **aggregate recomputed** (on write · trigger · scheduled)? · edit/delete window · moderation (pre/post, who) · pagination & sort.
+- `/architect home page UI` (**no design/screenshot given**) → which **sections** and in what order (hero · featured · how-it-works · testimonials · pricing · CTA · footer)? · what does **each section show/contain** (copy, data, imagery)? · build to an existing `design.md`, or pick a direction (template/described style)? · which **components** (existing vs net-new)? · **assets** — real files the engineer will add, or a placeholder source? · responsive/mobile behavior. When the UI isn't specified, *you* must extract the page's contents from the engineer — don't invent them.
 
-**Skip Round 2 entirely** when Q4 from Round 1 is `Documenting a made decision` — the direction is already settled, and deep-dive questions add friction with no benefit. Proceed directly to spawning the subagent.
+Notice: each feature shares *no* questions with the others — that's the point. Every one goes deep on its own data model / rules / contents and the library or build-vs-buy choice, aligned to the existing stack.
 
-**Enhancement mode guard**: if Q1="System enhancement" was selected in Round 1 AND SOURCE_FILE_COUNT=0: stop before Round 2. Tell the engineer:
+**Fallback only:** if the feature is too vague to generate good questions from (rare — usually means the topic should have been narrowed first), use the generic mode file matching the inferred mode as scaffolding: `questions/feature.md`, `questions/architecture.md`, `questions/enhancement.md`, `questions/cross-cutting.md`.
 
-"Enhancement mode reads existing code to understand what's being changed — but no source files were found in this project. What's the situation?
+**Skip the deep questioning** on the **"documenting a made decision"** path (Check B above) — the direction is already settled, so deep-dive questions add friction. Proceed directly to spawning the subagent with the documentation context.
+
+**Enhancement-mode guard**: if the inferred mode is `ENHANCEMENT` AND `SOURCE_FILE_COUNT = 0`: stop before the deep questioning and tell the engineer:
+
+"Enhancement mode reads existing code to understand what's being changed — but no source files were found. What's the situation?
 - A) The code exists in a different directory — tell me the path and I'll re-check.
-- B) There is no existing implementation — in that case, [Feature design] or [Architecture selection] is the right starting point."
+- B) There is no existing implementation — then this is really a new **FEATURE** (or **ARCHITECTURE**)."
 
-Wait for their answer. If (A): re-run the source file count for the given path. If (B): update Q1 to match their corrected intent and continue.
+Wait for their answer. If (A): re-run the source-file count for that path. If (B): switch the inferred mode and continue.
 
 ---
 
-### Round 2 → Subagent spawn
+### Subagent spawn
 
-After both rounds, read `agent-prompt.md` and `adr-template.md` (relative paths — the main agent resolves them). Fill the template **and inline the full `adr-template.md` text into the prompt** — the subagent writes the ADR from that structure and can't resolve skill paths itself. Then spawn:
+After the deep questioning, read `agent-prompt.md` and `adr-template.md` (relative paths — the main agent resolves them). Fill the template **and inline the full `adr-template.md` text into the prompt** — the subagent writes the ADR from that structure and can't resolve skill paths itself. Then spawn:
 
 - `model: "sonnet"`
-- `description: "Design: <mode> — research and draft ADR"`
+- `description: "Architect: <mode> — research and draft ADR"`
 - Tools: `Read`, `Bash`, `Write`, `Edit`
-- `prompt`: filled template with all engineer answers, context, the determined mode, and the injected ADR template
+- `prompt`: filled template with all engineer answers, the inferred framing, and the injected ADR template
 
-**Map Q1 answer to the exact MODE string to inject:**
-
-| Q1 answer | MODE to inject |
-|---|---|
-| `Feature design` | `FEATURE` |
-| `Architecture selection` | `ARCHITECTURE` |
-| `System enhancement` | `ENHANCEMENT` |
-| `Cross-cutting standard` | `CROSS-CUTTING` |
+The **inferred MODE** (from Framing) is already one of `FEATURE` / `ARCHITECTURE` / `ENHANCEMENT` / `CROSS-CUTTING` — inject it directly.
 
 Inject into the template:
 1. Design topic (from the user's original message)
-2. All Round 1 answers (Q1–Q4)
-3. All Round 2 answers — if Round 2 was skipped, inject: `"Round 2 skipped — [reason: Documenting a made decision / already-built documentation task]"` so the subagent knows this was intentional, not an error
-3a. The **RECOMMEND items** generated in Round 2 (Step D) → inject into `RECOMMEND_ITEMS_OR_NONE` — the specific decisions the subagent must make and justify (provider, session strategy, etc.). If none were generated, inject `"none"`.
-4. Context-file contents — `AGENTS.md` (canonical), or `CLAUDE.md` as fallback, or "MISSING"
+2. The **inferred framing**: MODE, platform (web/mobile/API), stack & conventions (from `AGENTS.md`), and any constraints/compliance you inferred or confirmed
+3. All **deep-questioning answers** — if the deep questioning was skipped (documentation path), inject: `"Deep questioning skipped — documenting an already-made decision"` so the subagent knows this was intentional, not an error
+3a. The **RECOMMEND items** (Step D) → inject into `RECOMMEND_ITEMS_OR_NONE` — the specific decisions the subagent must make and justify (library/provider aligned to the stack, session model, etc.). If none, inject `"none"`.
+4. Context-file contents — `AGENTS.md` (root + the feature area's nested), or `CLAUDE.md` as fallback, or "MISSING"
 5. Existing ADR list (filenames + first line of each)
 6. Related ADR paths (flagged in pre-flight)
 7. Next ADR number and file path
@@ -285,7 +244,7 @@ Inject into the template:
 9. Operation: `create` | `update` | `supersede`
 10. Today's date (from pre-flight `date +%Y-%m-%d`)
 11. Documentation context (if "already built" path was taken — the engineer's free-text answers about why this was chosen, alternatives, and tradeoffs)
-12. Community skills: for each relevant installed skill, inject its full content under a labelled section. For each relevant but missing skill, list its name only. If no community skills are relevant, inject "none detected".
+12. Community skills: for each skill relevant to this feature (identified from `AGENTS.md`, per pre-flight), inject its full content under a labelled section. For a relevant-but-not-installed one, list its name only. If none are relevant, inject "none detected".
 
 ---
 
@@ -325,7 +284,7 @@ If a required section is missing or a field is blank/placeholder, add this line 
 
 If the task is to update or supersede an **existing** ADR:
 - Pre-flight: read the existing ADR in full
-- Skip Round 2 questions if operation is in-place update
+- Skip the deep questioning if operation is in-place update
 - Tell the subagent: `update` or `supersede`
 - If supersede: subagent creates new ADR AND updates old ADR's status to `Superseded by [NNNN](NNNN-title.md)`
 
@@ -335,5 +294,5 @@ If the task is to update or supersede an **existing** ADR:
 
 - ADR template: `adr-template.md`
 - Research subagent prompt: `agent-prompt.md`
-- Round 2 questions are **generated per feature** (see Round 2, Steps A–D) — not stored
+- The deep questioning is **generated per feature** (see Deep questioning, Steps A–D) — not stored
 - Generic mode files (`questions/`) are a structural fallback only, used when the feature is too vague to generate from
