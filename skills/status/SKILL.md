@@ -63,7 +63,8 @@ Surface anything that makes it unsafe to just dive in:
 - **Behind the remote** (`behind > 0`) → "Pull first — N commits on `origin/$BASE` you don't have; a teammate may have changed what you're about to touch."
 - **Uncommitted work** present → list the areas; "finish or stash before starting something new."
 - **In-progress feature overlap** → for each `in-progress` feature, check whether its `Code area` has commits by **other authors** in recent history (`git log --format='%an' -- <area>` shows names other than yours) → "someone else may be mid-build on *<feature>*; coordinate before continuing it."
-- **ADR ↔ feature status drift** → an ADR's status should track its linked feature's status (`planned`→`Proposed`, `in-progress`→`In Progress`, `done`→`Accepted`). Flag any real mismatch, e.g.: feature `done` but ADR still `Proposed`/`In Progress` (ADR should be `Accepted`); ADR `Accepted` but the feature isn't `done`; feature `in-progress` but ADR still `Proposed`. Report each with the one-command fix — usually **`/sync`** to reconcile. Be conservative: only flag when the two genuinely disagree.
+- **ADR ↔ feature status drift** → a **feature-linked** ADR's status should track its linked feature's status (`planned`→`Proposed`, `in-progress`→`In Progress`, `done`→`Accepted`). Flag any real mismatch, e.g.: feature `done` but ADR still `Proposed`/`In Progress` (ADR should be `Accepted`); ADR `Accepted` but the feature isn't `done`; feature `in-progress` but ADR still `Proposed`. Report each with the one-command fix — usually **`/sync`** to reconcile. Be conservative: only flag when the two genuinely disagree. **A standalone decision ADR** — a foundational/stack or cross-cutting standard that no roadmap feature links to — is *decision-status* (`Proposed` when written, `Accepted` once ratified), not feature-mirrored: report it normally under Decisions and do **not** flag it as drift for having no linked feature.
+- **Dropped-feature ADR** → a feature-linked ADR whose linked feature is now `dropped` (de-scoped) governs abandoned work. Flag it: "ADR `<NNNN>` governs a dropped feature — supersede or remove?" with the one-command pointer (**`/architect`** to supersede, or remove the link). Be conservative — only flag when the ADR is clearly linked to a row now marked `dropped`.
 - **Detached HEAD / non-feature branch** → note it.
 
 ### Step 4b — Drift (plan vs reality)
@@ -90,6 +91,7 @@ Report these and the one-command fix: **`/mvp`** to enroll unplanned work / re-r
 
 **Decisions**: <n> Accepted · <n> In Progress · <n> Proposed · <n> Superseded
 - ⚠ <NNNN> <ADR status> but <feature> is <feature status> → `/sync` to reconcile
+- ⚠ <NNNN> governs a dropped feature — supersede or remove? → `/architect` (or remove the link)
 
 **Drift** (plan ≠ reality):
 - Unplanned code: <area> — shipped, no roadmap feature → run `/mvp` to enroll

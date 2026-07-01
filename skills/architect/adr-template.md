@@ -181,7 +181,14 @@ The ADR's status mirrors its feature's build lifecycle (roadmap: planned→`Prop
 | `Accepted` | The feature is built and verified (roadmap `done`) — the "done and dusted" state. An ADR is NOT `Accepted` until its feature ships. Set by /develop on completion or reconciled by /sync. |
 | `Superseded by [NNNN](NNNN-title.md)` | Replaced by a newer ADR |
 
+**Which status behavior applies depends on whether a buildable roadmap feature links this ADR:**
+- **Feature-linked ADR** (a `docs/mvp/` row's `ADR` cell points to it) → **feature-mirrored**: `Proposed` → `In Progress` → `Accepted`, tracking the feature's build lifecycle (table above). Confirmation ratifies content but does not set `Accepted`; /develop advances it.
+- **Standalone decision ADR** (a foundational/stack or cross-cutting standard with **no linked buildable feature**) → **decision-status**: `Proposed` when written, then **`Accepted` once the engineer ratifies it** (on confirmation). There's no build phase to gate on, so it is not feature-mirrored.
+- **ADR documenting already-shipped work** (the "already built" path, or a feature already `existing`) → **born `Accepted`** — it describes reality that already exists.
+
 **Umbrella child ADRs carry no lifecycle status.** In an umbrella directory (`NNNN-<x>/`), only the `index.md` has a `**Status**:` line — it mirrors the feature. The **child ADRs are spec content**, so **omit the `**Status**:` line on children** (they're governed by the umbrella). `/develop` and `/sync` advance the umbrella `index.md`'s status only, never a child's.
+
+**A directory ADR is a self-mapping manifest.** In a directory ADR (`NNNN-<x>/`), the top file (`index.md`, or the ADR file for a single decision with research) opens with a **`## Structure`** section listing and linking **every** child ADR and **every** research file — one line each: what it is + which decision it supports. Each **child ADR** links its own evidence in a **`## References`** section. **Research files are named by their owner**: `research/NNNN-<topic>.md` for the child numbered `NNNN`, or `research/_shared-<topic>.md` for umbrella-wide evidence — so every file's ownership is obvious, and a developer building a child follows *that child's* `## References` to exactly the research it needs. **Children are flat files by default** — give a child its own subfolder only when it accumulates multiple research/asset files. Each child ADR is **self-sufficient to build from**; `research/` is **optional depth** (the evidence trail), not required reading for `/develop`. Any **cross-child contract** (how children connect) belongs in the umbrella `index.md`.
 
 ## Writing rules
 

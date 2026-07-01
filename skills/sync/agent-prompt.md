@@ -103,13 +103,15 @@ An ADR's status mirrors its feature's build lifecycle. The exact values and thei
 - `Accepted` — the feature is built and verified, "done and dusted" (roadmap `done`). An ADR is **not** `Accepted` until its feature ships.
 - `Superseded` — replaced by a later ADR (you do not set this from roadmap status; flag it under `STALE_ADRS` instead).
 
+This applies **only to ADRs that link to a buildable roadmap feature.** A **standalone decision ADR** — a foundational/stack or cross-cutting standard that no roadmap feature links to — is *decision-status*: `Proposed` when written, `Accepted` once ratified. It is **not** feature-mirrored. Leave it exactly as-is: do **not** reconcile it, and do **not** flag it under `STALE_ADRS` as an unresolvable mismatch or drift merely because no feature links to it. Only genuinely stale/superseded standalone ADRs (Step 5) get flagged.
+
 For each ADR whose linked feature appears in the reconciled roadmap:
 1. Find the feature this ADR governs (its title/links reference a roadmap feature; the roadmap feature may link back to the ADR).
 2. Read the feature's current roadmap status and derive the target ADR status: `planned`→`Proposed`, `in-progress`→`In Progress`, `done`→`Accepted`.
 3. **Re-read the ADR file just before writing** (a teammate or another session may have edited it). If its `**Status**:` line already equals the target, do nothing (idempotent). Otherwise make a **single surgical edit to that one line only** — do not touch any other line, heading, or prose in the ADR.
 4. Record the change under `ADR_STATUS_RECONCILED`.
 
-**Do not guess.** If you can't confidently link an ADR to exactly one feature, or the mapping is ambiguous, or the current status is already `Superseded`, or the target would be a downgrade you can't explain — do **not** edit. Flag the mismatch under `STALE_ADRS` (e.g. "ADR 0007: no linked feature found — status can't be reconciled safely") and leave the line as-is.
+**Do not guess.** If a *feature-linked* ADR is ambiguous — you can't confidently link it to exactly one feature, the mapping is unclear, the current status is already `Superseded`, or the target would be a downgrade you can't explain — do **not** edit; flag the mismatch under `STALE_ADRS` and leave the line as-is. But a **standalone decision ADR with no linked feature is expected** — do **not** flag it "no linked feature found"; that is not a mismatch.
 
 ### 5. Flag stale ADRs (do not edit their content)
 

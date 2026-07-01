@@ -57,10 +57,18 @@ ANSWER_ALL_ROUNDS
 
 **ADR number**: ADR_NUMBER
 **ADR path & shape**: ADR_FILE_PATH
-<!-- Single decision → write one file at that path. Umbrella → the path is a directory: write its
-     `index.md` (the umbrella decision, listing + linking its children) plus each named child ADR
-     inside it. ANY inventory/audit/research you produce for this decision goes in that directory's
-     `research/` subfolder — NEVER in docs/mvp/ (the roadmap), and never loose in the code tree. -->
+<!-- Single decision → write one file at that path. Directory ADR (umbrella, or a single decision
+     with bulky research) → write the top file (`index.md` for an umbrella; the ADR file otherwise)
+     plus any named child ADRs inside it. In the top file, include a `## Structure` manifest that
+     lists and links EVERY child ADR and EVERY research file — one line each: what it is + which
+     decision it supports — so the directory is fully mapped from one place. Give each child ADR a
+     `## References` section linking ITS OWN research. ANY inventory/audit/research goes in the
+     directory's `research/` subfolder, named by its owner: `research/NNNN-<topic>.md` (the child's
+     number) or `research/_shared-<topic>.md` for umbrella-wide evidence — NEVER in docs/mvp/ (the
+     roadmap), and never loose in the code tree. Children are flat files by default; give a child its
+     own subfolder (`NNNN-child/{index.md, research/}`) only if it has multiple research/asset files.
+     Keep each child ADR self-sufficient to build from — research/ is the optional evidence trail,
+     not required reading — and put any cross-child contract (how children connect) in the top file. -->
 **Operation**: OPERATION
 
 **Existing ADR (update/supersede only):**
@@ -485,8 +493,15 @@ Standard format. Include a `## Standard definition` section after `## Rationale`
 
 ## Expert rules that apply to all modes
 
+**On the initial `**Status**:` line — set it correctly at creation (do not always write `Proposed`):**
+- **Feature-linked ADR** — a buildable roadmap feature links (or will link) this ADR (typical FEATURE/ENHANCEMENT, or an ARCHITECTURE foundation with a roadmap row): write **`Proposed`**. Its status is feature-mirrored — /develop advances it to `In Progress`, then `Accepted`, as the feature ships.
+- **Standalone decision ADR** — MODE is ARCHITECTURE or CROSS-CUTTING (a foundational/stack or cross-cutting standard) with **no buildable roadmap feature tied to it**: also write **`Proposed`** at creation; ratification (not a build phase) is what promotes it to `Accepted`, and the main agent sets that on the engineer's confirmation.
+- **Documenting already-shipped work** — DOCUMENTATION_CONTEXT is provided, OR the linked roadmap feature is already `existing` (shipped, pre-workflow): write **`Accepted`**, because the ADR describes reality that already exists (see the documentation-path rule below).
+- Umbrella children still omit the `**Status**:` line entirely (governed by the umbrella `index.md`).
+
 **On documenting an existing decision (the documentation path — `DOCUMENTATION_CONTEXT` provided):**
 - The decision is already made. Do not re-evaluate options from scratch or write an analytical ADR.
+- Write the ADR's `**Status**:` as **`Accepted`** — it documents shipped reality, not a proposal.
 - If SOURCE_FILE_COUNT > 0: read the relevant existing code to understand how it was actually implemented. Document what was built, not what could have been built.
 - If DOCUMENTATION_CONTEXT was provided: use the engineer's stated reasoning for Context, Rationale, and Consequences. Do not invent alternatives they didn't mention.
 - In `## Options considered`: write a brief section noting the alternatives the engineer considered. If no alternatives were mentioned: write "Options considered were not documented at decision time."
