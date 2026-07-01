@@ -78,10 +78,12 @@ Do **not** hardcode this to a list of page names or features — apply the *inve
 
 **The dangerous case is the false negative — building a real decision without noticing it** (which is exactly what "just build the home page" looks like). So when you can't tell, treat it as **owed** and ask (the panel below). One extra question is cheap; a page or feature whose design/behavior you silently invented is expensive to unwind.
 
+**Read only what *this* feature needs — not the whole `docs/` tree.** `/develop` touches exactly: the **one** roadmap file that holds this feature, and the **one** governing ADR it points to. Do **not** read other features' rows, other roadmap files/workspaces, or unrelated ADRs — that's wasted context and can mislead the build with decisions that aren't yours.
+
 **Check, in order:**
-1. If a roadmap exists in `docs/mvp/` (one or more numbered files — scan the dir), find this feature's row. If `Needs ADR? = yes` and the `ADR` column is empty → **a decision is owed and missing.** (If the roadmap or this row is **malformed** — broken table, non-standard status — don't guess; flag it and ask the engineer rather than acting on a misread.)
-2. Search `docs/adr/` for an ADR covering this scope. If one exists, it's the spec — proceed.
-3. Check whether the decision is already captured in the nearest `AGENTS.md` (the convention may have been synced from an earlier feature — e.g. "auth uses Clerk"). If so, proceed without a new ADR.
+1. **Locate this feature's roadmap file (only that one).** In a monorepo, go straight to the workspace's subdir for the task's package (`docs/mvp/<workspace>/`) — don't open other workspaces. To find the right file among numbered ones, glance at overview tables only; then read the **breakdown of just the file that contains this feature**. Find its row: if `Needs ADR? = yes` and the `ADR` cell is empty → **a decision is owed and missing.** (Malformed roadmap/row → flag and ask, don't guess.)
+2. **Open the governing ADR via the row's `ADR` pointer — read only that file** (plus its umbrella `index.md` if it's a nested child). It's the spec; proceed. Only if the row has **no** pointer *and* no ADR is linked, do a **targeted** look for one matching this feature's scope in its `docs/adr/<workspace>/` — never a blanket read of every ADR.
+3. Check whether the decision is already captured in the **nearest** `AGENTS.md` (the workspace/area one — synced from an earlier feature, e.g. "auth uses Clerk"). If so, proceed without a new ADR.
 
 **If a decision is owed and nothing records it — do not guess, and do not silently stop. Ask the engineer** via `AskUserQuestion` (single-select):
 
@@ -117,7 +119,7 @@ If genuinely ambiguous, ask once: "Is this the UI, the logic behind it, or both?
 ### Step 2 — Load the decision and conventions (both tracks)
 
 Before building, read:
-1. **The governing ADR** — from the `index.md` pointer, or the one found in Step 0. This is the spec: data model, API surface, invariants, security model, the provider/library already chosen. **Check its `Status`:** if it's still **`Proposed`** (not `Accepted`), the decision isn't ratified — warn before building: "The governing ADR is still `Proposed`, not accepted — build on an un-agreed decision, or accept it first (re-run `/architect` and confirm)?" Build only on the engineer's go-ahead. A `Superseded` ADR → use the one that superseded it.
+1. **The governing ADR — read only this one** (from the roadmap row's `ADR` pointer, or the one found in Step 0; plus its umbrella `index.md` if it's a nested child). Not the whole `docs/adr/` tree — just the spec for *this* feature: data model, API surface, invariants, security model, the provider/library already chosen. **Check its `Status`:** if it's still **`Proposed`** (not `Accepted`), the decision isn't ratified — warn before building: "The governing ADR is still `Proposed`, not accepted — build on an un-agreed decision, or accept it first (re-run `/architect` and confirm)?" Build only on the engineer's go-ahead. A `Superseded` ADR → use the one that superseded it.
 2. **The nearest `AGENTS.md`** to the target code area (proximity — Claude Code auto-loads it; read it explicitly to be sure). This carries decisions synced from earlier features, so you **don't re-ask** what's already settled.
 3. **`design.md`** (UI track only) — the visual source of truth.
 
@@ -136,7 +138,7 @@ A thin ADR caught here is a 30-second question; caught mid-build it's a wrong gu
 
 ### Step 3 — Resume check, then build
 
-**Resume first — never rebuild what's already done.** If a roadmap file in `docs/mvp/` has this feature (scan the dir — it may be `01-mvp.md` or a later numbered slice): if its status is **`existing`** (already shipped) or **`dropped`** (de-scoped), it isn't active — don't auto-build; tell the engineer it's marked `<status>` and confirm they want to revive/modify it (that's a new task, possibly needing an ADR). Otherwise read its build breakdown and find the first **unchecked** `[ ]` sub-task. Everything `[x]` above it is already built (possibly in an earlier session) — do not redo it. Tell the engineer where you're picking up: "This feature is 4/10 done — resuming at *data integration*." Then set the feature's **Status** to `in-progress`. (No roadmap → just build the requested task.)
+**Resume first — never rebuild what's already done.** Use the **same file you located in Step 0** (the one roadmap file with this feature — the workspace's, in a monorepo); don't re-open others. If its status is **`existing`** (already shipped) or **`dropped`** (de-scoped), it isn't active — don't auto-build; tell the engineer it's marked `<status>` and confirm they want to revive/modify it (that's a new task, possibly needing an ADR). Otherwise read its build breakdown and find the first **unchecked** `[ ]` sub-task. Everything `[x]` above it is already built (possibly in an earlier session) — do not redo it. Tell the engineer where you're picking up: "This feature is 4/10 done — resuming at *data integration*." Then set the feature's **Status** to `in-progress`. (No roadmap → just build the requested task.)
 
 **Gather any remaining inline answers** (the Step 2 spec-gap answer, the UI asset/template questions, an ambiguous business rule) — these need the engineer, so collect them *before* handing off to a build run.
 
