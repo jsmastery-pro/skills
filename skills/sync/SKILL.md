@@ -1,6 +1,7 @@
 ---
 name: sync
 compatibility: Built for Claude Code — uses subagents, model selection, and interactive questions. Installs on any Agent Skills client but is tuned for Claude Code.
+allowed-tools: Bash, Read, Grep, Glob, Write, Edit, Task
 description: "Use this skill after a change is complete to keep durable knowledge current. Run /sync as the last step on medium/full work, around merge. It updates the AGENTS.md context files (root + nested) to reflect what changed, reconciles the feature roadmap's status from repo evidence, and flags any ADR the change made stale. Conservative: surgical, additive edits that never overwrite curated content; it doesn't restructure root (/audit) or edit ADRs (/architect)."
 ---
 

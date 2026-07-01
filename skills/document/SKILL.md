@@ -1,6 +1,7 @@
 ---
 name: document
 compatibility: Built for Claude Code — uses subagents, model selection, and interactive questions. Installs on any Agent Skills client but is tuned for Claude Code.
+allowed-tools: Bash, Read, Grep, Glob, Write, Edit, Task, AskUserQuestion
 description: "Use this skill to write the human-facing prose about a change — a PR description, changelog entry, release notes, or incident postmortem. Run /document when you need any of those written from the real change (commits, diff) rather than by hand. Pass the type (/document pr | changelog | release-note | postmortem) or let it ask. A precise technical writer drafting from history, writing to the right place (PR body, CHANGELOG.md, docs/releases/, docs/postmortems/). It doesn't write code, tests, or ADRs."
 ---
 

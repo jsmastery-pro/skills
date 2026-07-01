@@ -1,6 +1,7 @@
 ---
 name: debug
 compatibility: Built for Claude Code — uses a subagent and iterative tool use. Installs on any Agent Skills client but is tuned for Claude Code.
+allowed-tools: Bash, Read, Grep, Glob, Write, Edit, Task
 description: "Use this skill to find and fix the root cause of a bug — something failing, broken, throwing, or behaving wrong. Run /debug when a test fails for a non-obvious reason, when /verify finds a failure, or when behavior is unexpected. It runs a disciplined loop — reproduce, localize, hypothesize, test, fix at the root, verify — one hypothesis at a time until the cause is proven, then makes the minimal fix and hands a regression test to /test. It fixes the cause, not the symptom; no features or extra refactors."
 ---
 

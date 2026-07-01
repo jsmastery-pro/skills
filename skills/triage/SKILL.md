@@ -1,6 +1,7 @@
 ---
 name: triage
 compatibility: Built for Claude Code — uses subagents, model selection, and interactive questions. Installs on any Agent Skills client but is tuned for Claude Code.
+allowed-tools: Read, Grep, Glob, Task, AskUserQuestion
 description: "Use this skill when starting any new task, change, bug fix, or feature to determine the appropriate risk tier, workflow playbook, and severity before touching any code. Run /triage first to get a recommendation on whether to proceed as just-do-it, lean, medium, or full, and to understand which downstream skills to invoke."
 ---
 

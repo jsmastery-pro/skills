@@ -1,6 +1,7 @@
 ---
 name: verify
 compatibility: Built for Claude Code — uses subagents and can drive a browser/CLI. Installs on any Agent Skills client but is tuned for Claude Code.
+allowed-tools: Bash, Read, Grep, Glob, Write, Task, AskUserQuestion
 description: "Use this skill to confirm a change actually works by running the real app and watching its behavior — not just that tests pass. Run /verify after /develop and before /review, or any time you need to see a feature work end to end: it launches the app, exercises the changed flow, and checks the observable result (UI, an API response, CLI output, a job). For a **behavior-preserving refactor** (or a project with no test runner), it runs a before/after diff — capturing the affected outputs pre- and post-change and proving they're identical — which is the regression gate a refactor needs. Complements /test with runtime confirmation; reports what worked, what didn't, and what /test should lock in. It doesn't write code."
 ---
 

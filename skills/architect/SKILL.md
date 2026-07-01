@@ -1,6 +1,7 @@
 ---
 name: architect
 compatibility: Built for Claude Code — uses subagents, model selection, and interactive questions. Installs on any Agent Skills client but is tuned for Claude Code.
+allowed-tools: Bash, Read, Grep, Glob, Write, Edit, Task, AskUserQuestion
 description: "Use this skill to make and document an architectural or technical decision before writing code. Run /architect when facing a meaningful choice between approaches, designing a feature or page from scratch, choosing a tech stack, or when /develop says a decision is owed. A Staff/Principal Engineer that challenges bad directions, names anti-patterns, asks deep feature-specific questions, and recommends the right answer rather than a neutral menu — then writes a complete-build-spec ADR to docs/adr/ for your confirmation. Owns all ADR files."
 ---
 

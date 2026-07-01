@@ -1,6 +1,7 @@
 ---
 name: audit
 compatibility: Built for Claude Code — uses subagents, model selection, and interactive questions. Installs on any Agent Skills client but is tuned for Claude Code.
+allowed-tools: Bash, Read, Grep, Glob, Write, Edit, Task, AskUserQuestion
 description: "Use this skill to bootstrap a project's AI context — the AGENTS.md files every later skill reads. Run /audit at the start of a greenfield project (it asks your coding standards and seeds root AGENTS.md), on an existing codebase with no or partial docs (it scans and writes root + nested AGENTS.md, adding only what's missing), or on one named area (e.g. /audit src/auth). Writes tool-agnostic AGENTS.md plus a thin CLAUDE.md pointer; never overwrites curated content. Not for ADRs (/architect), post-change upkeep (/sync), or the roadmap (/mvp)."
 ---
 

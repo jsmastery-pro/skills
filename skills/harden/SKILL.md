@@ -1,6 +1,7 @@
 ---
 name: harden
 compatibility: Built for Claude Code — uses subagents, model selection, and interactive questions. Installs on any Agent Skills client but is tuned for Claude Code.
+allowed-tools: Bash, Read, Grep, Glob, Write, Task
 description: "Use this skill to stress-test a change against production-only failure modes — edge cases, concurrency, scale, and security. Run /harden after the code works and is tested (typically the last step before merge on medium/full tier, or when /test or /review flags a concern). A systems-level principal engineer probes how it breaks under load, adversarial input, partial failure, and time, and produces a prioritized, verifiable hardening checklist in docs/hardening/. It doesn't rewrite your code."
 ---
 

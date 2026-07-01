@@ -1,6 +1,7 @@
 ---
 name: mvp
 compatibility: Built for Claude Code — uses interactive questions. Installs on any Agent Skills client but is tuned for Claude Code.
+allowed-tools: Bash, Read, Grep, Glob, Write, Edit, Task, AskUserQuestion
 description: "Use this skill to turn a product idea into a prioritized, buildable roadmap. Run /mvp at the start of a new product, when you don't know what to build first, or when scoping the next batch of features on an existing app. As a senior product engineer it asks across business, product, and SEO, then decomposes the product into small features — each broken into ordered build sub-tasks with ready-to-paste prompts — and writes the roadmap to docs/mvp/. It plans; it doesn't design individual features (/architect), write code (/develop), or create ADRs."
 ---
 

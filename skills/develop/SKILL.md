@@ -1,6 +1,7 @@
 ---
 name: develop
 compatibility: Built for Claude Code — uses interactive questions and stack detection. Installs on any Agent Skills client but is tuned for Claude Code.
+allowed-tools: Bash, Read, Grep, Glob, Write, Edit, Task, AskUserQuestion
 description: "Use this skill to build a feature — UI or logical/backend — from an approved design. Run /develop to implement a page, component, API, service, data layer, or any slice. It first gates on the decision: if building would require inventing something undecided (a design system, page composition, a provider, data model, or a feature's behavior) and no ADR records it, /develop stops and routes you to /architect. Otherwise it reads the ADR + AGENTS.md (+ design.md for UI) and builds, advancing the roadmap. It doesn't make architecture decisions or write ADRs (/architect)."
 ---
 
