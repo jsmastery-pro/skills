@@ -42,11 +42,13 @@ Written for any Agent Skills client on macOS, Linux, or Windows. Detection snipp
 
 ## Execution
 
-### Pre-check — the project must already exist
+### Pre-check — the project must already exist (except the scaffold task)
 
-`/develop` builds *into* a scaffolded project; it does not scaffold one. If there's no project skeleton at all (no `package.json`/`pyproject.toml`/`go.mod`/manifest, no source tree), **stop** and tell the engineer:
+**Exception, the scaffold task.** If this task **is** the scaffold sub-task of the Stack and architecture foundation feature (the prompt says `scaffold`, or the step is to initialize the project from the stack ADR), then **creating the project IS the job** — do not refuse. Read the ARCHITECTURE ADR's `## Proposed stack`, run the framework's own init (`create-next-app`, `npm init`, `vite`, `cargo new`, and so on, per that stack), install dependencies, lay out the directories, and confirm a dev server or build runs. The scaffold steps are **derived here from the stack decision**, not read from a pre-written ADR build plan (a decision ADR has none). Then proceed.
 
-> No project found to build into. Scaffold it first (`create-next-app`, `npm init`, `vite`, `cargo new`, and so on, per your architecture ADR), then run `/develop` again.
+Otherwise, `/develop` builds *into* an already-scaffolded project; it does not scaffold one. If there's no project skeleton at all (no `package.json`/`pyproject.toml`/`go.mod`/manifest, no source tree) **and this is not the scaffold task**, **stop** and tell the engineer:
+
+> No project found to build into. Run the scaffold step first (the Stack and architecture feature's scaffold sub-task, per your architecture ADR), then run `/develop` again.
 
 If a project exists (even a bare scaffold), proceed.
 

@@ -39,17 +39,16 @@ The **Approach** column is the per-feature override: blank/`inherit` = builds by
 
 | # | Feature | Priority | Approach | Needs ADR? | Status | Code area |
 |---|---------|----------|----------|-----------|--------|-----------|
-| 1 | Stack & architecture | P0 | inherit | yes | planned | n/a |
-| 2 | Scaffold project (chosen stack) | P0 | inherit | no | planned | n/a |
-| 3 | Coding standards & tooling (`/audit`) | P0 | inherit | no | planned | n/a |
-| 4 | Data model | P0 | inherit | yes | planned | n/a |
-| 5 | Design system & UI foundation | P0 | inherit | yes | planned | n/a |
-| 6 | Walking-skeleton slice | P0 | inherit | no | planned | n/a |
-| 7 | Home page | P0 | inherit | yes | planned | n/a |
-| 8 | Segment landing pages | P0 | inherit | yes | planned | n/a |
-| 9 | Shop listing (filter & sort) | P0 | inherit | yes | planned | n/a |
-| 10 | Product detail page | P0 | inherit | yes | planned | n/a |
-| 11 | Cart | P0 | Facade | yes | planned | n/a |
+| 1 | Stack & architecture (decide + scaffold) | P0 | inherit | yes | planned | n/a |
+| 2 | Coding standards & tooling (`/audit`) | P0 | inherit | no | planned | n/a |
+| 3 | Data model | P0 | inherit | yes | planned | n/a |
+| 4 | Design system & UI foundation | P0 | inherit | yes | planned | n/a |
+| 5 | Walking-skeleton slice | P0 | inherit | no | planned | n/a |
+| 6 | Home page | P0 | inherit | yes | planned | n/a |
+| 7 | Segment landing pages | P0 | inherit | yes | planned | n/a |
+| 8 | Shop listing (filter & sort) | P0 | inherit | yes | planned | n/a |
+| 9 | Product detail page | P0 | inherit | yes | planned | n/a |
+| 10 | Cart | P0 | Facade | yes | planned | n/a |
 | … | … | … | … | … | … | n/a |
 
 _(Approach example: Cart is prototyped **Facade**-style first to demo the flow, overriding the Tracer-Bullet default; every other row inherits.)_
@@ -66,7 +65,7 @@ _(Granular: home and segment landing are separate features; listing, product, an
 
 Foundations always lead (Step 4); the feature phases after them are ordered by the header's **Build approach** (don't hardcode a single sequence). The example below is under **Tracer Bullet** (vertical slices); a Skateboard, Facade, or Journey build phases the same features differently.
 
-**Phase 1, Foundations** (scaffold before audit): standards *preferences* (light; may ride along with the stack decision) → stack (`/architect` → ARCHITECTURE ADR) → **scaffold the project with the chosen stack** → coding standards + tooling (`/audit` reads the **real scaffolded project**, then enforcement tooling via `/develop`) → data model (`/architect`) → design system (`/architect` → `design.md` → base components) → walking-skeleton slice. `/audit` and tooling come **after** stack-decision + scaffold, never before.
+**Phase 1, Foundations** (scaffold before audit): standards *preferences* (light; may ride along with the stack feature) → **stack & architecture** (`/architect` decides the stack, then `/develop` scaffolds it from that decision — one feature, two sub-tasks) → coding standards + tooling (`/audit` reads the **real scaffolded project**, then enforcement tooling via `/develop`) → data model (`/architect`) → design system (`/architect` → `design.md` → base components) → walking-skeleton slice. `/audit` and tooling come **after** the stack-and-scaffold feature, never before.
 **Phase 2, Slice: home** (end-to-end): data → API → UI → integration → SEO → tests, shipping something real before the next slice
 **Phase 3, Slice: shop listing** (end-to-end): filter & sort working against real data, states, tests
 **Phase 4, Slice: product detail** (end-to-end) → **Slice: cart** (end-to-end) → … one working slice at a time
@@ -75,18 +74,22 @@ _Deferred: advanced search, analytics dashboard_
 
 ## Build breakdown
 
-### 2. Scaffold project (chosen stack)  ·  Needs ADR: no  ·  Approach: inherit  ·  Status: planned
-- [ ] Initialize the project with the stack from the ARCHITECTURE ADR: `/develop scaffold: framework init, dependency install, directory layout, runnable dev server/build, per the stack ADR`
+### 1. Stack & architecture (decide + scaffold)  ·  Needs ADR: yes  ·  Approach: inherit  ·  Status: planned
+<!-- ONE foundation feature, two sub-tasks: decide the stack (ADR), then scaffold from it. The decision
+     ADR records the decision only; the scaffold steps are derived by /develop, not pre-written here or
+     in the ADR (that double-spec is the bug). -->
+- [ ] Decision (ADR): `/architect stack & architecture: framework, hosting, persistence, auth approach` _(ARCHITECTURE ADR, records the decision only)_
+- [ ] Scaffold from the decision: `/develop scaffold: framework init, dependency install, directory layout, runnable dev server/build, per the stack ADR`
 - [ ] Smoke-check it runs: `/test` _(dev server boots / build passes)_
-> ADR: n/a (executes the stack decision; makes none) · Code area: n/a · _Must land before `/audit` (step 3), since `/audit` reads this real project._
+> ADR: [0001](../adr/0001-stack-architecture.md) · Code area: n/a · _The scaffold sub-task must land before `/audit`, since `/audit` reads the real project._
 
-### 3. Coding standards & tooling (`/audit`)  ·  Needs ADR: no  ·  Approach: inherit  ·  Status: planned
+### 2. Coding standards & tooling (`/audit`)  ·  Needs ADR: no  ·  Approach: inherit  ·  Status: planned
 - [ ] Capture standards + tooling into `AGENTS.md` from the **scaffolded project**: `/audit` _(greenfield, after scaffold: reads the real stack/structure, not a guess)_
 - [ ] Set up enforcement tooling: `/develop tooling: ESLint + Prettier + strict tsconfig + husky/lint-staged pre-commit, per the captured standards`
 - [ ] Tests: `/test` _(lint/format run clean)_
 > ADR: n/a (no decision; conventions captured by /audit, after stack-decision + scaffold) · Code area: n/a
 
-### 7. Home page  ·  Needs ADR: yes  ·  Approach: inherit  ·  Status: planned
+### 6. Home page  ·  Needs ADR: yes  ·  Approach: inherit  ·  Status: planned
 - [ ] Decision (ADR): `/architect home page: composition (hero, featured collections, segment entry points), layout, asset strategy`
 - [ ] UI (placeholder data): `/develop home page UI: build to design.md with mock collections + placeholder imagery`
 - [ ] Data integration: `/develop home page wire-up: swap mock for real featured collections, loading/empty states`
@@ -94,14 +97,14 @@ _Deferred: advanced search, analytics dashboard_
 - [ ] Tests: `/test home page`
 > ADR: n/a · Approach: inherit (project default) · Code area: n/a
 
-### 11. Cart  ·  Needs ADR: yes  ·  Approach: **Facade** (override)  ·  Status: planned
+### 10. Cart  ·  Needs ADR: yes  ·  Approach: **Facade** (override)  ·  Status: planned
 - [ ] Decision (ADR): `/architect cart: line items, quantity, totals, persistence`
 - [ ] UI (placeholder data): `/develop cart UI: clickable cart on mock line items + states`
 - [ ] Data integration: `/develop cart wire-up: swap mock for real cart, loading/empty states`
 - [ ] Tests: `/test cart`
 > ADR: n/a · Approach: **Facade** (overrides the Tracer-Bullet default; demo the flow on placeholder data first, then wire the back) · Code area: n/a
 
-### 8. Segment landing pages  ·  Needs ADR: yes  ·  Approach: inherit  ·  Status: planned
+### 7. Segment landing pages  ·  Needs ADR: yes  ·  Approach: inherit  ·  Status: planned
 - [ ] Decision (ADR): `/architect segment landing: per-segment layout (dev/gamer/anime), theming, shared vs unique blocks`
 - [ ] UI (placeholder data): `/develop segment landing UI: build to design.md, mock per-segment data`
 - [ ] Data integration: `/develop segment landing wire-up: real segment catalog, empty states`

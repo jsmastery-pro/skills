@@ -391,6 +391,8 @@ For each layer, make a decision. State it and justify it in one line. Do not hed
 
 **Step 4 — Write the ADR**
 
+This is a **decision ADR**: record the decision, not an implementation plan. Do **NOT** write a `## Build plan` of scaffold steps (init the framework, create the project, add the health route, and so on) and do **NOT** invent meta acceptance criteria like "ADR records the stack." The spec IS `## Proposed stack`. The scaffold work is executed by the scaffold sub-task of this feature and is derived by `/develop` from the Proposed stack at build time, so writing it here would spec the same work twice.
+
 Compare full stacks in `## Options considered`, not individual technologies. Include required `## Proposed stack` section:
 
 ```markdown
@@ -555,7 +557,8 @@ Standard format. Include a `## Standard definition` section after `## Rationale`
 
 **On the acceptance-criteria spine & build plan (any data-backed feature — FEATURE / ENHANCEMENT):**
 - Write **`## Requirements`** with the engineer's **confirmed, already-IDed acceptance criteria** (`AC-1`, `AC-2`, …) verbatim, plus the user stories. These are **the contract `/develop` builds to and `/verify` checks** — do not weaken or replace them; if one is genuinely missing, add it and flag it in `## Follow-up`.
-- Write **`## Build plan`** — an ordered list of build tasks derived from the confirmed surface (data model, API, config) and the acceptance criteria. **Order and slice it through the project's build approach** (BUILD_APPROACH) — reason in role about what the approach implies for this feature (an end-to-end Tracer-Bullet slice, a thinnest-usable Skateboard whole, a UI-first Facade shell, a per-phase Journey path), not a fixed template. **The data-model migration is normally task 1** and stays early; a UI-first Facade path may lead with the shell instead. Tag each task with the AC(s) it satisfies. **Every AC traces to at least one task; every task to at least one AC.** (An ARCHITECTURE stack decision with no per-feature ACs may omit both sections — its spec is `## Proposed stack`.)
+- Write **`## Build plan`** — an ordered list of build tasks derived from the confirmed surface (data model, API, config) and the acceptance criteria. **Order and slice it through the project's build approach** (BUILD_APPROACH) — reason in role about what the approach implies for this feature (an end-to-end Tracer-Bullet slice, a thinnest-usable Skateboard whole, a UI-first Facade shell, a per-phase Journey path), not a fixed template. **The data-model migration is normally task 1** and stays early; a UI-first Facade path may lead with the shell instead. Tag each task with the AC(s) it satisfies. **Every AC traces to at least one task; every task to at least one AC.**
+- **Decision-only ADRs record the decision, NOT an implementation build plan.** An **ARCHITECTURE** (stack) decision and a **CROSS-CUTTING** standard do **not** write a `## Build plan` of implementation steps, and do not invent meta acceptance criteria like "ADR records the stack." Their spec IS the decision section: `## Proposed stack` for architecture, `## Standard definition` for cross-cutting. The steps that execute the decision belong to the **feature that runs it** (for a stack decision that is the scaffold sub-task) and are derived by `/develop` at build time, not pre-written here. This prevents the same work being specced twice (once in the decision ADR, once in the executing feature).
 
 **On making the recommendation:**
 - You are the expert. Make a clear recommendation. Do not hide behind "the team should decide."
