@@ -127,10 +127,12 @@ Do not repeat the pros/cons list — explain the reasoning. 1–3 paragraphs.>
 
 <!-- Ordered build tasks DERIVED from the surface above (data model, API, stack) and the acceptance
      criteria in ## Requirements. Each task names the AC(s) it satisfies, so every AC traces to at least
-     one task and every task traces to an AC. Task 1 is the data-model migration derived from the
-     confirmed data model. When a roadmap feature row links this ADR, these tasks are also written into
-     that row's sub-tasks; with no roadmap row, they live here as the source of truth (see /architect's
-     derive-tasks step). -->
+     one task and every task traces to an AC. The ORDER and slicing reflect the project's build approach
+     (Tracer Bullet, Skateboard, Facade, Journey, or a variant — read in pre-flight), reasoned about for
+     this feature rather than by a fixed recipe. The data-model migration is normally task 1 (from the
+     confirmed data model) and stays early; a UI-first Facade/prototype approach may lead with the shell.
+     When a roadmap feature row links this ADR, these tasks are also written into that row's sub-tasks;
+     with no roadmap row, they live here as the source of truth (see /architect's derive-tasks step). -->
 
 1. <Build task — e.g. "Create the migration for the confirmed data model"> — satisfies **AC-1**
 2. <Build task> — satisfies **AC-2**, **AC-3**
@@ -159,7 +161,7 @@ N. <Build task> — satisfies **AC-N**
      name the source/practice instead. Every link here must have been web-verified by the subagent. -->
 
 **Project sources** (verifiable, in this repo):
-- <e.g. `AGENTS.md` — the auth convention · ADR 0003 · the installed `stripe` skill · already on the project's BaaS>
+- <e.g. `AGENTS.md` — the auth convention · ADR 0003 · an installed community skill · already on the project's BaaS>
 
 **Practices & standards**:
 - <named practice/principle the decision rests on — e.g. idempotency keys for money ops · strangler pattern · OWASP session guidance>
@@ -189,7 +191,7 @@ N. <Build task> — satisfies **AC-N**
 - <Pattern that is now wrong>
 
 **Enforcement**:
-<Lint rule / TypeScript type / other — and where it is configured>
+<Lint rule / compile-time type / other — and where it is configured>
 
 **Rollout**:
 <New code immediately | single migration PR | gradual migration schedule>
@@ -205,8 +207,8 @@ N. <Build task> — satisfies **AC-N**
 
 - Format: `NNNN-kebab-case-title.md`
 - NNNN: zero-padded 4-digit number, auto-incremented
-- Title: lowercase, hyphens, no articles at the start ("use-postgres" not "the-use-of-postgres")
-- Examples: `0001-use-postgresql-for-primary-storage.md`, `0002-adopt-feature-flags-for-rollout.md`
+- Title: lowercase, hyphens, no articles at the start ("use-object-storage" not "the-use-of-object-storage")
+- Examples: `0001-adopt-relational-db-for-primary-storage.md`, `0002-adopt-feature-flags-for-rollout.md`
 
 ## Status values
 

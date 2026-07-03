@@ -33,6 +33,12 @@ Root `AGENTS.md`'s `## Stack` is a **mirror of the architecture decision**. Befo
 
 This makes the `/architect → /audit` handoff order-independent: whenever audit runs, root absorbs the decided stack.
 
+## Build approach (every phase that writes or audits root)
+
+Root `AGENTS.md`'s `## Build approach` is a **project-wide convention** — the default build strategy every skill reads, exactly like `## Stack`. Reason as the engineer setting the team's default: **capture** the approach as a convention, don't invent or prescribe one. Its source of truth is the **roadmap header** (the build-approach line `/roadmap` records):
+- **Creating root** (greenfield, whole-repo): seed `## Build approach` from the roadmap header if one exists — a short line: the approach's name + its one-line principle. If there's no roadmap, or none is set yet, write `<TBD — set by /roadmap>` rather than guessing one.
+- **Auditing existing root** (gap-fill): if root's `## Build approach` is missing while the roadmap header names one, that's a gap (ROOT_GAPS); if the two name **different** approaches, that's a contradiction (CONTRADICTIONS). Never silently overwrite a curated line.
+
 ## Phase
 
 PHASE
@@ -87,11 +93,13 @@ The project is new — no source files yet. Your job: create a root AGENTS.md th
 
 Using your file tools, list the top couple of levels of the project (excluding `.git`), and check `docs/adr/` for numbered ADR files (`NNNN-*.md`) — did /architect already choose the stack?
 
-Read `package.json` / `pyproject.toml` / `go.mod` if present — note language and package manager. **If an architecture ADR exists in `docs/adr/`** (one with a `## Proposed stack` section), read it: the engineer already decided the stack via `/architect`. Use it to populate `## Stack` — do not leave placeholders or contradict it. This is the cold-start handoff: the architecture decision becomes the project's first ambient convention.
+Read the project's manifest if present (whatever the ecosystem uses) — note language and package manager. **If an architecture ADR exists in `docs/adr/`** (one with a `## Proposed stack` section), read it: the engineer already decided the stack via `/architect`. Use it to populate `## Stack` — do not leave placeholders or contradict it. This is the cold-start handoff: the architecture decision becomes the project's first ambient convention.
+
+Also check `docs/roadmap/` (or `.workflow/roadmap/`) for a roadmap: its **header** may record the project's **build approach** (name + one-line principle). If it does, that's the seed for `## Build approach` — capture it verbatim as a convention. If there's no roadmap or no approach set, leave it `<TBD — set by /roadmap>`.
 
 **Step 2 — Create root AGENTS.md**
 
-Use the template below. Populate `## Stack` from the architecture ADR if one exists, otherwise from what you found (or `<to be filled>` if truly nothing is decided yet).
+Use the template below. Populate `## Stack` from the architecture ADR if one exists, otherwise from what you found (or `<to be filled>` if truly nothing is decided yet). Populate `## Build approach` from the roadmap header if one is set (name + one-line principle), otherwise `<TBD — set by /roadmap>`.
 
 For `## Rules`: use the SELECTED_PATTERNS content injected above as the basis. If the engineer selected "Other" (free-text) instead of a named pattern, treat their exact text as the conventions and include it verbatim under `## Rules` — do not interpret or reformat it. Append ADDITIONAL_STANDARDS as extra bullet points at the end of `## Rules`. If nothing was found for stack, write placeholders like `<to be filled>`.
 
@@ -221,10 +229,10 @@ Read the manifest(s), CI config, entry points, and a sample of each major area. 
 
 **Step 3 — Find four kinds of finding**
 
-- **(a) Global facts missing from root** — a daily command, stack element, or project-wide rule that's true but absent from root AGENTS.md. Return each as a `ROOT_GAPS` line (exact markdown + target section) — do NOT edit root yourself; the main model applies these with permission.
+- **(a) Global facts missing from root** — a daily command, stack element, project-wide rule, or the **build approach** (present in the roadmap header but absent from root) that's true but not recorded in root AGENTS.md. Return each as a `ROOT_GAPS` line (exact markdown + target section) — do NOT edit root yourself; the main model applies these with permission.
 - **(b) Undocumented areas** — a major area with distinct conventions/gotchas that has **no** nested AGENTS.md. Create the nested doc (nested template + sibling CLAUDE.md pointer) and add its root pointer line via Edit. (This is safe to do directly — you're creating, not overwriting.)
 - **(c) Stale/incomplete nested docs** — an existing nested AGENTS.md missing something now true of its area. Return as `PROPOSED_ADDITIONS` — do NOT edit it yourself.
-- **(d) Contradictions** — a doc states something the codebase **disproves**: root says "tests: Jest" but the project uses Vitest; root's `## Stack` conflicts with the architecture ADR; a documented command no longer exists. This is worse than a gap — the docs are actively wrong. **Do NOT auto-fix** (the line may be curated). Return each as a `CONTRADICTIONS` entry naming the doc, what it says, and what the code/ADR actually shows. The main model surfaces these to the human to resolve.
+- **(d) Contradictions** — a doc states something the codebase or its governing records **disprove**: the documented test runner or framework isn't the one the project actually uses; root's `## Stack` conflicts with the architecture ADR; root's `## Build approach` names a different strategy than the roadmap header; a documented command no longer exists. This is worse than a gap — the docs are actively wrong. **Do NOT auto-fix** (the line may be curated). Return each as a `CONTRADICTIONS` entry naming the doc, what it says, and what the code/ADR/roadmap actually shows. The main model surfaces these to the human to resolve.
 
 Be conservative: only flag findings you're confident about and that are durable. When unsure, leave it. Do not flag implementation detail, TODOs, or anything that churns.
 
@@ -243,6 +251,16 @@ Be conservative: only flag findings you're confident about and that are durable.
 - **Framework**: <e.g. Next.js 14, Express>
 - **Key dependencies**: <3–5 most important>
 - **Package manager**: <npm / pnpm / yarn / pip / cargo>
+
+## Build approach
+
+<The project's default build strategy — a short line: name + one-line principle. A project-wide
+ convention every skill reads (like the stack). Seeded from the roadmap header; `<TBD — set by
+ /roadmap>` if none is set yet. The approach is one of:
+ - **Tracer Bullet** — vertical end-to-end slices, thin but complete through every layer
+ - **Skateboard** — ship the thinnest usable whole, then grow it
+ - **Facade** — UI-first shell, then wire the real behavior behind it (prototype-led)
+ - **Journey** — build the full user path, one phase at a time>
 
 ## Commands
 

@@ -7,6 +7,8 @@ description: "Use this skill for a rigorous, senior-level code review before mer
 
 ## What this skill does
 
+**Your role:** the senior reviewer with fresh eyes — the one who didn't write the code and therefore isn't in love with it. You read the diff for what it *actually does*, not what it was meant to do, and you rank findings by the harm they'd cause in production, not by how clever they are to spot. Your one non-negotiable: a reviewer must not share the author's blind spots, which is why this review runs on a **different model than wrote the code**.
+
 Reviews the current change set as a senior engineer would review a teammate's pull request, and writes severity-ranked findings. The critical property: **the reviewer runs on a different model than the author.** A model reviewing its own output shares its own blind spots; a second model catches what the first missed.
 
 - **Different Claude model, automatically** — the review runs in a subagent on the contrasting Claude model. No API keys, no external setup.

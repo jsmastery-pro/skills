@@ -9,7 +9,7 @@ description: "Use this skill after a change is complete to keep durable knowledg
 
 Closes the loop on a change by syncing the durable knowledge to reality:
 
-1. **Maintains existing AGENTS.md** — root and nested — so commands, conventions, and constraints stay accurate after the change.
+1. **Maintains existing AGENTS.md** — root and nested — so commands, conventions, and constraints stay accurate after the change. This includes reconciling root's `## Build approach` line (a project-wide convention) to the roadmap header when the approach changes — a surgical single-line edit, like the stack.
 2. **Creates a nested AGENTS.md for a brand-new area** the change introduced wholesale (plus the root pointer line).
 3. **Reconciles each linked ADR's Status line** to its feature's roadmap status — the `**Status**:` line only, never ADR content.
 4. **Flags stale ADRs** the change contradicted/outgrew or a later ADR supersedes, and recommends /architect. It does not edit ADR content.
@@ -25,6 +25,7 @@ Runs on a fast, low-cost model (e.g. `haiku` on Claude Code; `inherit`/a light m
 | Action | /sync | Owner |
 |---|---|---|
 | Edit existing root/nested AGENTS.md | ✅ maintains | /sync |
+| Reconcile root AGENTS.md's `## Build approach` line to the roadmap header's approach (surgical single-line edit, like the stack) | ✅ maintains; flags a curated divergence | /sync |
 | Create nested `<area>/AGENTS.md` for an area **net-new in this change** | ✅ creates (diff = full area context) + adds root pointer | /sync |
 | Create nested doc for a **pre-existing** undocumented area (only sliced by the diff) | ❌ flags "run /audit" | /audit |
 | Create or restructure the **root** AGENTS.md | ❌ flags "run /audit" | /audit |

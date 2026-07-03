@@ -7,6 +7,8 @@ description: "Use this skill to confirm a change actually works by running the r
 
 ## What this skill does
 
+**Your role:** the acceptance engineer — the senior hand who trusts observed behavior over green checkmarks. You reason from a single question: *"If I were the person who has to sign off that this is real, what would I need to watch happen with my own eyes?"* You know that a passing suite proves the code the author thought to test, not that the feature exists; so you drive the actual thing and judge what you see against what the slice was supposed to deliver.
+
 Closes the gap between "the tests are green" and "the feature actually works." A passing unit suite does not prove a page renders, a button submits, an endpoint returns the right shape, or a job completes. `/verify` **runs the thing and watches it behave.**
 
 1. **Scopes** what changed (from git) into a short list of observable behaviors to check — anchored to the spec's acceptance criteria when a governing ADR exists.
@@ -44,7 +46,7 @@ Written for any Agent Skills client on macOS, Linux, or Windows. Run/launch snip
 Only in refactor mode. Because it drives the app twice and holds two output sets, **run it in a subagent** (keeps the main context clean):
 - `model`: a strong model (e.g. `sonnet` on Claude Code) · `description: "Verify: before/after diff — <scope>"` · Tools: `Read`, `Bash`, `Grep`, `Glob` (+ browser/HTTP driving)
 - Its job:
-  1. Identify the **affected surfaces** from the diff — the endpoints, queries, or pages the refactor touches (e.g. `getAllCourses`, `getCourseBySlug`, the KB list). Pick representative ones per changed area.
+  1. Identify the **affected surfaces** from the diff — the endpoints, queries, jobs, or pages the refactor touches. Pick representative ones per changed area, favoring the surfaces whose output is most observable and most likely to reveal a behavior shift.
   2. **Capture BEFORE** — the pre-change state. **Prefer a throwaway git worktree** checked out at the pre-change ref (the base branch, or the commit before the refactor): `git worktree add <tmp> <ref>`, start the app *in that worktree*, hit each surface, save the raw outputs, then `git worktree remove <tmp>`. This keeps your working tree and **untracked files** intact. Only if worktrees aren't available, fall back to `git stash --include-untracked` (plain `git stash` leaves new files behind and contaminates the "before"), restoring with `git stash pop` after.
   3. **Capture AFTER** — with the change applied, start the app, hit the same surfaces the same way, save the outputs.
   4. **Diff** before vs after per surface. For a behavior-preserving change they must be **byte-identical** (modulo intentional, documented differences). Report any diff as a **regression**.
@@ -69,6 +71,12 @@ When an ADR **is** found, it carries the **contract**: `## Requirements` with ID
 2. **Else fall back to the ADR's `## Requirements`** acceptance criteria directly, and turn each `AC-N` into an observable check yourself.
 
 Either way you now hold: the **list of AC-N** to confirm, and the **list of specced surfaces** to confirm exist. Carry both into Steps 1–4; the per-AC conformance verdict is produced in **Step 4b** and reported in **Step 5**. The feature/refactor modes remain the **runtime engine** — spec-conformance decides *what* to check and *what "met" means*; the modes are *how* you drive the app to check it.
+
+### Step 0c — Calibrate "working" to the build approach
+
+Before you decide what to watch, know what *this slice was meant to be*. The project's roadmap header (or root `AGENTS.md`) records the **build approach** the team chose — how they carve a product into shippable slices. "Working" means something different under each, and verifying against the wrong bar produces false failures (dinging a prototype for lacking a real backend) or false passes (blessing a slice that never proved the path it existed to prove).
+
+Read the approach, then reason as the acceptance engineer about what *done* means for the slice in front of you — don't run a fixed per-approach script. The judgment is always the same shape: **what did this slice promise to make real, and what is it explicitly still allowed to fake?** Verify the former hard; don't fail the slice for the latter. For orientation, teams commonly frame slices as a thin **end-to-end path** wired through every layer (verify the whole path carries a real request to a real result), a **thinnest-usable-whole** core loop (verify that one loop genuinely works, not the trimmings), a **UI-first shell** wired to placeholders (verify the shell and its placeholder flow render and navigate — a stubbed data source is the plan, not a defect), or a **full user journey** per phase (verify the journey end to end, not isolated screens). Whatever the label, let it set the bar; then carry that bar into the scope and the conformance verdict below. The acceptance criteria still govern *what* must be true — the build approach tells you *how much of the stack behind them is expected to be real yet.*
 
 ### Step 1 — Scope the observable behaviors *(feature mode)*
 

@@ -9,7 +9,7 @@ description: "Use this skill to bootstrap a project's AI context — the AGENTS.
 
 The context-bootstrapper. It gives every later skill (and every AI tool) an accurate picture of the project by writing the `AGENTS.md` files — and it handles all three starting points:
 
-- **Greenfield** (no code yet): asks the engineer for the coding standards and conventions, and **seeds the root `AGENTS.md`** from the answers — so the very first `/develop` already has ambient conventions to build to. (This is the cold-start fix: without it, the foundational stack/standards decision has nowhere to land.)
+- **Greenfield** (no code yet): asks the engineer for the coding standards and conventions, and **seeds the root `AGENTS.md`** from the answers — including the project's **build approach** (name + one-line principle) read from the roadmap header if `/roadmap` set one — so the very first `/develop` already has ambient conventions to build to. (This is the cold-start fix: without it, the foundational stack/standards/build-approach decision has nowhere to land.)
 - **Brownfield, undocumented** (code, no `AGENTS.md`): scans the whole project, then **writes the root `AGENTS.md` AND creates nested `<area>/AGENTS.md` files** — using judgment about what is global (→ root) versus area-specific (→ nested).
 - **Brownfield, partially documented** (code + some `AGENTS.md` already): checks the existing root and nested docs **against the whole codebase** and **adds only what's missing** — new global facts, and nested docs for undocumented areas — never clobbering curated content.
 
@@ -105,7 +105,7 @@ Written for any Agent Skills client on macOS, Linux, or Windows:
 
 Why this order (both learned from dry-running it):
 - **Doc commits inflate history.** On greenfield, `/roadmap` and `/architect` commit a roadmap and an ADR *before* any code — so "≥2 commits → established" would misroute a code-less project to Phase 2 and skip the standards questions. Gating greenfield on **no source AND no manifest** ignores doc commits.
-- **File count alone misreads a scaffold.** A `create-next-app` scaffold has 10+ files but **one** commit — git history is what separates it from a built codebase, and history works for languages the `find` doesn't recognize. A shallow clone / squash-merge repo showing ≤1 commit falls to Phase 0, where one question resolves it safely.
+- **File count alone misreads a scaffold.** A fresh framework scaffold has 10+ files but **one** commit — git history is what separates it from a built codebase, and history works for languages the source scan doesn't recognize. A shallow clone / squash-merge repo showing ≤1 commit falls to Phase 0, where one question resolves it safely.
 
 **Monorepo (`MONOREPO=yes`) — root + a light stub per workspace, deepen on demand.** Each workspace (`apps/*`, `packages/*`) is a first-class area, and its **primary doc lives at the workspace root** (`packages/api/AGENTS.md`), never buried deeper.
 
@@ -158,7 +158,7 @@ Question 2 — Additional standards (multi-select):
 - `model`: a strong model (e.g. `sonnet`/`opus` on Claude Code)
 - `description: "Audit: greenfield setup — create root AGENTS.md + CLAUDE.md pointer"`
 - Tools: `Read`, `Bash`, `Write`
-- `prompt`: filled `agent-prompt.md` template with `PHASE=greenfield`, `SELECTED_PATTERNS=<file contents>`, `ADDITIONAL_STANDARDS=<selections>`, and **`MONOREPO_OR_NO`** (`yes — apps: web, api, …` if detected). The subagent writes root `AGENTS.md` + its `CLAUDE.md` pointer — **and, if `MONOREPO=yes`, a nested `AGENTS.md` (+ pointer) per workspace** seeded from each scaffold's manifest, with the root pointers baked in.
+- `prompt`: filled `agent-prompt.md` template with `PHASE=greenfield`, `SELECTED_PATTERNS=<file contents>`, `ADDITIONAL_STANDARDS=<selections>`, and **`MONOREPO_OR_NO`** (`yes — apps: web, api, …` if detected). The subagent writes root `AGENTS.md` + its `CLAUDE.md` pointer — seeding `## Build approach` from the roadmap header if one is set (else `<TBD — set by /roadmap>`) — **and, if `MONOREPO=yes`, a nested `AGENTS.md` (+ pointer) per workspace** seeded from each scaffold's manifest, with the root pointers baked in.
 
 ---
 

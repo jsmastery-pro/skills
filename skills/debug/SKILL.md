@@ -7,6 +7,8 @@ description: "Use this skill to find and fix the root cause of a bug — somethi
 
 ## What this skill does
 
+**Your role:** the investigator who trusts evidence over intuition. You treat a bug like a case to be proven, not a symptom to be silenced — you reproduce it on demand, narrow it to the smallest surface that still fails, and change exactly one thing at a time so every result *means* something. You resist the pull to patch what you see (the null, the crash) before you understand *why* it's there, because a fix you can't explain is a bug you haven't caught. You stop when the cause is proven and the fix is the smallest one that addresses it — no opportunistic refactors riding along.
+
 A structured root-cause investigation, not a guess-and-check. Bugs are found by a **loop**: reproduce → localize → hypothesize → test the hypothesis → fix the root cause → verify. This skill runs that loop with discipline — **one hypothesis at a time**, each confirmed or rejected by evidence before moving on — until the actual cause is proven, then applies the smallest fix that addresses it.
 
 > This is an *internal investigation loop within a single run* — not the `/loop` skill (which re-runs a command on a time interval). Reach for `/loop` only when you need to watch something over time, e.g. poll a flaky test across many runs.

@@ -2,7 +2,7 @@ Roadmap structure `/roadmap` writes to — the templates/examples referenced fro
 
 ## Standard sub-task table
 
-Standard sub-tasks (drop any that don't apply, add feature-specific ones), in **UI-first order** within the feature:
+Standard sub-tasks (drop any that don't apply, add feature-specific ones), **ordered within the feature per the recorded Build approach** (a Tracer Bullet slice runs data→API→UI→integration end-to-end; a Facade prototype front-loads the UI on placeholder data — don't assume one fixed order):
 
 | # | Sub-task | Command + prompt to paste |
 |---|---|---|
@@ -30,6 +30,9 @@ Write the chosen file with two parts — an overview table and the detailed brea
 
 _Seeded by /roadmap · status advanced by /develop and /sync. Roadmap files live in `docs/roadmap/` (ADRs are in `docs/adr/`)._
 
+**Build approach:** Tracer Bullet — vertical slices; each feature built end-to-end through every layer, working.
+_(The chosen approach — Tracer Bullet · Skateboard · Facade (prototype-grade) · Journey — is recorded here by /roadmap as a project-wide convention: /audit and /sync persist it into root `AGENTS.md`, and /architect, /develop, and /verify read and honor it so the whole build follows it consistently.)_
+
 ## Overview
 
 | # | Feature | Priority | Needs ADR? | Status | Code area |
@@ -52,13 +55,15 @@ _Seeded by /roadmap · status advanced by /develop and /sync. Roadmap files live
 
 _(Granular: home and segment landing are separate features; listing, product, and cart are separate — not one "storefront".)_
 
-## Build order (UI-first, layered)
+## Build order (sequenced per the recorded Build approach)
 
-**Phase 1 — Foundations**: coding standards + tooling (`/audit` → `/develop`) → stack (`/architect`) → design system (`/architect` → `design.md` → base components)
-**Phase 2 — All UI (placeholder data, no auth/DB)**: home → segment landing → shop listing → product → cart → checkout → account → admin — every page, static mock data + placeholder assets, browsable end to end
-**Phase 3 — Data & auth foundations**: authentication → database + schema → seed data
-**Phase 4 — Integration (page by page)**: wire home → segment landing → shop → product → cart → checkout → account → admin to real data + auth + actions, one at a time
-**Phase 5 — Harden & test**: per feature as it goes live
+Foundations always lead (Step 4); the feature phases after them are ordered by the header's **Build approach** — don't hardcode a single sequence. The example below is under **Tracer Bullet** (vertical slices); a Skateboard, Facade, or Journey build phases the same features differently.
+
+**Phase 1 — Foundations**: coding standards + tooling (`/audit` → `/develop`) → stack (`/architect`) → data model (`/architect`) → design system (`/architect` → `design.md` → base components) → walking-skeleton slice
+**Phase 2 — Slice: home** (end-to-end): data → API → UI → integration → SEO → tests, shipping something real before the next slice
+**Phase 3 — Slice: shop listing** (end-to-end): filter & sort working against real data, states, tests
+**Phase 4 — Slice: product detail** (end-to-end) → **Slice: cart** (end-to-end) → … one working slice at a time
+**Phase 5 — Harden & test**: per feature as it goes live (full-weight features)
 _Deferred: advanced search, analytics dashboard_
 
 ## Build breakdown

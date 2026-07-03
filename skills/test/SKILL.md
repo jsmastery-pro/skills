@@ -7,7 +7,9 @@ description: "Use this skill to write a test suite for code you just built or ch
 
 ## What this skill does
 
-Writes a thorough, maintainable test suite for **the code that changed in this branch but isn't committed yet**. Acts as a senior test engineer — it reads each changed file, classifies what kind of thing it is (pure logic, component, API route, page/flow), and writes tests with the right strategy for each. Tests verify real behavior and catch regressions, not coverage farming.
+**Your role:** a senior test engineer who writes the suite the code deserves — no more, no less. Your instinct is to pin the *behavior that matters* for this slice and ignore the noise: you test what a caller relies on and what would actually break someone, not lines for a coverage number. You choose a strategy per file the way an experienced engineer does — reading what the thing *is* before deciding how to prove it works — and you refuse to write tests that lock in scaffolding the slice was never meant to make real.
+
+Writes a thorough, maintainable test suite for **the code that changed in this branch but isn't committed yet**. It reads each changed file, classifies what kind of thing it is (pure logic, component, API route, page/flow), and writes tests with the right strategy for each. Tests verify real behavior and catch regressions, not coverage farming.
 
 - **Scope is automatic**: uncommitted git changes (modified, staged, and untracked source files). You don't name files.
 - **First run**: asks which framework, checks if installed, installs with your confirmation, saves `test-preferences.json`.
@@ -276,6 +278,7 @@ Using your file tools:
 
 What the main model passes to the subagent:
 - **Project context**: read `AGENTS.md` (canonical) — fall back to `CLAUDE.md` if there's no `AGENTS.md` — and inline its contents (short, cheap, consistent with the other skills).
+- **Build approach**: note the slice-shaping approach the team chose, recorded in the roadmap header (or root `AGENTS.md`) — e.g. a thin end-to-end path, a thinnest-usable-whole core loop, a UI-first shell wired to placeholders, or a full user journey per phase. Pass it to the subagent as one line. It doesn't branch the logic; it calibrates the test engineer's judgment about what in this slice is **durably real** (worth pinning as a stable assertion) versus **deliberate scaffolding** (a placeholder the slice is allowed to fake — don't lock a real-backend expectation onto a shell that stubs its data by design).
 - **ADRs**: pass the **3 recent paths**. The subagent reads them itself, and only if relevant to what it's testing.
 - **Governing ADR + contract**: pass the governing ADR path and the `verify.md` path (or `none` for each). The subagent reads the ADR's `## Requirements` acceptance criteria — preferring `verify.md`'s already-resolved `AC-N`-tagged checklist when present — so it knows the `AC-N` list to trace tests to. Pass `TRACE_TO_CONTRACT = yes` when a governing ADR exists, else `no`.
 - **design.md**: pass the **path**, and only when a **component** or **page/flow** file is in scope. The subagent reads it. Pass `none` otherwise.
@@ -312,7 +315,7 @@ Read two bundled files from this skill's folder (relative paths — you, the mai
   3. `testDir`, `filePattern`, package manager, stack/framework, `packageRoot`
   4. **Classified scope** — each file path with its class (logic / component / page-flow / api-server / cli)
   5. `RUN_COMMAND` (resolved in Step 7), `RUN_AFTER` flag
-  6. **Project context** inline (short) — `AGENTS.md`, or `CLAUDE.md` fallback
+  6. **Project context** inline (short) — `AGENTS.md`, or `CLAUDE.md` fallback — plus the **build approach** line from Step 7. Instruct the subagent to let it calibrate which behaviors are durably real for this slice (lock those in) versus deliberate scaffolding the slice fakes by design (don't assert a real implementation the plan hasn't built yet).
   7. **ADR paths** — the 3 recent paths, or `none`. (If the subagent has no file access in your client, read and inline the relevant ADR text instead.)
   8. **design.md path** — only if component/page scope, else `none`
   9. **Contract for traceability** — `TRACE_TO_CONTRACT` flag, the governing ADR path, and the `verify.md` path (each `none` if absent). Instruct the subagent: **when `TRACE_TO_CONTRACT = yes`**, read the acceptance criteria (from `verify.md` if present, else the ADR's `## Requirements`) and **lock in the durable ones** — write an automated test for every criterion that *can* be pinned as a stable assertion, and **tag each test with the `AC-N` it covers** (e.g. a `covers: AC-3` comment on the test, or `AC-3` in the test title) so the suite is traceable back to the contract. For any criterion that **can't** be turned into an automated test — a visual/manual/environmental check (e.g. "email actually arrives", "layout looks right") — do **not** fake it; record it in `NOT_COVERED` as `AC-N — <why not automatable> → defer to /verify manual step`. (If the subagent has no file access, read and inline the acceptance criteria / `verify.md` text into its prompt.)

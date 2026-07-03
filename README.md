@@ -96,11 +96,11 @@ The loop is **spec-driven**: `/roadmap` fixes the *what*, `/architect` designs t
 - **`/verify`** runs the **spec-conformance** pass — every acceptance criterion met and every specced surface (page, route, table, migration) actually built. This is what catches a missed page or an un-applied migration that green tests never reveal.
 - **`/test`** locks in the durable checks · **`/harden`** stress-tests `full`-weight work · **`/review`** re-reads on a fresh model · **`/document`** writes it up · **`/sync`** reconciles context + roadmap · then **replan** queues the next slice.
 
-`/develop` **gates** on the ADR: if the feature needs a design system, a provider, a data model, or a behavior you haven't decided, it stops and sends you to `/architect` first. The **vertical slice is the default** for a proper build; UI-first (every page against placeholder data) is a *prototype* option, chosen at roadmap time. `*`harden only on `full`-weight work (payments, auth, migrations).
+`/develop` **gates** on the ADR: if the feature needs a design system, a provider, a data model, or a behavior you haven't decided, it stops and sends you to `/architect` first. The **Tracer Bullet vertical slice is the default** for a proper build; the **Facade** UI-first path (a shell on placeholder data) is a *prototype* option — chosen as the build approach at roadmap time. `*`harden only on `full`-weight work (payments, auth, migrations).
 
 **Bugs** skip this entirely: `/debug` runs a root-cause loop and hands a regression test to `/test`.
 
-> **Decision panels.** Every user-facing choice — a stage gate in `/architect`, the phasing pick in `/roadmap`, the ADR sign-off — is an **options panel**: 2–4 concrete options with exactly one **(recommended)** pick, plus a free-text "specify your own". On agents with an interactive picker it renders as one; elsewhere it degrades to the same options in plain text.
+> **Decision panels.** Every user-facing choice — a stage gate in `/architect`, the build-approach pick in `/roadmap`, the ADR sign-off — is an **options panel**: 2–4 concrete options with exactly one **(recommended)** pick, plus a free-text "specify your own". On agents with an interactive picker it renders as one; elsewhere it degrades to the same options in plain text.
 
 ---
 
@@ -141,7 +141,13 @@ Acceptance-criteria seeds:
 
 **The detailed build tasks are not guessed here** — they're **derived from the feature's ADR** (`## Build plan`) when `/architect` designs it. `/roadmap` seeds the *what*; `/architect` designs the *how* and fills the tasks; `/develop` builds them.
 
-- **Phasing choice** — `/roadmap` recommends how to sequence the features: **MVP-first**, **vertical slices**, **user-journey**, or **UI-first prototype**. The recommended default for a production build is **vertical slices + foundations-first**; the others fit fast validation, a funnel, or a throwaway demo.
+- **Build approach** — `/roadmap` recommends *how the product gets built*, as a named delivery strategy (described by principle, so the AI reasons rather than following a hardcoded recipe):
+  - **Tracer Bullet** — vertical slices; each feature built end-to-end through every layer, working. *(recommended default for a proper build)*
+  - **Skateboard** — MVP-first; ship the thinnest *usable whole* first, then grow it.
+  - **Facade** — UI-first; a clickable shell on placeholder data, wire the back later *(prototype-grade)*.
+  - **Journey** — a complete user path end-to-end per phase.
+
+  The choice is **recorded once and honored everywhere**: `/roadmap` writes it into the roadmap header → `/audit`/`/sync` persist it into root `AGENTS.md` → `/architect`, `/develop`, `/verify` read it and shape the ADR's build plan, the build, and what "working" means to fit it. Change the approach and the whole pipeline follows.
 - **Foundations-first sequencing** — whatever the phasing, the ground comes first and isn't up for a vote: **coding standards → stack → data model → design system → a walking-skeleton slice**, *then* the features.
 - **Per-feature process weight** — the `Weight` column right-sizes each feature (it turns design-review and `/harden` on or off downstream). This **replaces the old triage step** — right-sizing is one column, not a separate skill.
 - **The replan beat** — the roadmap is *living*. `/roadmap replan` after each feature or phase ships reconciles what landed, enrolls follow-ups surfaced during the build (from the ADR's `## Consequences` / `## Follow-up`), reorders, and queues the next slice. `/roadmap add <feature>` enrolls one ad-hoc feature without re-planning the whole product.

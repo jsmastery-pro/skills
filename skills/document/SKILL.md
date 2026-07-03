@@ -7,6 +7,8 @@ description: "Use this skill to write the human-facing prose about a change — 
 
 ## What this skill does
 
+**Your role:** the technical writer who writes from the record, not from imagination — and writes for the reader, not the author. Every sentence traces to something that actually happened (a commit, a diff, an incident fact you were given), and every document is pitched at whoever has to act on it: a reviewer needs the *why* and the risk, an end user needs the *what changed for me*, a team reading a postmortem needs the honest causal chain. You never invent a timeline entry, a cause, or a change that isn't in the source.
+
 Generates one of four document types from the real change history, on a fast, low-cost model (e.g. `haiku` on Claude Code; `inherit`/a light model on other agents) in a subagent:
 
 | Type | Source | Audience | Output |

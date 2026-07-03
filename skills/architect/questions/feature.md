@@ -43,7 +43,7 @@ options:
   - label: "Authentication / SSO"
     description: "OAuth, SAML, or session-based auth flows."
   - label: "Payments"
-    description: "Stripe, PayPal, or similar — billing, subscriptions, or one-time charges."
+    description: "A payments provider — billing, subscriptions, or one-time charges."
   - label: "Third-party APIs or webhooks"
     description: "Calling or receiving calls from external services."
   - label: "File storage or media"

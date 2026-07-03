@@ -24,11 +24,11 @@ header: "Infra target"
 multiSelect: false
 options:
   - label: "Cloud — managed services"
-    description: "AWS, GCP, or Azure with managed databases, queues, and hosting. Prefer less ops overhead."
+    description: "A major cloud platform with managed databases, queues, and hosting. Prefer less ops overhead."
   - label: "Serverless or edge"
-    description: "Vercel, Cloudflare Workers, AWS Lambda. Pay-per-use, fast cold start tolerance required."
+    description: "A serverless/edge platform — pay-per-use, tolerant of cold starts."
   - label: "Containers — self-managed"
-    description: "Docker + Kubernetes or similar. Team owns the ops. More control, more overhead."
+    description: "Containers + an orchestrator; the team owns the ops. More control, more overhead."
   - label: "Not decided yet"
     description: "Open to any target — factor infra into the recommendation."
 

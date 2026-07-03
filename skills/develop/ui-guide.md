@@ -12,6 +12,10 @@ Three entry points — checked in order:
 
 All paths: **component-or-screen → stack detection → styling library → dark mode → token sync → font → five phases**.
 
+## How the UI build fits the project's approach
+
+The UI build **serves the project's build approach** (read in `SKILL.md` Step 2) — it doesn't dictate one. Standing the UI shell up first on placeholder data and wiring it later is the **Facade** mode: one strategy among several, **not** the universal default. Under an end-to-end / tracer-bullet slice the UI is built as part of a coherent slice whose data layer lands in the same pass, so it binds to the real source; under a Journey it completes the whole user path for the phase. Act as a professional frontend engineer: read the recorded approach and build the UI to fit it. The phases below (semantic structure → tokens → responsive → states → accessibility) apply whichever approach is in play — only *when the real data arrives* differs. If no approach is recorded, build the UI as part of the coherent end-to-end slice.
+
 ---
 
 ## Portability (any OS, any agent)
@@ -394,15 +398,15 @@ Rules for placeholders: real `width`/`height` (or aspect-ratio box) to avoid lay
 
 ---
 
-## Placeholder data (UI-first builds)
+## Placeholder data (Facade / UI-shell-first builds)
 
-In a **UI-first** roadmap, pages are built *before* their database/auth/API exist (see `/roadmap`'s layered build order). When there's no real data source yet, bind the page to a **clearly-marked local mock module** so it renders fully — don't block on the backend and don't invent a real data layer here:
+This applies **only when the build approach stands the UI up before its data source exists** — the **Facade** mode (build the shell, wire it later), or any slice where the page is genuinely built ahead of its backend. Under an end-to-end / tracer-bullet approach the data layer lands in the *same* slice, so bind the page to the **real** source and skip this. When there is no real data source yet, bind the page to a **clearly-marked local mock module** so it renders fully — don't block on the backend and don't invent a real data layer here:
 
 - Put mock data in one obvious place, e.g. `lib/<feature>.placeholder.ts` (or `mocks/`), exporting typed objects shaped like the real data the ADR specifies — so swapping to the real source later is a single import change.
 - Cover the real states with the mock: a populated list, an empty list, a loading and an error case, so those UI states are actually built now.
 - Mark it unmistakably (a `// PLACEHOLDER — replaced by <feature>'s data-integration sub-task` header) and note it in the report.
 
-The feature's later **data-integration** sub-task (layer 4) replaces the mock with the real query/action. Same principle as placeholder assets: render real UI now, wire real data later.
+When the real data source lands — the feature's **data-integration** sub-task, or the wiring pass of a Facade — swap the mock for the real query/action. Same principle as placeholder assets: render real UI now, wire real data later.
 
 ---
 

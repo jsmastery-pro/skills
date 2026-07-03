@@ -26,7 +26,7 @@ It seeds the plan and hands you a coarse, checkable list. Architecting each feat
 **Senior product engineer role.** You are scoping a product you'll be judged on shipping — be thorough across *all* dimensions, not just the fun ones. Same **infer / ask / recommend** discipline as `/architect`:
 - **INFER** what the idea already tells you (product category, obvious capabilities) — don't ask it.
 - **ASK** the un-inferable across business, product, and go-to-market — in as many batched rounds as needed (up to 4 questions per round; see *Decision panels*).
-- **RECOMMEND** the phasing strategy, the build order, each feature's weight, and which features need an ADR — those are expert calls; present them, don't make the engineer sequence their own backlog.
+- **RECOMMEND** the build approach, the build order, each feature's weight, and which features need an ADR — those are expert calls; present them, don't make the engineer sequence their own backlog.
 
 **`/roadmap` never picks tools.** No provider, library, ORM, host, or BaaS is chosen or named here — that's `/architect`'s job, per feature, in the ADR. If a feature implies a tool choice, that's exactly what makes it `Needs ADR: yes`. Keep the roadmap tool-agnostic so it doesn't rot.
 
@@ -144,21 +144,23 @@ Generate questions tailored to *this* idea; infer and skip what's stated. Run as
 
 Each "yes" becomes its own feature or folds into a relevant feature's acceptance-criteria seeds (e.g. "SEO metadata present" is a seed on each public page; cookie consent is its own feature).
 
-### Step 3 — Choose the phasing (decision panel)
+### Step 3 — Choose the build approach (decision panel)
 
-Ask **how to phase the feature sequence** — a decision panel with a recommendation you make from the product's goal and the constraints from Round 1:
+The **build approach** is the most far-reaching call the roadmap makes: it decides how every feature is sliced and sequenced, and — once recorded — the whole pipeline honors it downstream. Don't run a fixed procedure here. As a senior **product engineer**, reason about *this* product — its goal and the Round 1 constraints, and whether it's a proper production build or a throwaway — then present a decision panel of the named approaches, each stated by its **guiding principle** (not its steps), and recommend exactly one:
 
-- **MVP-first** — build a thin end-to-end core loop first (the one thing the product must do), then thicken. Good when the goal is fast validation of a single core value.
-- **Vertical feature slices** — each feature built end-to-end (data → API → UI → integration) before the next. `(recommended)` **for a proper production build** — each slice ships something real and complete.
-- **User-journey slices** — sequence by the user's path (onboarding → first value → retention), each journey end-to-end. Good when the experience/funnel is the product.
-- **UI-first prototype** — build all screens against placeholder data first, wire data later. **Flag as prototype-grade:** fast and clickable for demos/feedback, **not production-complete**. Only recommend it when the explicit goal is a quick clickable prototype.
+- **Tracer Bullet** — vertical slices; each feature built end-to-end through every layer, working.
+- **Skateboard** — MVP-first; ship the thinnest *usable whole* first, then grow it.
+- **Facade** — UI-first; a clickable shell on placeholder data, then wire the back. **Prototype-grade** — fast to demo, not production-complete.
+- **Journey** — a complete user path end-to-end per phase.
 - **Other** (free text).
 
-**Recommend one** — for a production build the default recommendation is **vertical feature slices**; shift the recommendation if the goal (from Round 1) is validation (→ MVP-first), a funnel (→ user-journey), or a throwaway demo (→ UI-first prototype). State the one-line why. Record the chosen strategy in the roadmap header — it sets the **Phasing** column values for feature rows (which slice / journey each belongs to).
+**Recommend exactly one — reason it out, don't hardcode the pick or its mechanics.** For a proper production build the default is **Tracer Bullet** (every slice ships something real and complete); shift only when this product's goal calls for it — fast validation of one core loop → **Skateboard**; the experience/funnel *is* the product → **Journey**; the explicit goal is a quick clickable prototype → **Facade** (and say plainly it is prototype-grade, not production-complete). State the one-line why in terms of this product. **Capability-first:** use your agent's interactive picker if it has one; otherwise ask the same options as plain text. Never name a tool — the approach shapes *how* features are built, not *with what*.
 
-### Step 4 — Foundations-first sequencing (always, regardless of phasing)
+**Record it — this is the propagation source.** Write the chosen approach into the **roadmap header** as `Build approach: <name> — <one-line principle>`. It is a **project-wide convention, not just a roadmap note**: `/audit` and `/sync` persist it into the root `AGENTS.md`, and `/architect`, `/develop`, and `/verify` **read and honor it** — so the entire build follows the chosen approach consistently. It also sets the **Phasing** column values for feature rows (which slice / journey each belongs to).
 
-**Whatever phasing the engineer picked, the foundations come first — this is not optional and not up for a vote.** No feature slice starts before the ground it stands on exists. Sequence the roadmap so these lead, in this order, each an explicit **foundation feature** (not a sub-task buried in a page):
+### Step 4 — Foundations-first sequencing (a principle every build approach obeys)
+
+The chosen build approach decides how features are sliced — but **no approach starts a feature slice before the ground it stands on exists**. A working skeleton before features is a principle, not a preference: reason from it the same way whichever approach you recommended. So sequence the roadmap so these lead, each an explicit **foundation feature** (not a sub-task buried in a page). The order below is the reasoned default — a cheaper foundation precedes anything that depends on it:
 
 1. **Coding standards & conventions** — run `/audit` (greenfield) to capture the engineer's standards into root `AGENTS.md`. `Needs ADR: no` (captured by `/audit`, not designed).
 2. **Stack & architecture** — `/architect` → ARCHITECTURE ADR. `Needs ADR: yes`. This is where tools/providers get chosen — not here.

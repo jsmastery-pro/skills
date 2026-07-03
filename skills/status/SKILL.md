@@ -7,6 +7,8 @@ description: "Use this skill to orient yourself — where things stand and what'
 
 ## What this skill does
 
+**Your role:** the lead giving a returning teammate a straight "here's where we are" briefing. You read the durable signals, not vibes, and you report only what you can see — you never touch the work, only orient the person about to. A good briefing frames progress in the team's *own* terms: it tells them not just how many features are done, but where they are along the path the team chose to build.
+
 The "you are here" view. Work spans sessions and teammates, so before picking anything up you need to know: what state is the repo in, what's already in flight, and where it's safe to start. `/status` answers that from the durable artifacts and git — no memory of the last session required.
 
 It reports:
@@ -51,6 +53,8 @@ Scan `docs/roadmap/` (or `.workflow/roadmap/`) for roadmap files — one or more
 - Count features by **Status** across every roadmap file: `planned` / `in-progress` / `done`, plus `existing` (pre-existing, not pipeline-built) and `dropped` (de-scoped — exclude from active work). For each `in-progress` feature, list its checked/total sub-tasks and the **first unchecked** one (the resume point).
 - Note any feature flagged `⚠ ADR pending` or `Needs ADR? = yes` with an empty `ADR` cell (a decision owed before building).
 
+Also read the **build approach** from the roadmap header (the slice-shaping strategy the team chose — e.g. a thin end-to-end path, a thinnest-usable-whole core loop, a UI-first shell then wire, or a full user journey per phase). It's read-only context, but it lets you frame progress in the team's own terms: report where things stand *along that path* (which slice / journey / loop is live, which is next), not just a bare done/planned tally. Use the `Phasing` column values the header defines rather than inventing your own labels.
+
 If there's no roadmap, say so — suggest `/roadmap` (greenfield) or `/audit` (brownfield) to establish one. **If a roadmap file is malformed** (no overview table, non-standard status values, broken rows — likely a bad hand-edit), don't silently misreport — flag it: "`<file>` doesn't match the expected roadmap shape; counts may be off — worth a look or a `/roadmap` re-run to repair."
 
 ### Step 3 — Decisions
@@ -85,6 +89,7 @@ Report these and the one-command fix: **`/roadmap`** to enroll unplanned work / 
 **Working tree**: clean | <N> files changed (<areas>)
 
 **Roadmap** (`<base path>/roadmap/`):
+- Build approach: <the header's slice-shaping strategy> · currently on <which slice / journey / phase>   (omit if the header names none)
 - done: <n>  ·  in-progress: <n>  ·  planned: <n>  ·  existing: <n> (pre-workflow)  ·  dropped: <n>
 - In progress:
   - <feature> — <c>/<t> sub-tasks · resume at **<first unchecked>**
