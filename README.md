@@ -53,8 +53,8 @@ Right-size it against the [Tiers table](#tiers--right-sizing-the-process) below,
 |---|---|---|
 | [`roadmap`](skills/roadmap/) | **Scope** | Turns an idea into a **coarse, living** feature roadmap in `docs/roadmap/` — each feature with an intent, acceptance-criteria seeds, phasing, and process weight. Build tasks are derived from each feature's ADR, not guessed here. Just run `/roadmap` — it infers plan / reconcile / enroll-one-feature from context. |
 | [`audit`](skills/audit/) | **Map** | Writes the `AGENTS.md` context files every other skill reads — asks your standards on greenfield, scans the code on brownfield, per-area (and per-workspace) nesting. |
-| [`architect`](skills/architect/) | **Decide** | Staff-engineer system design as a **step-by-step walk** — one dimension at a time (requirements → data model → stack → API → security → edge cases), it suggests and you pick, nothing bundled upfront — writing a complete build-spec **ADR** to `docs/adr/`. A feature ADR carries `## Requirements` (acceptance criteria), Design, and `## Build plan`; a decision-only stack/standard ADR records just the decision. |
-| [`develop`](skills/develop/) | **Build** | Builds a feature — UI *and* logic — from its ADR as a **vertical slice**, runs migrations, and emits verify steps. **Gates on the decision first**: if building would mean inventing something undecided, it routes you to `/architect`. |
+| [`architect`](skills/architect/) | **Decide** | Staff-engineer system design as a **step-by-step walk** — one dimension at a time (requirements → data model → stack → API → security → edge cases), it suggests and you pick, nothing bundled upfront — writing a complete build-spec **ADR** to `docs/adr/`. A feature ADR carries `## Requirements` (acceptance criteria), Design, and `## Build plan`; a decision-only stack/standard ADR records just the decision. On capture it **updates the roadmap feature** (milestones + Verify/Test boxes) and **offers the chosen tool's Agent Skill and MCP server**. |
+| [`develop`](skills/develop/) | **Build** | Builds a feature — UI *and* logic — from its ADR as a **vertical slice**, runs migrations, ticks the roadmap milestones, and emits verify steps. For a UI screen it composes the **whole product surface** (brand, copy, layout, states), never a bare widget. **Gates on the decision first**: if building would mean inventing something undecided, it routes you to `/architect`. |
 | [`verify`](skills/verify/) | **Verify** | Runs the *real app* end-to-end — plus a **spec-conformance** pass: every acceptance criterion met and every specced surface built (catches missed pages / un-applied migrations), not just green tests. |
 | [`test`](skills/test/) | **Verify** | A senior test suite for your uncommitted change; detects/saves your framework. |
 | [`review`](skills/review/) | **Verify** | Rigorous code review on a **different model** than wrote the code, so a fresh set of eyes catches what the author missed. |
@@ -86,13 +86,13 @@ The loop is **spec-driven**: `/roadmap` fixes the *what*, `/architect` designs t
 
 ```
 /roadmap → /architect → /develop → /verify → /test → /harden* → /review → /document → /sync → replan
- what       how (staged/  build the   spec-      lock    stress    fresh-    write     sync     queue
- (seed)     gated ADR)    slice       conformance         (full)*   model     up        context  next
+ what       how (walk to  build the   spec-      lock    stress    fresh-    write     sync     queue
+ (seed)     the ADR)      slice       conformance         (full)*   model     up        context  next
 ```
 
 - **`/roadmap`** seeds the *what* — a feature's intent plus acceptance-criteria **seeds** (the definition-of-done).
-- **`/architect`** designs the *how* as a **step-by-step walk** — it asks one dimension at a time (requirements → data model → stack/tool → API → security → edge cases), suggesting an option at each and letting you pick, never dumping a finished model or stack in a box. It writes an **ADR** whose spine is `## Requirements` (IDed acceptance criteria `AC-1…`, *the contract*), a Design section, and a `## Build plan` (tasks derived from those criteria). A **decision-only ADR** (a stack/architecture or cross-cutting standard) records just the decision — its spec is `## Proposed stack` / `## Standard definition`, with no build plan; the feature that executes it derives its steps at `/develop` time.
-- **`/develop`** builds the **vertical slice** (data → logic → API → UI, end-to-end), runs migrations, and emits **verify steps** tied back to each `AC-N`.
+- **`/architect`** designs the *how* as a **step-by-step walk** — it asks one dimension at a time (requirements → data model → stack/tool → API → security → edge cases), suggesting an option at each and letting you pick, never dumping a finished model or stack in a box. It writes an **ADR** whose spine is `## Requirements` (IDed acceptance criteria `AC-1…`, *the contract*), a Design section, and a `## Build plan`; a **decision-only ADR** (stack/architecture or cross-cutting standard) records just the decision, no build plan. On capture it **updates the roadmap feature** to `Design → Build (2–5 milestones rolled up from the ADR) → Verify → Test`, and when it settles on a tool it **offers that tool's Agent Skill and MCP server** (you choose, nothing is auto-installed).
+- **`/develop`** builds the **vertical slice** (data → logic → API → UI, end-to-end), runs and confirms migrations, ticks the roadmap milestones, and emits **verify steps** tied back to each `AC-N`. For UI it composes the **full product surface** (brand, copy, layout, states), not a bare widget, and pulls the real design from a **Figma MCP** when one is connected.
 - **`/verify`** runs the **spec-conformance** pass — every acceptance criterion met and every specced surface (page, route, table, migration) actually built. This is what catches a missed page or an un-applied migration that green tests never reveal.
 - **`/test`** locks in the durable checks · **`/harden`** stress-tests `full`-weight work · **`/review`** re-reads on a fresh model · **`/document`** writes it up · **`/sync`** reconciles context + roadmap · then **replan** queues the next slice.
 
@@ -100,7 +100,9 @@ The loop is **spec-driven**: `/roadmap` fixes the *what*, `/architect` designs t
 
 **Bugs** skip this entirely: `/debug` runs a root-cause loop and hands a regression test to `/test`.
 
-> **Decision panels.** Every user-facing choice — a stage gate in `/architect`, the build-approach pick in `/roadmap`, the ADR sign-off — is an **options panel**: 2–4 concrete options with exactly one **(recommended)** pick, plus a free-text "specify your own". On agents with an interactive picker it renders as one; elsewhere it degrades to the same options in plain text.
+> **Decision panels.** Every user-facing choice is an **options panel** (2–4 options plus a free-text "your own"). **Confirmation gates** (a stage sign-off, the ADR accept, the build-approach pick) carry one **(recommended)** default. The choices **you own** — the design source, the data model, the stack, tool/MCP setup — are asked **open**: the agent presents the options and *you* pick, it does not pre-decide. On agents with an interactive picker it renders as one; elsewhere it degrades to plain text.
+
+> **Context hygiene.** The workflow's state lives in files (roadmap, ADRs, `AGENTS.md`, `verify.md`), so each skill advises **`/clear` at handoffs** (after `/roadmap`, after each `/architect`, between features) and **`/compact`** mid-build. A fresh session re-reads everything from disk, so long chats don't pile up token cost. (On Claude Code, `/clear` / `/compact`; use your agent's equivalent elsewhere.)
 
 ---
 
@@ -135,13 +137,20 @@ Each skill owns exactly one kind of artifact, so there's no overlap and nothing 
 
 ## Slice 2
 
-### 4. Home page · needs a decision
+### 4. Home page · in-progress
 The public landing page that turns a visitor into a signup.
 **Done when:** hero/featured/footer render on real data; SEO + social card present; empty and error states handled.
-- [ ] Design it (ADR): `/architect home page`
+- [x] Design it (ADR): `/architect home page`
+- [ ] Build it: `/develop home page`
+   - [ ] Hero + featured sections on real data (AC-1, AC-2)
+   - [ ] SEO metadata + social card (AC-3)
+   - [ ] Empty and error states (AC-4)
+- [ ] Verify it: `/verify home page`
+- [ ] Test it: `/test home page`
+ADR 0007 · code (filled by /develop)
 ```
 
-**The detailed build tasks are not guessed here** — they're **derived from the feature's ADR** (`## Build plan`) when `/architect` designs it, and become that feature's checkboxes. `/roadmap` seeds the *what*; `/architect` designs the *how* and fills the tasks; `/develop` builds them.
+A feature **starts as a single box** (`Design it (ADR): /architect …`). **When `/architect` captures its ADR, the roadmap updates in place** to the shape above: `Design` ticked, the ADR linked, a `Build it` box with **2 to 5 milestones rolled up from the ADR** (the atomic build tasks stay in the ADR's `## Build plan`, never dumped into the roadmap), then `Verify it` and `Test it`. Every box is a command or a tracked milestone, so the next step is always the first unticked box. `/develop` ticks the milestones, `/verify` and `/test` close their boxes, and a feature is `done` **only when all four are ticked** — so a built-but-untested slice honestly reads `in-progress`. `/roadmap` seeds the *what*; `/architect` designs the *how* and defines the milestones; `/develop` builds; `/verify` and `/test` close the feature.
 
 - **Build approach** — `/roadmap` recommends *how the product gets built*, as a named delivery strategy (described by principle, so the AI reasons rather than following a hardcoded recipe):
   - **Tracer Bullet** — vertical slices; each feature built end-to-end through every layer, working. *(recommended default for a proper build)*
@@ -155,7 +164,7 @@ The public landing page that turns a visitor into a signup.
 - **The replan beat** — the roadmap is *living*. `/roadmap replan` after each feature or phase ships reconciles what landed, enrolls follow-ups surfaced during the build (from the ADR's `## Consequences` / `## Follow-up`), reorders, and queues the next slice. `/roadmap add <feature>` enrolls one ad-hoc feature without re-planning the whole product.
 - **Epic-split** — a small product is a single `roadmap.md`; a big one splits by epic into an `index.md` + one file per epic (mirroring the ADR umbrella and the per-workspace layout).
 
-**Feature statuses:** `planned` → `in-progress` → `done` (the pipeline lifecycle), plus `existing` (predated this workflow, enrolled for context) and `dropped` (de-scoped, kept for history). The linked **ADR's status** mirrors that build lifecycle (`Proposed` → `In Progress` → `Accepted`) — see [The ADR model](#the-adr-model-docsadr) below. `/develop` ticks tasks and advances status as it builds; `/sync` reconciles the rest from what actually shipped; `/status` reports it all and flags drift (code or ADRs that exist but aren't on the roadmap).
+**Feature statuses:** `planned` → `in-progress` → `done` (the pipeline lifecycle), plus `existing` (predated this workflow, enrolled for context) and `dropped` (de-scoped, kept for history). The linked **ADR's status** mirrors that build lifecycle (`Proposed` → `In Progress` → `Accepted`) — see [The ADR model](#the-adr-model-docsadr) below. `/develop` ticks the build milestones and leaves `Verify it`/`Test it` for `/verify`/`/test`; a feature reaches **`done` only when Design, Build, Verify, and Test are all ticked** (so a built-but-untested slice stays `in-progress`). `/sync` reconciles the rest from what actually shipped, and `/status` reports it all and flags drift (code or ADRs that exist but aren't on the roadmap).
 
 ### The ADR model (`docs/adr/`)
 
@@ -167,7 +176,7 @@ An ADR is the feature's **complete build spec**, and it carries the **acceptance
 
 This gives end-to-end **traceability**: **criterion → build task → verify step → conformance check**. Every `AC-N` maps to at least one task; every task yields a verify step in `verify.md`; `/verify` confirms each criterion is met.
 
-`/architect` produces it through a **staged, gated** design conversation — the **data model is shown & confirmed** (never buried in prose), and tool options are **generated fresh & current at runtime**, never a hardcoded list. The finished ADR is confirmed via an **options panel** before anything gets built.
+`/architect` produces it through a **step-by-step walk** — it asks each dimension one at a time (the **data model elicited entity by entity**, the **stack layer by layer**), suggests an option and lets you pick, and never dumps a finished model or stack in a box for accept-or-change. Tool options are **generated fresh & current at runtime**, never a hardcoded list. The finished ADR is confirmed via an **options panel** before anything gets built.
 
 **Single file vs umbrella.** Most decisions are **one file**: `docs/adr/NNNN-title.md` (in a monorepo, `docs/adr/<workspace>/`). A **broad decision** — one that splits into several sub-decisions, or carries a bulky audit/inventory — becomes a **directory** instead, so the pieces stay discoverable and each ADR stays focused:
 
@@ -185,6 +194,10 @@ docs/adr/0003-checkout/
 - **`/develop` reads `index.md` (the map + any cross-child contract), then the child ADR(s) its sub-task touches** — not the whole tree. A child's `research/` is *optional depth*, opened only if the build needs the underlying evidence.
 - **Feature-linked ADR** → status mirrors the feature lifecycle: `Proposed` (decision agreed, feature not built) → `In Progress` (building) → `Accepted` (built and verified), plus `Superseded`. **Cross-cutting / stack ADRs** not tied to a buildable feature are instead **decision-status** — `Accepted` once you ratify them (there's no build phase to gate on).
 - Children stay flat by default; a child gets its own subfolder only when its research grows. `/architect` decides single-vs-directory from the decision's breadth.
+
+### Tool skills & MCP (optional, capability-first)
+
+When `/architect` or `/audit` settles on a tool, it checks whether that tool has an **Agent Skill** or an **MCP server** and offers to set it up — *you* choose (the skill, the MCP, both, or neither); nothing is auto-installed, and declines are remembered in `AGENTS.md` so it never re-nags. An installed skill's conventions then shape both the ADR (in `/architect`) and the code (in `/develop`); a connected MCP gives the workflow **live access to the real thing** — a **Figma** MCP for the real design in `/develop`'s UI, a **database** MCP to confirm a migration is live, a **browser** MCP for `/verify` to drive the running app. It is all capability-first and never hardcoded: with nothing connected the workflow uses its normal fallbacks, so MCP is pure upside, never required.
 
 ---
 
