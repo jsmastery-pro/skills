@@ -72,8 +72,9 @@ ANSWER_ALL_ROUNDS
 **ADR number**: ADR_NUMBER
 **ADR path & shape**: ADR_FILE_PATH
 <!-- Single decision → write one file at that path. Directory ADR (umbrella, or a single decision
-     with bulky research) → write the top file (`index.md` for an umbrella; the ADR file otherwise)
-     plus any named child ADRs inside it. In the top file, include a `## Structure` manifest that
+     with bulky research) → write the top file **always as `index.md`** (never a doubled
+     `NNNN-title/NNNN-title.md`), plus any named child ADRs inside it. In the top file, when there
+     are children or research, include a `## Structure` manifest that
      lists and links EVERY child ADR and EVERY research file — one line each: what it is + which
      decision it supports — so the directory is fully mapped from one place. Give each child ADR a
      `## References` section linking ITS OWN research. ANY inventory/audit/research goes in the
