@@ -256,7 +256,7 @@ The artifacts are shared files, so the skills are built for concurrent use:
 These skills follow the open Agent Skills format and are written to be **portable**:
 
 - **Any OS** — macOS, Linux, and Windows. `git` is the only required CLI (identical everywhere); every other step uses your agent's own cross-platform file tools rather than POSIX utilities like `find`/`grep`/`sed`.
-- **Any client** — they install on any skills-compatible agent (Claude Code, Cursor, Copilot, Codex, Gemini CLI, and [more](https://agentskills.io/clients)). Bundled files are referenced relative to the skill folder; when a subagent needs one, the main agent resolves it to an absolute path and the subagent reads it by path. If a client cannot give subagents file-read access to installed skills, each skill falls back to inlining the bundled text in the prompt.
+- **Any client** — they install on any skills-compatible agent (Claude Code, Cursor, Copilot, Codex, Gemini CLI, and [more](https://agentskills.io/clients)). Bundled files (writing guides, templates) are referenced relative to the skill folder; the main thread reads them itself at write time. Where a read or fetch subagent needs a briefing file, the main agent resolves it to an absolute path (falling back to inlining the text if a client can't give subagents file-read access to installed skills).
 - **Capability-first, with plain fallbacks.** Several steps use a subagent, a per-step model choice, or an interactive options panel. Every skill is written to **use whatever your agent natively provides, and fall back only where it doesn't** — it never assumes a feature exists. The fallbacks, in order: run the work **inline** (no subagent), use the **parent model** (no per-step model choice), and ask questions as **plain text** (no options panel). Your agent already knows its own tool names, so the skills stay generic; the per-agent mapping lives here:
 
 | Capability | Claude Code | Cursor | Codex | Antigravity |
@@ -273,15 +273,14 @@ These skills follow the open Agent Skills format and are written to be **portabl
 
 By default a Claude Code subagent **inherits the main session's model**, so if you run on Opus, every read-only helper (exploration, skill/MCP discovery, doc-check, sourcing) inherits Opus too and burns tokens it never needed. Prose in a skill cannot fix this — the harness only honors a structured model field.
 
-This repo ships three role subagents in [`.claude/agents/`](.claude/agents/) that pin the model:
+This repo ships two read-only role subagents in [`.claude/agents/`](.claude/agents/) that pin the model:
 
 | Agent type | Model | Used for |
 |---|---|---|
 | `scout` | `haiku` | read-only code exploration and repo scans |
 | `researcher` | `haiku` | Agent Skill / MCP discovery, doc-checks, source verification |
-| `writer` | `sonnet` | the ADR / `AGENTS.md` / test-suite writers |
 
-The skills spawn these types by name on Claude Code (with the plain "set the model explicitly" behavior as the fallback everywhere else), so the read-only helpers run on Haiku and the heavy writers on Sonnet, never the inherited session model.
+The skills spawn these two types by name on Claude Code (with the plain "set the model explicitly" behavior as the fallback everywhere else), so both read-only helpers run on Haiku, never the inherited session model. A subagent is only ever used for the two things above, reading code or fetching from the web. All writing (the ADR, `AGENTS.md`, the test suite, docs, and code in `/develop`) stays on the main thread, so nothing gets pushed onto a heavier model.
 
 **To get this in the repos where you actually run the skills**, copy `.claude/agents/` into that project (or into `~/.claude/agents/` to enable it for every project). The resolution order Claude Code uses is: `CLAUDE_CODE_SUBAGENT_MODEL` env var → the spawn's `model` parameter → the agent type's `model:` → the session model. Do **not** set `CLAUDE_CODE_SUBAGENT_MODEL` to a fixed model if you want the per-role split, since it overrides everything.
 
@@ -290,7 +289,7 @@ The skills spawn these types by name on Claude Code (with the plain "set the mod
 The suite is a first-class fit for Codex — in several ways it needs *no* degradation:
 
 - **`AGENTS.md` is native.** Codex reads `AGENTS.md` as its project instructions automatically (`project_doc_max_bytes`, `project_doc_fallback_filenames`). The context files `/audit` and `/sync` produce are the exact artifact Codex already consumes — so the workflow's shared memory is first-class, not just compatible.
-- **Subagents work.** Codex ships multi-agent tools on by default (`features.multi_agent` → `spawn_agent`, `wait_agent`, `resume_agent`, …), so the parallel/fan-out build steps and the review/test/harden subagents run natively. Subagents read bundled prompt files from the absolute paths the main agent passes; if your sandbox blocks installed-skill reads, use the inline fallback described in the skill. Per-step *model* selection (haiku vs opus) is Claude-specific; on Codex use one model, or define roles via `agents.<name>.config_file`.
+- **Subagents work.** Codex ships multi-agent tools on by default (`features.multi_agent` → `spawn_agent`, `wait_agent`, `resume_agent`, …), so the read-only scout/researcher helpers and the review/harden subagents run natively. Those helpers get a brief from the main agent; where one needs a bundled file it reads it from the absolute path passed, with an inline fallback if your sandbox blocks installed-skill reads. Per-step *model* selection (haiku vs opus) is Claude-specific; on Codex use one model, or define roles via `agents.<name>.config_file`.
 - **Install:** `npx skills add JavaScript-Mastery-Pro/pilot -a codex` → lands in `.agents/skills/`. Enable/disable individual skills with `skills.config` if desired.
 - **Enforce the read-only skills with Codex's sandbox, not just `allowed-tools`.** Because `allowed-tools` uses Claude tool names, treat it as advisory on Codex and let Codex's own permission layer do the enforcing — run `/status`, `/review`, `/verify` under `sandbox_mode = "read-only"` (or a `default_permissions = ":read-only"` profile). Build skills need `sandbox_mode = "workspace-write"`.
 
@@ -299,8 +298,8 @@ The suite is a first-class fit for Codex — in several ways it needs *no* degra
 Antigravity (Google) is another strong fit — it shares the two things that matter most:
 
 - **`AGENTS.md` is read natively** to align the agent's behavior and planning phase with your conventions — the same artifact `/audit` and `/sync` produce.
-- **Subagents are first-class** via `invoke_subagent` (async, with built-in `research`/`browser`/`self` roles and `define_subagent` for custom ones), so the parallel/fan-out build steps and the review/test/harden subagents run natively. Antigravity's `browser` subagent is a natural fit for `/verify`'s runtime checks.
-- **One key constraint:** an Antigravity subagent **runs on the parent's model** (no per-subagent model choice). So `/review`'s cross-model guarantee can't be automated there — it now detects this and falls back to an inline, same-model review (flagged as reduced independence), or you switch your active model and re-run. Steps that pick a *cheaper* model (test/document/harden) simply run on the parent model.
+- **Subagents are first-class** via `invoke_subagent` (async, with built-in `research`/`browser`/`self` roles and `define_subagent` for custom ones), so the read-only scout/researcher helpers and the review/harden subagents run natively. Antigravity's `browser` subagent is a natural fit for `/verify`'s runtime checks.
+- **One key constraint:** an Antigravity subagent **runs on the parent's model** (no per-subagent model choice). So `/review`'s cross-model guarantee can't be automated there — it now detects this and falls back to an inline, same-model review (flagged as reduced independence), or you switch your active model and re-run. The read-only helpers (scout/researcher) that would pick a *cheaper* model simply run on the parent model.
 - **Install:** `npx skills add JavaScript-Mastery-Pro/pilot -a antigravity` → project skills land in `.agents/skills/`. Subagents inherit the parent's approved command/file scopes, and any tool needing confirmation bubbles up to the subagent panel — so Antigravity's own permission model is the enforcement layer, with `allowed-tools` as an advisory hint (as on Codex).
 
 ### Running on Cursor
@@ -308,7 +307,7 @@ Antigravity (Google) is another strong fit — it shares the two things that mat
 Cursor is the closest match to Claude Code:
 
 - **`AGENTS.md` is native** — read at the root *and in nested subdirectories* (auto-applied per directory), exactly how `/audit` and `/sync` structure context. Cursor also reads `.claude/agents/` for compatibility.
-- **Subagents via `Task`** (same tool name as Claude Code), with built-in `Explore`/`Bash`/`Browser` roles and parallel execution — so fan-out builds and the review/test/harden subagents run natively.
+- **Subagents via `Task`** (same tool name as Claude Code), with built-in `Explore`/`Bash`/`Browser` roles and parallel execution — so the read-only scout/researcher helpers and the review/harden subagents run natively.
 - **Per-subagent model is supported** (`model: inherit` or a specific id), so `/review`'s cross-model pass works here. Cursor falls back to a compatible model under admin/plan/Max-Mode limits — the same case `/review`'s fallback already handles.
 - **Read-only skills map to Cursor's `readonly: true` subagent flag** (no edits, no state-changing shell) — a native fit for `/status`, `/review`, `/verify`.
 - **Install:** `npx skills add JavaScript-Mastery-Pro/pilot -a cursor` → `.agents/skills/`.
