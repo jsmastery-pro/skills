@@ -32,10 +32,10 @@ Uses [npx skills](https://github.com/vercel-labs/skills). Pick your agent:
 
 ```bash
 # Claude Code (installs into .claude/skills, then restart Claude Code)
-npx skills@latest add JavaScript-Mastery-Pro/pilot -a claude-code
+npx skills@latest add JavaScript-Mastery-Pro/skills -a claude-code
 
 # Generic .agents/skills, read by Codex and other agents
-npx skills@latest add JavaScript-Mastery-Pro/pilot
+npx skills@latest add JavaScript-Mastery-Pro/skills
 ```
 
 Works on any Agent Skills client (Claude Code, Cursor, Codex, Gemini CLI, and [more](https://agentskills.io/clients)). Commit the installed skills folder to share the workflow with your team.

@@ -9,7 +9,7 @@ A collection of Claude Code skills encoding a phase-based engineering workflow. 
 
 ## Skills
 
-See `skills/` for available skills. (Consumers install them via `npx skills add JavaScript-Mastery-Pro/pilot`, which lands them in their agent's skills dir, e.g. `.claude/skills/`.)
+See `skills/` for available skills. (Consumers install them via `npx skills add JavaScript-Mastery-Pro/skills`, which lands them in their agent's skills dir, e.g. `.claude/skills/`.)
 
 ## ADRs
 
