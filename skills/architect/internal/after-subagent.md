@@ -28,9 +28,11 @@ If a required section is missing or a field is blank/placeholder, add this line 
 - Mark exactly one recommended by the spec's stakes: for a high risk / compliance touching / foundational ARCHITECTURE spec, recommend `Another model`; for a small or trivial spec, recommend `Skip`.
 
 Act on the pick:
-- **Another model / Same model** → spawn a READ-ONLY cross check subagent that reads the drafted spec and returns its critique only; it writes nothing, the main thread applies any fix. Set its model explicitly, not inherited: for `Another model`, a capable model different from the one that wrote the spec; for `Same model`, this session's model. Brief it to stress test the design from the spec text and its own knowledge only (does it hold up? is there a materially simpler option? what failure mode is missed?), and to NOT fetch the spec's reference links, now or later (human facing). Surface its findings as a short "Cross check" note, and fix clear issues yourself by targeted Edit before confirmation. No subagent capability → do the same model pass inline on the main thread.
-- **I'll review it myself** → run no AI critique; present the spec for the engineer to read and note they are reviewing it themselves.
-- **Skip** → no critique; go straight to the accept panel.
+- **Another model / Same model** → spawn a READ-ONLY cross check subagent that reads the drafted spec and returns its critique only; it writes nothing, the main thread applies any fix. Set its model explicitly, not inherited: for `Another model`, a capable model different from the one that wrote the spec; for `Same model`, this session's model. Brief it to stress test the design from the spec text and its own knowledge only (does it hold up? is there a materially simpler option? what failure mode is missed?), and to NOT fetch the spec's reference links, now or later (human facing). Surface its findings as a short "Cross check" note, and fix clear issues yourself by targeted Edit. No subagent capability → do the same model pass inline on the main thread.
+- **I'll review it myself** → run no AI critique. Present the spec for the engineer to read, and say they are reviewing it themselves.
+- **Skip** → no critique.
+
+**All four branches then go to step 1.** The cross check never ends the run and never decides anything: it only produces a note. The moment it is done, whether a subagent critiqued the spec, the engineer read it themselves, or nothing ran at all, you present the spec and ask whether to accept it. Never treat a finished cross check as acceptance, and never accept the spec on the engineer's behalf.
 
 1. Tell the engineer the spec path, a one line preview from your report, and (if a cross check ran) its note:
 

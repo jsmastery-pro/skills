@@ -188,6 +188,6 @@ If the task is to update or supersede an existing spec:
 - Spec writing rules & persona: `agent-prompt.md` (the main thread reads it at write time)
 - Mode specific writing instructions: `agent-modes/*.md` (read only the matching mode file, at write time)
 - Main thread design conversation: `internal/design-conversation.md` (read only for create/supersede)
-- Tool skill & MCP discovery/offer: `internal/tool-discovery.md` (read only when the stack walk settles a new tool; the web/registry fetch runs in a `researcher` subagent)
+- Agent Skill & MCP offer: `internal/tool-discovery.md` (read only when the stack walk settles a new tool; it asks before it searches, and the registry fetch then runs in a `researcher` subagent)
 - Main thread completion flow: `internal/after-subagent.md` (read only after the spec is written)
 - The staged design conversation is generated per feature (see *Staged design conversation*, stages a to f), not stored; there are no canned question lists. If a topic is too vague to generate from, narrow it first (scope validation, or one clarifying question), never fall back to generic MCQs

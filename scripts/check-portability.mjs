@@ -119,8 +119,13 @@ const HOT_PATH_BUDGETS = [
   {
     // Worst-case main-thread read: router + the tool-skills sweep (greenfield/
     // whole-repo only) + the largest single phase mode file.
+    //
+    // Raised 25K -> 26K when the Agent Skill and MCP consent gate landed in
+    // `modes/tool-skills.md`. That gate is required behaviour (nothing may be
+    // searched before the engineer agrees), so this path genuinely carries more.
+    // Paid for partly by trimming the duplicated Portability block in SKILL.md.
     name: 'audit phase path',
-    budget: 25 * 1024,
+    budget: 26 * 1024,
     required: ['audit/SKILL.md', 'audit/modes/tool-skills.md'],
     oneOf: ['audit/modes/greenfield.md', 'audit/modes/whole-repo.md', 'audit/modes/area.md', 'audit/modes/gapfill.md'],
   },

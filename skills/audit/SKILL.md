@@ -43,7 +43,7 @@ The `AGENTS.md` files hold the content: create root if missing (Phase 1, 2) and 
 ## Portability (any OS, any agent)
 
 - Commands: `git` is the only required CLI, same on every OS. Other shell snippets (file counts, `find`, `[ -f ]`) are POSIX reference, not literal scripts; use your agent's cross platform file tools (search/glob, read, write) to list, count, and check existence.
-- Bundled files: `agent-prompt.md`, the phase mode files (`modes/*.md`), and the pattern presets (`patterns/*.md`) live in this skill's folder. Resolve that folder to an absolute path (you already resolve these relative paths, so you know the folder). Read the matching phase mode file when routing (Step "Route to the selected phase"), and read `agent-prompt.md` plus the SELECTED pattern preset file(s) at write time (the main thread writes `AGENTS.md`, so it reads its own guide). The `agent-prompt.md` placeholder values (PHASE, AREA, ADDITIONAL_STANDARDS, MONOREPO_OR_NO, INSTALLED_SKILLS, DECLINED_TOOLS, and so on) are the inputs you gathered in `pre-flight` and the question rounds; apply each as you read.
+- Bundled files live in this skill's folder: `agent-prompt.md`, the phase mode files (`modes/*.md`), and the pattern presets (`patterns/*.md`). Resolve the folder to an absolute path. Read the matching phase mode file when routing, then `agent-prompt.md` plus the SELECTED pattern preset at write time. Its ALL_CAPS placeholders (PHASE, AREA, ADDITIONAL_STANDARDS, MONOREPO_OR_NO, INSTALLED_SKILLS, DECLINED_TOOLS, and so on) are the inputs you gathered in the startup checks and the question rounds; apply each as you read.
 - No interactive question support? Ask any multiple choice question as plain text with the same options.
 
 ## Execution
