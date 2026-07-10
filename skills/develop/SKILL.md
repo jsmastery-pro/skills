@@ -16,7 +16,7 @@ The builder: turns a spec plus project conventions into working code. Tracks: **
 
 ## Asks vs acts
 
-Gates, then acts: no upfront question rounds like `/architect`. Read the decision, build, ask only what the design left open (a UI template when no screenshot was given; a business rule the spec didn't settle). Infer from the spec, `AGENTS.md`, and codebase; ask only what can't be inferred; recommend local implementation choices.
+Gates, then acts: no upfront question rounds like `/architect`. Read the decision, build, ask only what the design left open (the visual direction when no reference was given; a business rule the spec didn't settle). Infer from the spec, `AGENTS.md`, and codebase; ask only what can't be inferred; recommend local implementation choices.
 
 ## Artifact ownership
 
@@ -31,7 +31,7 @@ Gates, then acts: no upfront question rounds like `/architect`. Read the decisio
 
 ## Portability (any OS, any agent)
 
-Any Agent Skills client, macOS/Linux/Windows. Detection snippets are POSIX reference; use your agent's own cross platform file tools. Builds inline on the main thread (Step 3); the only subagents are a read only `scout` that explores code (Step 2.5) and a read only `researcher` for a doc check (Step 2.6, degrading to building from knowledge without web capability), both on the cheapest model. Bundled guides (`ui-guide.md`, `logical-guide.md`, `checklist.md`, `templates/`) and the build flow after the gate (`flow/build.md`) are paths relative to this skill's folder; the main thread reads them. No interactive question picker → ask the prompts as plain text with the same options.
+Any Agent Skills client, macOS/Linux/Windows. Detection snippets are POSIX reference; use your agent's own cross platform file tools. Builds inline on the main thread (Step 3); the only subagents are a read only `scout` that explores code (Step 2.5) and a read only `researcher` for a doc check (Step 2.6, degrading to building from knowledge without web capability), both on the cheapest model. Bundled guides (`ui-guide.md`, `logical-guide.md`, `checklist.md`) and the build flow after the gate (`flow/build.md`) are paths relative to this skill's folder; the main thread reads them. No interactive question picker → ask the prompts as plain text with the same options.
 
 ## Execution
 
@@ -111,5 +111,4 @@ Once the gate clears (no decision owed, or the engineer chose `No, not needed` /
 - UI build track: `ui-guide.md`
 - Logical build track: `logical-guide.md`
 - Accessibility checklist (UI track, Phase 5): `checklist.md`
-- Design templates (UI track): `templates/`
 - Project design system (UI track): `./design.md`

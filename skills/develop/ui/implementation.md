@@ -79,7 +79,7 @@ A complete product screen has, cohesive and branded:
 - **Supporting content**: a short value prop or trust signals where they fit, secondary CTAs, and a footer with the links a product is expected to have (where the page type warrants one).
 - **The functional core**: the form, table, or flow itself, done well (validation, Phase 4 states, Phase 5 accessibility).
 
-This is composition (completeness), not look: the design source (template, generated system, or described style) decides the visual language; this step decides the page is a whole product, not a stub. It applies whichever design source was used, default system or engineer requested style.
+This is composition (completeness), not look: the design source (a reference, a derived system, or a described style) decides the visual language; this step decides the page is a whole product, not a stub. It applies whichever design source was used, default system or engineer requested style.
 
 Nothing provided: derive a wordmark from the product name; use a tasteful visual (gradient, subtle pattern, abstract illustration, or a placeholder image via *Asset resolution*) rather than blank space; write real copy from the product's purpose. Invent tastefully to make it feel like a product, but surface what you invented: list the brand name/wordmark, the copy, and any placeholder assets in the completion report so the engineer can correct them. A product feel is wanted; pretending invented brand and copy are final is not.
 
@@ -259,7 +259,7 @@ The build is not done until you have checked it. Ambition in prose is not enough
 **Styling**: <tailwind | shadcn | css-modules | styled-components | plain css>
 **Dark mode strategy**: .dark class | @media | both
 **Icon library**: <library name> | none (install needed)
-**Path**: Design.md (existing) | A (image) | A (multi: <what each image represented>) | B (template: <name> | url: <url> | custom: "<style>")
+**Path**: Design.md (existing) | A (image) | A (multi: <what each image represented>) | B (derived: <mood> | url: <url> | custom: "<style>")
 **design.md**: pre-existing | created | fetched from <url>
 **Token conflicts**: none | <list, verify manually before next run>
 **Token file**: created | updated | unchanged (<path>)

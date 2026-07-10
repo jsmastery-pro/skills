@@ -26,7 +26,7 @@
 //  8. `allowed-tools` names the subagent tool `Agent`, not the legacy `Task`.
 //  9. A marked contract block duplicated across skills stays byte-identical.
 // 10. No em or en dash in any instruction file or `description` (the skills teach
-//     the no-dash rule, so their own prose follows it). Templates are exempt.
+//     the no-dash rule, so their own prose follows it).
 // 11. No hyphen in prose. Compounds become simple words (read only, not read-only).
 //     Code, paths, flags, ALL CAPS keywords, and the parsed artifact literals
 //     (in-progress, gap-fill, whole-repo, Follow-up) keep their hyphens.
@@ -34,8 +34,10 @@
 // Budgets (rule 5) are also reported as utilization on every run, and anything
 // above WARN_AT is called out while it is still passing. See BUDGET POLICY below.
 //
-// Note: `.md` files under templates/ are reference data and are skipped for
-// rules 2-4 (they show generated output, not instructions to run).
+// Every `.md` under skills/ obeys every rule. The old `templates/` exemption
+// existed for five bundled brand design systems; those are gone, and the four
+// document templates left are literally the prose the skill emits, so they must
+// follow the same style rules as everything else.
 
 import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
@@ -102,8 +104,15 @@ const HOT_PATH_BUDGETS = [
   {
     // The reference-file half of a UI build, checked on its own so a bloated
     // guide is attributable. The full main-thread read is the union group below.
+    //
+    // Raised 48K -> 52K when the five bundled brand templates were deleted.
+    // `ui/generate.md` grew ~2.6KB to carry the derivation rules (accent, neutral
+    // ladder, WCAG verification, modular type scale) that those 177KB of templates
+    // used to supply by example. A from-scratch UI build now loads ~39KB LESS in
+    // total, because no ~43KB template is read behind this path any more. This is
+    // a path genuinely needing to carry more, not a ratchet to dodge a breach.
     name: 'develop UI path',
-    budget: 48 * 1024,
+    budget: 52 * 1024,
     required: ['develop/ui-guide.md', 'develop/ui/implementation.md'],
     oneOf: ['develop/ui/mcp.md', 'develop/ui/image.md', 'develop/ui/existing.md', 'develop/ui/generate.md'],
   },
@@ -133,9 +142,9 @@ const HOT_PATH_BUDGETS = [
   {
     // The heaviest real read in the suite, and the one the two develop groups
     // above miss: they overlap on ui-guide.md and never sum, so nothing watched
-    // what a UI build actually loads into the main thread. It does not include a
-    // design template — one of those adds up to another ~40KB, read lazily and
-    // only after the mood pick, so it is deliberately out of scope here.
+    // what a UI build actually loads into the main thread. This is now the whole
+    // read: the brand design templates are gone, so nothing else loads lazily
+    // behind it, and `ui/generate.md` derives the system instead of copying one.
     name: 'develop UI build path (full main-thread read)',
     budget: 90 * 1024,
     required: [
@@ -188,12 +197,11 @@ function check(path) {
   const rel = path.slice(SKILLS_DIR.length);
   const text = readFileSync(path, 'utf8');
   const isSkillMd = rel.endsWith('/SKILL.md');
-  const isTemplate = rel.includes('/templates/');
 
   // Word-count report data (rule 5 companion): track every .md so a size
   // regression on a hot file is visible at a glance, not just on budget breach.
   const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-  sizes.push({ rel, words, bytes: Buffer.byteLength(text, 'utf8'), isTemplate });
+  sizes.push({ rel, words, bytes: Buffer.byteLength(text, 'utf8') });
 
   // Rule 1 — allowed-tools on every SKILL.md
   if (isSkillMd && !/^allowed-tools:/m.test(frontmatter(text))) {
@@ -233,7 +241,7 @@ function check(path) {
     if (desc && /[—–]/.test(desc[1])) {
       violations.push(`${rel}: description contains an em or en dash — it loads into every session and must obey the no-dash rule`);
     }
-  } else if (!isTemplate) {
+  } else {
     // Rule 5 — bundled prompt/guide byte budget
     const budget = SUPPORT_MD_OVERRIDES[rel] ?? SUPPORT_MD_BYTE_BUDGET;
     const bytes = Buffer.byteLength(text, 'utf8');
@@ -243,8 +251,6 @@ function check(path) {
       warnings.push(`${rel}: ${bytes}/${budget} bytes (${(100 * bytes / budget).toFixed(1)}% of support-file budget)`);
     }
   }
-
-  if (isTemplate) return; // reference data — skip prose/shell rules
 
   // Rule 11 — no hyphen in prose. Code, paths, flags, ALL CAPS keywords, and the
   // parsed artifact literals keep theirs; ordinary compounds become simple words.
@@ -378,7 +384,6 @@ if (!failed) {
 // are reference data), so a creeping size regression is visible before it breaks
 // a budget. Loading cost tracks words as much as bytes.
 const report = sizes
-  .filter(s => !s.isTemplate)
   .sort((a, b) => b.bytes - a.bytes)
   .slice(0, 15);
 const pad = Math.max(...report.map(s => s.rel.length));

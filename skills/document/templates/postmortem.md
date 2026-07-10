@@ -1,6 +1,6 @@
 # Postmortem Template
 
-Write a blameless incident postmortem to `docs/postmortems/<DATE>-<slug>.md`. Build it from INCIDENT_FACTS (the engineer's account) plus any root-cause detail in the diff or a /debug record. Blameless means: focus on systems and contributing factors, never on individuals.
+Write a blameless incident postmortem to `docs/postmortems/<DATE>-<slug>.md`. Build it from INCIDENT_FACTS (the engineer's account) plus any root cause detail in the diff or a /debug record. Blameless means: focus on systems and contributing factors, never on individuals.
 
 ## Structure
 

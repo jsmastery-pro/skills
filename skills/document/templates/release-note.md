@@ -1,6 +1,6 @@
 # Release Notes Template
 
-Write user-facing release notes for VERSION_RANGE to `docs/releases/<version>.md`. Audience is **end users**, not developers, so translate technical changes into what users can now do, and lead with what they'll care about most.
+Write release notes for VERSION_RANGE, written for users to `docs/releases/<version>.md`. Audience is **end users**, not developers, so translate technical changes into what users can now do, and lead with what they'll care about most.
 
 ## Structure
 
@@ -18,7 +18,7 @@ _Released <DATE>_
 
 ## Improvements
 
-- <smaller enhancement, user-facing phrasing>
+- <smaller enhancement, phrased for users>
 
 ## Fixes
 

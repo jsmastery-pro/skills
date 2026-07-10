@@ -2,7 +2,7 @@
 
 Read this once the Step 0 gate in `SKILL.md` clears (a decision is not owed, or the engineer chose to build anyway). It holds the build flow after the gate. Tracks are additive: a feature can be UI, Logical, or both (and may also carry a tooling sub task); classify in Step 1 and run each part.
 
-Guide paths below (`ui-guide.md`, `logical-guide.md`, `checklist.md`, `templates/`) are relative to the develop skill folder (the parent of this `flow/` directory).
+Guide paths below (`ui-guide.md`, `logical-guide.md`, `checklist.md`) are relative to the develop skill folder (the parent of this `flow/` directory).
 
 ### Step 1: Classify the track
 
@@ -59,7 +59,7 @@ Only when you genuinely need the current usage/setup/API of a tool the spec alre
 
 **Resume first; never rebuild what's done.** Use the Step 0 scope file only (the workspace's, in a monorepo). Status **`existing`** (shipped) or **`dropped`** (dropped from scope) → not active: don't build it automatically; say it's marked `<status>` and confirm reviving/modifying (a new task, possibly needing a spec). Else find the first unchecked `[ ]` in the spec's `## Build plan` (or the scope checkboxes, no spec); `[x]` tasks are already built, don't redo them. Say where you pick up: "This feature is 4/10 done, resuming at *data integration*." Set the feature's status to `in-progress` (At a glance table and heading); a governing spec's `**Status**:` line advances `Proposed` → `In Progress` surgically per Artifact ownership (read it again first; not `Proposed` → flag, don't clobber). No scope → just build the requested task.
 
-**Gather remaining inline answers** (the Step 2 spec gap answer, UI asset/template questions, an ambiguous business rule) before any build handoff; they need the engineer.
+**Gather remaining inline answers** (the Step 2 spec gap answer, UI asset and design direction questions, an ambiguous business rule) before any build handoff; they need the engineer.
 
 **With the Step 2.5 map in hand, the build is a write step you do inline on the main thread.** Do not spawn a subagent to write code; the main thread does all the building. (Reading to locate files is the only thing offloaded, in Step 2.5; the writing stays here.) A normal feature slice, a page, an endpoint, a very large single build, and a big multi file rollout are all built inline, just sequenced sensibly.
 

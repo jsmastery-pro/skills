@@ -6,7 +6,7 @@ Case 3: the project already has a design system. Two complementary sources: `des
 
 **Build the new page WITHIN the system, at the bar.** A new page in an existing system is still a full professional product surface (the guide's bar, and `ui/implementation.md` Phase 0), never a bare form: as complete and considered as the pages already shipped, and visually consistent with them. Design first (compose the whole surface in the system's language), then integrate.
 
-**Naming note:** `colors.primary` and `colors.accent` are synonyms for the brand accent. Older templates use `primary`; generated systems use `accent`. Treat them identically.
+**Naming note:** `colors.primary` and `colors.accent` are synonyms for the brand accent. Older systems use `primary`; derived systems use `accent`. Treat them identically.
 
 ### DS1: Read the direction and the tokens
 

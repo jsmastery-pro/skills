@@ -25,7 +25,7 @@ You are a senior product designer shipping a real product, not a developer wirin
 1. **Figma connected (the spec says use it)** → pull the real design from Figma, build to the frames. Route: `ui/mcp.md`.
 2. **Image provided (pasted in chat, not a repo file)** → replicate it pixel perfect. The image is both the look and the composition, so match it faithfully and do NOT embellish beyond it. Tokenize what you see (values into CSS, character into `design.md`) and derive the responsive and accessible behavior a single screenshot cannot show. Route: `ui/image.md`.
 3. **A design system already exists** (`design.md` + tokens in CSS) → design the new page WITHIN that system, at the bar above: a full professional surface, consistent with what is already shipped. Route: `ui/existing.md`.
-4. **Nothing provided** → establish the design system first (the `frontend-design` skill when available, else a template seed), record it in `design.md` (character + mandate + pointers) with the tokens written to CSS, then build to the bar above, maximalist and complete. Route: `ui/generate.md`.
+4. **Nothing provided** → establish the design system first (the `frontend-design` skill when available, else derive it from the rules in `ui/generate.md` B2 and verify its contrast), record it in `design.md` (character + mandate + pointers) with the tokens written to CSS, then build to the bar above, maximalist and complete. Route: `ui/generate.md`.
 
 Cases 3 and 4 get the full chat app treatment (bold, complete, product level); case 2 gets faithful fidelity; case 1 gets Figma fidelity. Follow the source the spec recorded; never default to Figma just because an MCP is connected.
 
@@ -39,7 +39,7 @@ The UI build serves the project's build approach (read in `SKILL.md` Step 2), ne
 
 ## Portability (any OS, any agent)
 
-Any Agent Skills client, macOS/Linux/Windows. Detection snippets (`find`, `cat | grep`, `cp`) are POSIX reference, not literal scripts: use your agent's own cross platform file tools to find files, read `package.json`/config, and copy a template to `design.md`. Bundled files (`templates/*.md`, `checklist.md`) are paths relative to this skill's folder, read on demand: load only the ONE chosen template (full file only after selection), never all of them, and read this guide's phases as reached, not all up front. The UI build runs inline (it is interactive); heavy code exploration (finding existing components/tokens to match) goes to a read only subagent per `SKILL.md` Step 2.5. App code/CSS is inherently cross platform. No interactive question picker: ask the prompts as plain text with the same options.
+Any Agent Skills client, macOS/Linux/Windows. Detection snippets (`find`, `cat | grep`, `cp`) are POSIX reference, not literal scripts: use your agent's own cross platform file tools to find files and read `package.json`/config. Bundled files (`checklist.md`, `ui/*.md`) are paths relative to this skill's folder, read on demand: read this guide's phases as reached, not all up front. The UI build runs inline (it is interactive); heavy code exploration (finding existing components/tokens to match) goes to a read only subagent per `SKILL.md` Step 2.5. App code/CSS is inherently cross platform. No interactive question picker: ask the prompts as plain text with the same options.
 
 ## Step 0: Where the design comes from (one decision, made once)
 
@@ -49,7 +49,7 @@ Route on what the spec recorded, using the *Design source* table above:
 - Figma or another design MCP → `ui/mcp.md`.
 - A screenshot or a pasted image → `ui/image.md`.
 - An existing design system, or "extract from existing UI" → **Step 0.1**.
-- A named template or a described direction → `ui/generate.md` (its B2 puts the token values into CSS and its character into `design.md`), then implement.
+- A described direction, a brand or site URL, or nothing at all → `ui/generate.md` (B1 finds the direction, B2 derives and verifies the tokens into CSS and the character into `design.md`), then implement.
 
 No spec governs this UI, or the spec is silent on the design system → fall through to the detection in Steps 0.1 to 0.3. If detection settles nothing, ask *"How should I get the design for this?"* with options **From Figma (its MCP)** · **From a screenshot / images** · **From the existing `design.md` / current UI** · **No design, suggest a direction** (the picker adds Other), then proceed by their pick.
 
@@ -73,7 +73,7 @@ Found (brownfield): ask before proceeding, via your agent's interactive option p
 - **header**: "Design system"
 - **options**:
   1. `Extract from existing code`: "Recommended, capture the design direction from the current tokens/components into `design.md`, pointing at the existing CSS tokens, so new UI matches what's shipped." → **Step 0.3**.
-  2. `Use a reference`: "I'll give a screenshot or a `design.md` URL, or pick a template." → **Step 1**.
+  2. `Use a reference`: "I'll give a screenshot, a `design.md` URL, or a site to work from." → **Step 1**.
   3. `Match a specific file`: "Build to mirror an existing component/page I name; I'll point you at it." → read that file's styles, treat them as the local source of truth.
 
 No existing UI (greenfield) → **Step 0.5**.
@@ -152,14 +152,13 @@ Based on the checks above, read exactly one source file:
 - `ui/mcp.md` when Figma or another design MCP is the source.
 - `ui/image.md` when a screenshot or image is the source.
 - `ui/existing.md` when an existing `design.md` or current UI is the source.
-- `ui/generate.md` when there is no source and the engineer wants a template or suggested direction.
+- `ui/generate.md` when there is no source: it finds a direction, then derives and verifies the system.
 
 After the selected source has resolved tokens, assets, and design direction, read `ui/implementation.md` and follow it through the implementation phases and report. Do not read the other source files unless the source changes.
 
 ## Reference files
 
 - Accessibility checklist: `checklist.md`
-- Design templates: `templates/`
 - Project design system: `./design.md` (art direction and the build mandate; token values live in CSS)
 - UI source routes: `ui/mcp.md`, `ui/image.md`, `ui/existing.md`, `ui/generate.md`
 - UI implementation phases and report: `ui/implementation.md`

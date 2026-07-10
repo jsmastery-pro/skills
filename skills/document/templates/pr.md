@@ -1,6 +1,6 @@
 # PR Template
 
-Produce a title and body. Always return both as text (the skill shows them in chat). Touch `gh` only per **GH_ACTION**: `none` → chat-only; `gh pr create` → create the PR with this body; `gh pr edit` → update the existing PR's body. Never invent a different gh command.
+Produce a title and body. Always return both as text (the skill shows them in the chat). Touch `gh` only per **GH_ACTION**: `none` → chat only; `gh pr create` → create the PR with this body; `gh pr edit` → update the existing PR's body. Never invent a different gh command.
 
 ## Title
 

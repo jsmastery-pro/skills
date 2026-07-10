@@ -47,7 +47,7 @@ Add lines under the correct subheading inside `## [Unreleased]` (create the subh
 ```
 
 Rules:
-- One bullet per notable change. Skip internal-only refactors that don't affect users or integrators.
+- One bullet per notable change. Skip refactors that are internal only and do not affect users or integrators.
 - Write from the reader's perspective: "Added pagination to the orders endpoint", not "Added `limit` param to `getOrders`".
 - Map the change to the right category. A fix is `Fixed`; a new flag is `Added`; a behaviour change is `Changed`.
 - Only include categories that have entries. Don't leave empty headings.
