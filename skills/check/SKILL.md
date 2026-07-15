@@ -1,6 +1,7 @@
 ---
 name: check
-allowed-tools: Bash, Read, Grep, Glob, Write, Agent, AskUserQuestion
+allowed-tools: Bash, Read, Grep, Glob, Write, Agent
+argument-hint: [verify | review]
 description: "Run /check before merge to confirm a change is sound. Two modes: `/check verify` drives the real app and proves behavior against the spec (every acceptance criterion met, every specced surface built); `/check review` runs a senior code review on a different model than wrote the code. Verify after /develop, review before a PR. Writes findings to docs/reviews/; never edits your code."
 ---
 
@@ -21,13 +22,28 @@ Neither mode edits your code. `verify` points failures at `/debug` or `/develop`
 
 ## Pick the mode (route before doing anything else)
 
-Read the argument and route:
+This is the first step, always, before reading any mode file or touching the repo. Look at what followed `/check`:
 
-- Starts with `verify` (or `run`) → runtime proof. Read `modes/verify.md` and follow it fully. Pass any remaining arguments (a feature name, a scope) through.
-- Starts with `review` → code review. Read `modes/review.md` and follow it fully. Pass the review steering through unchanged (e.g. `/check review with opus`, `/check review uncommitted`).
-- No mode word, or ambiguous → ask once which one, capability first (a picker where the agent has one, else plain text): question "Which check?", header "Check", options `verify: run the real app and prove it works (recommended right after building)` · `review: a fresh-model read of the diff before a PR`. The picker appends its own free text option; add it explicitly in a plain text fallback. Then read that mode's file and follow it.
+- The argument **starts with `verify` (or `run`)** → runtime proof. Read `modes/verify.md` and follow it fully. Pass any remaining arguments (a feature name, a scope) through.
+- The argument **starts with `review`** → code review. Read `modes/review.md` and follow it fully. Pass the review steering through unchanged (e.g. `/check review with opus`, `/check review uncommitted`).
+- **No mode word, or anything ambiguous** (bare `/check`, or a feature name with no mode like `/check auth`) → do NOT guess and do NOT default to a mode. Show the two options as a plain text panel and **stop and wait** for the engineer to type their choice. This is the case that makes `/check` safe to type with nothing after it.
 
-Do not mix the two in one run. If the engineer clearly wants both, do `verify` first (confirm it works), then offer `review`.
+**How to present the choice (plain text, works on every agent, no interactive modal):**
+
+Print exactly this, then stop and wait for the reply. Do not proceed, do not assume `verify`, until the engineer answers. Route on their typed word (`verify` / `review` / `both`).
+
+```
+Which check do you want to run? Type one:
+  • verify  run the real app and prove the change works against its spec (usually right after /develop)
+  • review  a fresh model senior read of the diff, ranked findings (usually right before a PR)
+  • both    verify first, then review
+```
+
+Do not use an interactive picker or modal for this; it is a typed choice shown inline, so it behaves the same in every AI tool. (The `argument-hint` in this skill's frontmatter also surfaces `verify | review` in Claude Code's own type-time autocomplete, before submit; other tools ignore that field, which is why this inline panel is the portable path.)
+
+If a feature name was passed with no mode (`/check auth`), carry it through as the target once the engineer picks the mode; still ask the mode.
+
+Do not mix the two in one run. If the engineer types **both**, do `verify` first (confirm it works), and only then offer `review` as the next step.
 
 ## Portability (any OS, any agent)
 
