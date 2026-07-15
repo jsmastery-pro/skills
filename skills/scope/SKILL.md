@@ -45,7 +45,7 @@ File shape:
 
 Status lifecycle (`/scope` sets initial status; the pipeline advances it):
 - New features start `planned`. Brownfield: also enroll features that are already there as `existing` (complete) or `in-progress` (partial), the only other statuses `/scope` writes.
-- `/develop` advances pipeline built work (`planned` → `in-progress` → `done`); `/sync` reconciles against the diff.
+- `/develop` advances pipeline built work (`planned` → `in-progress` → `done`); `/sync` reconciles against the diff. A feature built on an **assumed decision** (its governing spec is `Assumed`, recorded by `/develop` when the engineer chose to build before deciding) stays `in-progress` with an `assumed decision (spec NNNN)` note until `/architect` ratifies the decision; it cannot reach `done` before then.
 - `done` ≠ `existing`: `done` = this pipeline built and verified it; `existing` predates the workflow; `/develop` and `/sync` never touch `existing` rows.
 - `replan` may set a feature dropped from scope to `dropped`, never deletes rows; `dropped` keeps history, excluded from active counts and work; `/develop` and `/sync` skip it.
 

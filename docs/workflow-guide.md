@@ -44,7 +44,9 @@ The key idea is that these files nest. There is one at the root of the project f
 - It is **replaced** by `architect` when a decision is genuinely overturned. `architect` writes a new spec and marks the old one `Superseded`, with a pointer to the one that replaced it, so the history stays readable.
 - It is **flagged** by `sync` if a later change quietly made a spec out of date, so a human can bring it in line.
 
-Two rules keep this clean. Only `architect` writes the content of a spec. Only `develop` moves the status. That single ownership is why the files do not turn into mush over time.
+There is one more status, `Assumed`, for the case where you chose to build before a real decision was made. When `develop` hits a load bearing choice that has no spec and you tell it to build anyway, it does not just guess in silence. It writes a small spec marked `Assumed` that records the assumption it is building on, who authorized it, and the code it touches. This is the only spec `develop` is allowed to create, and it can only ever create it in this one state. An `Assumed` spec means "recorded but not thought through," so the feature it governs cannot be marked done. To clear it you run `architect` again, which deliberates the decision properly against the code that was built, then either fills in the real reasoning and lifts the `Assumed` mark, or, if the assumption was wrong, writes a corrected spec and marks the old one `Superseded` so `develop` rebuilds. That step is called ratification, and it is what lets an override keep moving without the decision ever escaping into the chat.
+
+Two rules keep this clean. Only `architect` writes the content of a spec and only `architect` clears an `Assumed` mark. Only `develop` moves the status along the built lifecycle, and the one new spec it may create is the `Assumed` stub. That single ownership is why the files do not turn into mush over time.
 
 **The design system, in `design.md`.** This holds the art direction for your user interface, the character and the rules for how pages are put together. The real values, the exact colors and sizes, live in your project's CSS, and `design.md` only points at them, so a value is never written in two places. `develop` creates this the first time you build a user interface, or extracts it from your existing screens.
 
@@ -56,7 +58,7 @@ The files stay trustworthy because ownership is fixed. Here is who creates each 
 |---|---|---|---|
 | `AGENTS.md` and its `CLAUDE.md` pointer | audit | every skill | sync |
 | Scope in `docs/scope/` | scope | architect, develop | develop advances it, scope and sync reconcile it |
-| Specs in `docs/specs/` | architect | develop | develop moves the status line only, architect owns the content and marks a replacement, sync flags a stale one |
+| Specs in `docs/specs/` | architect (plus the `Assumed` stub, which develop may create) | develop | develop moves the status line along the built lifecycle and may create a spec only in the `Assumed` state; architect owns all content, clears the `Assumed` mark by ratifying, and marks a replacement; sync flags a stale one and surfaces an unratified `Assumed` one |
 | `design.md` and the CSS values it points at | develop | develop, check | develop |
 
 ### The one thread that ties the stages together
@@ -116,7 +118,9 @@ You run `develop`. This is where the most branching happens, and it happens in a
 
 - **Decide it first.** Go make the decision in `architect` now, then come back. This is the recommended path, and it is what keeps the agent from guessing.
 - **No real decision here, build directly.** You have judged there is nothing to decide, so it builds.
-- **Skip for now.** Build without a spec and leave a mark in the scope that a decision is owed later.
+- **Build now, record it as an assumed spec.** You want to keep moving, but the decision is real. So `develop` writes the assumption down first, as a small spec marked `Assumed`, then builds against it. This is the important part: the decision lives in the repository, not in the chat. The feature cannot be marked done until `architect` ratifies that assumption later, which is what keeps the override honest.
+
+The old behavior let you skip and "backfill later," which left the real decision only in the conversation. That was the one hole in the promise that every decision lives in a file, and the `Assumed` spec closes it.
 
 **Next, what kind of work is this.** `develop` sorts the task into user interface work, backend work, or both. Sign in is both, the sign in and sign up screens plus the session logic behind them, so it runs each part.
 
@@ -201,7 +205,7 @@ On a team, before it changes anything, `develop` checks a few things and warns y
 The limits matter as much as the features.
 
 - It will not mark a feature done on its own. Built is not done. Done waits for `check` in verify mode to pass and for tests to be in.
-- It will not invent a decision you have not made. If building would mean guessing a provider, a data shape, or a design, `develop` stops and sends you to `architect`.
+- It will not invent a decision you have not made and hide it. If building would mean guessing a provider, a data shape, or a design, `develop` stops and sends you to `architect`. You can override and build anyway, but then it writes the assumption down as an `Assumed` spec and blocks the feature from done until `architect` ratifies it. The decision never lives only in the chat.
 - It will not reach the internet without your go ahead. It asks before searching for an outside connector or looking anything up, and it records what it used.
 - The review does not edit your code. It reads and reports, and you decide what to change.
 - No skill rewrites your prose or reaches into another skill's files. Ownership is fixed, which is what keeps the files trustworthy over time.
@@ -212,7 +216,9 @@ The limits matter as much as the features.
 
 **Do I have to run all nine?** No. You run only the ones a change needs. A tiny change can be just `develop` and then `check` in verify mode. A bug is just `debug`.
 
-**What if there is no spec yet?** If a real decision is missing, `develop` stops and offers to send you to `architect` to make it, or to build directly if you judge there is nothing to decide, or to skip for now and leave a note that a decision is owed.
+**What if there is no spec yet?** If a real decision is missing, `develop` stops and offers to send you to `architect` to make it, or to build directly if you judge there is nothing to decide, or to build now and record the assumption as an `Assumed` spec. That last option keeps you moving while still writing the decision into the repository, and it parks the feature short of done until you run `architect` to ratify the assumption.
+
+**Is it fine to never ratify an `Assumed` spec?** It is allowed, but it is not free. The feature can never be marked done, and both a bare `scope` and `sync` keep surfacing the `Assumed` spec as an open decision that is owed. For a throwaway spike that is fine, leave it. For real work the unclosable status is the nudge to go ratify it. The workflow does not block a merge, but the assumption and the fact that it is owed stay durable in the repository, which is the guarantee it actually makes.
 
 **Why clear the session between stages?** A long chat costs more and drifts. Because the work is saved in files, a fresh session reads the current state from disk and continues cleanly, so clearing loses nothing.
 

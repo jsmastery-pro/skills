@@ -29,6 +29,7 @@ Closes the loop on a completed change: syncs AGENTS.md files, the scope, and lin
 | Create nested doc for an **already existing** undocumented area (only sliced by the diff) | ❌ flags "run /audit" | /audit |
 | Create or restructure the **root** AGENTS.md | ❌ flags "run /audit" | /audit |
 | Reconcile a spec's `**Status**:` line to its feature's scope status (`planned`→`Proposed`, `in-progress`→`In Progress`, `done`→`Accepted`) | ✅ Status line only | /sync |
+| Clear an `Assumed` spec (move it out of `Assumed`) | ❌ flags as decision debt "run /architect to ratify" (never reconciled to the feature status; only ratification clears it) | /architect |
 | Edit a spec's **content** / supersede it | ❌ flags as stale | /architect |
 | Reconcile the scope, for the **relevant workspace's** scope file only (not all of `docs/scope/`), tick **any** completed sub task from repo **evidence** (code, tests, AGENTS.md), advance status | ✅ corrects | /sync |
 | Add / reorder features or sub tasks in the scope | ❌ leaves alone | /scope |
@@ -145,6 +146,9 @@ The inputs to apply:
 
 **Specs flagged stale** (run /architect to update or supersede):
 - `docs/specs/<file>`, <why the change makes it stale, or status mismatch sync couldn't safely resolve>
+
+**Assumed decisions, not yet ratified** (run /architect to ratify; the feature can't be `done` until then):
+- `docs/specs/<file>`, <feature> built on an assumption, decision not deliberated
 
 **Context gaps** (run /audit, area too established for /sync to document from the diff alone):
 - `<area>`, <pre-existing undocumented area only sliced by this change>
