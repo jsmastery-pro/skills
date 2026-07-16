@@ -3,7 +3,7 @@ Scope structure `/scope` writes to: the reference shapes read while writing the 
 ## What keeps it readable (the format rules)
 
 - **Two parts:** a slim **At a glance** table for a quick scan, then **the plan** as clean feature sections grouped by phase. Build order is just the section order. There is no separate "build order" list to keep in sync.
-- **Clean headings.** A heading is `### <N>. <Feature name>` plus a short status word and short tags **only when they carry real information** (`needs a decision`, a per feature approach override, `full` weight). Never a pipe delimited metadata row like `Title | P0 | inherit | …`.
+- **Clean headings.** A heading is `### <N>. <Feature name>` plus a short status word and short tags **only when they carry real information** (`needs a decision`, a per feature approach override, a workflow tier override like `· Full`). Never a pipe delimited metadata row like `Title | P0 | inherit | …`.
 - **Each fact appears once.** Intent, the definition of done, tasks, and pointers live in the section; the At a glance table is the quick index. Status is shown in the table and beside the heading, and nowhere else.
 - **Only what is set.** No `n/a`, no `inherit`, no empty fields. A pointer line (`spec <n> · code in <path>`) appears **only once those exist**: the spec link added by `/architect` at capture, the code path by `/develop`.
 - **A feature grows a defined shape.** It has a one or two line **intent**, a single **Done when:** line (the acceptance criteria seeds), and **checkbox steps**. A **not yet designed** feature has **one box** (its entry command: `/architect` when it `needs a decision`, else `/develop`, or `/audit` for standards & tooling). **When its spec is captured, `/architect` fills in the built ready shape:** `Design it` (ticked) → `Build it: /develop <feature>` with **2 to 5 milestone sub items rolled up from the spec** → `Verify it: /check verify <feature>` → `Test it: /test <feature>`. **The atomic build tasks stay in the spec's `## Build plan`, never here**. The scope carries only the milestone rollup. The next step is always the first unticked box.
@@ -16,8 +16,7 @@ Scope structure `/scope` writes to: the reference shapes read while writing the 
 <One or two plain sentences: what the product is and who it serves.>
 
 **Build approach:** <Tracer Bullet | Skateboard | Facade | Journey> (<one-line principle>).
-**Workflow:** <Vibe | Lean | Medium | Full> (<the tail after develop: e.g. Medium = check verify, then test>). The project default depth; architect still gates any feature that needs a decision at every depth; a feature's own Weight tag wins where higher.
-**Weight profile:** <e.g. mostly lean and medium; billing is full (payments)>.  <!-- omit line if all default -->
+**Workflow:** <Vibe | Lean | Medium | Full> (<the tail after develop: e.g. Medium = check verify, then test>). The project default rigor tier; architect still gates any feature that needs a decision at every tier; a feature's own tier tag (e.g. `· Full`) overrides it.
 
 ## At a glance
 
@@ -85,7 +84,7 @@ Nudge members who have not submitted before a team cutoff, so daily standup beco
 ## Deferred
 Out of scope for the current build pass, kept so the plan stays honest.
 - **Email invites**: invite teammates by email · needs a decision
-- **Billing & plans**: free and paid tiers · needs a decision · full weight
+- **Billing & plans**: free and paid tiers · needs a decision · Full
 - **Chat integrations**: post standups to team chat · needs a decision
 - **Product analytics**: measure signups and habit · needs a decision
 
@@ -108,8 +107,8 @@ Out of scope for the current build pass, kept so the plan stays honest.
 - **Atomic build tasks live in the spec's `## Build plan`, not here**: the scope carries only the milestone rollup.
 - **Status** `planned` → `in-progress` → `done`, plus `existing` (pre-workflow) and `dropped` (de-scoped, kept for history).
 - **Approach tag** beside a heading (e.g. `· Facade`) overrides the project default for that feature; no tag = inherits it.
-- **Weight tag** `· full` = a fresh-model `/check review` warranted; `lean`/`medium` get no tag.
-- **Workflow** (header line) is the project default depth of stages each feature runs **after** `/develop`: **Vibe** = nothing after `/develop` (rely on its build-time self-check); **Lean** = `/check verify`; **Medium** = `/check verify` then `/test`; **Full** = `/check verify`, `/test`, a fresh-model `/check review`, then `/document` (and most features need a spec). The tier also sets what closes a feature to `done`, the last required stage marks it: **Vibe** → `/develop` (build + self-check); **Lean** → `/check verify` on PASS; **Medium**/**Full** → `/test` (with verify passed). At every tier an `Assumed` spec still blocks `done` until `/architect` ratifies it. Depth does not gate `/architect`: any feature that needs a decision runs `/architect` first (or records an `Assumed` spec) at every depth. A feature's Weight tag wins where it is higher than the default. `/develop` reads this to scale the next steps it recommends.
+- **Workflow tier tag** beside a heading (e.g. `· Full`, `· Vibe`) overrides the project default `**Workflow:**` tier for that one feature; no tag = inherit. It is the single rigor dial (there is no separate "weight").
+- **Workflow** (header line) is the project default tier, the stages each feature runs **after** `/develop`: **Vibe** = nothing after `/develop` (rely on its build-time self-check); **Lean** = `/check verify`; **Medium** = `/check verify` then `/test`; **Full** = `/check verify`, `/test`, a fresh-model `/check review`, then `/document` (and most features need a spec). The tier also sets what closes a feature to `done`, the last required stage marks it: **Vibe** → `/develop` (build + self-check); **Lean** → `/check verify` on PASS; **Medium**/**Full** → `/test` (with verify passed). At every tier an `Assumed` spec still blocks `done` until `/architect` ratifies it, and `/architect` still gates any feature that needs a decision (tier does not turn the gate off). A feature's own tier tag overrides this default. `/develop` reads the effective tier to scale the next steps it recommends.
 - **Pointer line** (`spec <n> · code in <path>`): the spec link added by `/architect`, the code path by `/develop`.
 ```
 
@@ -139,8 +138,7 @@ When `scope.md` outgrows a comfortable scan (roughly a dozen plus features acros
 **Product**: <one line>
 **Behavior**: <plan | replan | add (inferred from the situation, not a typed subcommand)>
 **Build approach**: <name (one-line principle)> · **Per-feature overrides**: <feature → approach, … (or "none, all inherit")>
-**Workflow**: <Lean | Medium | Full> (<the stages it runs; why recommended for this product>)
-**Weight profile**: <e.g. billing full (payments), everything else lean/medium (or "all default")>
+**Workflow**: <Vibe | Lean | Medium | Full> (<the stages it runs; why recommended for this product>) · **Per-feature tier overrides**: <feature → tier, … (or "none, all inherit")>
 **Scope file**: <docs/scope/scope.md> (<created new | updated in place | new epic file for <area>>)
 **Scope (this pass)**: <N> new features to build, <M> already on the scope, <K> deferred
 **Build order**: <feature 1> → <feature 2> → …

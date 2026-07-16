@@ -17,11 +17,11 @@ You wrote the spec yourself on the main thread. Now check your own work for comp
 
 If a required section is missing or a field is blank/placeholder, add this line directly after the spec path in the presentation: `⚠️ Incomplete: [section name] came out blank, e.g. "⚠️ Incomplete: ## Feature design > Security model was left as a placeholder. Request it in your feedback."`
 
-**Cross check (independent read of the spec, especially for decision completeness).** This is the layer that holds the "no decision gets made behind your back" guarantee, so it must not rest on the same model that wrote the spec (see spec 0002). Its strength is tier gated by the feature's Weight (read from the scope row in pre-flight):
+**Cross check (independent read of the spec, especially for decision completeness).** This is the layer that holds the "no decision gets made behind your back" guarantee, so it must not rest on the same model that wrote the spec (see spec 0002). It is gated by the feature's effective workflow tier (its own tier tag if set, else the project default on the scope `**Workflow:**` line; read from the scope in pre-flight):
 
-- **`full` weight** → run the `Another model` cross check **automatically**, do not offer to skip it. Tell the engineer: "This is a `full` weight feature, so I ran an independent cross model check of the spec's decision completeness." Then go to *Act on the pick* as if `Another model` was chosen.
-- **`medium` weight** → present the panel below with `Another model` marked recommended.
-- **`lean` weight, or no scope row** → present the panel with `Skip` (or `Same model` for a foundational spec) recommended by stakes, as before.
+- **`Full` or `Medium` tier** → run the `Another model` cross check **automatically**, do not offer to skip it. These are the tiers where a load bearing gap does real damage, and the bug that motivated this (spec 0002) was a `Medium` feature, so an independent check must not be optional here. Tell the engineer: "This is a `<tier>` tier feature, so I ran an independent cross model check of the spec's decision completeness." Then go to *Act on the pick* as if `Another model` was chosen.
+- **`Lean` tier** → present the panel below with `Another model` marked recommended (offered, not forced).
+- **`Vibe` tier, or no scope row** → present the panel with `Skip` (or `Same model` for a foundational spec) recommended by stakes.
 
 When you present the panel (capability first: `AskUserQuestion` on Claude Code, else the same options as plain text; exactly one option marked recommended, the picker adds the custom slot):
 - **question**: "Cross check this spec before you review it?"

@@ -1,6 +1,6 @@
 # Project: Engineering Workflow Skills
 
-A collection of Claude Code skills encoding a phase based engineering workflow. There are no fixed tiers or mandated playbooks: run whichever skills a change needs, in whatever order fits.
+A collection of Claude Code skills encoding a phase based engineering workflow. No mandated playbook: you run whichever skills a change needs, in whatever order fits. `/scope` recommends a workflow tier (`Vibe`/`Lean`/`Medium`/`Full`, how much verification a project or feature warrants), but it is a default you override per feature, never a forced track.
 
 ## Stack
 
