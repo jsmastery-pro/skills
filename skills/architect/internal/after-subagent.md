@@ -9,7 +9,7 @@ You wrote the spec yourself on the main thread. Now check your own work for comp
 **Check your own work before presenting**: Read the spec you just wrote again. For a directory spec read both `index.md` and its `rationale.md` (the decision record sections live in `rationale.md`; the single file shape has everything in the one file). Verify all required sections exist across the file(s):
 - All modes: `## Summary` (the plain words human quick read, no dashes, in `index.md`/the file), `## Requirements` (IDed acceptance criteria, the confirmed spine), `## Decision`, `## Consequences` (build spec, in `index.md`/the file); and `## Context`, `## Options considered` (unless "Documenting a made decision"), `## Rationale` (decision record, in `rationale.md` for a directory spec, inline otherwise). A directory `index.md` also carries the one line `## Rationale` pointer to `rationale.md`.
 - Data backed modes: `## Build plan`: ordered tasks, each tagged with the AC(s) it satisfies, migration first; every AC traces to at least one task
-- Feature mode: `## Feature design` with the confirmed data model and Critical test scenarios (mapped to ACs) populated
+- Feature mode: `## Feature design` with the confirmed data model, the **Value sourcing** table (every value each action produces, computes, or displays has a named source; no blank source for a value an AC requires, that would be an undecided input left for the build), and Critical test scenarios (mapped to ACs) populated
 - Architecture mode: `## Proposed stack` with every relevant layer filled
 - Decision only specs (Architecture, Cross cutting): no `## Build plan` of implementation steps and no invented meta ACs; the spec is `## Proposed stack` / `## Standard definition`, and the executing feature (e.g. the scaffold sub task) derives its steps at `/develop` time. If a scaffold style build plan appears in a stack spec, strip it before presenting.
 - Enhancement mode (a migration that is not trivial): `## Migration plan` with Strategy, Phases, Rollback, and Risks
@@ -17,7 +17,13 @@ You wrote the spec yourself on the main thread. Now check your own work for comp
 
 If a required section is missing or a field is blank/placeholder, add this line directly after the spec path in the presentation: `⚠️ Incomplete: [section name] came out blank, e.g. "⚠️ Incomplete: ## Feature design > Security model was left as a placeholder. Request it in your feedback."`
 
-**Cross check (part of the review preview, the engineer picks how).** Right after that check and before the accept panel, ask the engineer how they want the spec cross checked. Present a panel (capability first: `AskUserQuestion` on Claude Code, else the same options as plain text; exactly one option marked recommended, the picker adds the custom slot):
+**Cross check (independent read of the spec, especially for decision completeness).** This is the layer that holds the "no decision gets made behind your back" guarantee, so it must not rest on the same model that wrote the spec (see spec 0002). Its strength is tier gated by the feature's Weight (read from the scope row in pre-flight):
+
+- **`full` weight** → run the `Another model` cross check **automatically**, do not offer to skip it. Tell the engineer: "This is a `full` weight feature, so I ran an independent cross model check of the spec's decision completeness." Then go to *Act on the pick* as if `Another model` was chosen.
+- **`medium` weight** → present the panel below with `Another model` marked recommended.
+- **`lean` weight, or no scope row** → present the panel with `Skip` (or `Same model` for a foundational spec) recommended by stakes, as before.
+
+When you present the panel (capability first: `AskUserQuestion` on Claude Code, else the same options as plain text; exactly one option marked recommended, the picker adds the custom slot):
 - **question**: "Cross check this spec before you review it?"
 - **header**: "Cross check"
 - **options**:
@@ -28,7 +34,10 @@ If a required section is missing or a field is blank/placeholder, add this line 
 - Mark exactly one recommended by the spec's stakes: for a high risk / compliance touching / foundational ARCHITECTURE spec, recommend `Another model`; for a small or trivial spec, recommend `Skip`.
 
 Act on the pick:
-- **Another model / Same model** → spawn a READ-ONLY cross check subagent that reads the drafted spec and returns its critique only; it writes nothing, the main thread applies any fix. Set its model explicitly, not inherited: for `Another model`, a capable model different from the one that wrote the spec; for `Same model`, this session's model. Brief it to stress test the design from the spec text and its own knowledge only (does it hold up? is there a materially simpler option? what failure mode is missed?), and to NOT fetch the spec's reference links, now or later (human facing). Surface its findings as a short "Cross check" note, and fix clear issues yourself by targeted Edit. No subagent capability → do the same model pass inline on the main thread.
+- **Another model / Same model** → spawn a READ-ONLY cross check subagent that reads the drafted spec and returns its critique only; it writes nothing, the main thread applies any fix. Set its model explicitly, not inherited: for `Another model`, a capable model different from the one that wrote the spec; for `Same model`, this session's model. Brief it to stress test the design from the spec text and its own knowledge only, covering two jobs:
+  1. **Decision completeness (the primary job).** List every value each action, endpoint, or read path must produce, compute, or display to satisfy the acceptance criteria whose **source the spec does not name**, and every decision the builder will have to make that this spec does not settle. This is the check that catches a load bearing gap the spec author's own introspection missed (e.g. an AC that needs "the user's local day" with no timezone source named). Report each as a gap to close before build, not a nitpick.
+  2. **Soundness.** Does the design hold up? Is there a materially simpler option? What failure mode is missed?
+  Brief it to NOT fetch the spec's reference links, now or later (human facing). Surface its findings as a short "Cross check" note; resolve every decision completeness gap yourself before presenting (name the source, ASK the engineer if only they know it), and fix other clear issues by targeted Edit. No subagent capability → do the same model pass inline on the main thread (weaker, note that the independent check did not run).
 - **I'll review it myself** → run no AI critique. Present the spec for the engineer to read, and say they are reviewing it themselves.
 - **Skip** → no critique.
 

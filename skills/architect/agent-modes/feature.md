@@ -57,6 +57,12 @@ Include `## Feature design` after `## Rationale`. Every field below is required;
 |---|---|---|---|---|---|
 | /resource | POST | field:type (req), field:type (opt) | id, status | bearer | 409 conflict, 422 invalid |
 
+**Value sourcing** (name the source of every value each action produces, computes, or displays; a required value with no named source is an undecided input to resolve now, never one for the build to invent):
+| Action | Value produced / displayed | Source |
+|---|---|---|
+| <action> | <the value an AC needs> | <input param · DB column · derived from X · decided in spec N> |
+<!-- Trace each value the acceptance criteria require, not just the obvious ones; this exposes inputs the API table omits. Procedural, not a checklist. Illustrations of the pattern: a read that must show "the user's local day" names where the timezone comes from; a displayed total names its rounding/currency source; a per-tenant query names how the tenant is resolved. -->
+
 **Key invariants**:
 <Rules that must always hold, enforced at application or DB layer. E.g. "order total = sum of line items", "email is unique per account">
 

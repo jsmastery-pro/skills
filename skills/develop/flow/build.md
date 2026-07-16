@@ -27,7 +27,12 @@ Read:
 
 **Precedence on conflict:** the spec wins for the feature it governs; `AGENTS.md` is the general convention (`AGENTS.md` says Jest, this spec says "Vitest for this" → Vitest for this feature). Flag the conflict ("spec <NNNN> diverges from `AGENTS.md` on X, `/sync` should reconcile") rather than silently picking. spec silent on a point → `AGENTS.md` governs.
 
-**Spec completeness check (before building, not partway through the build).** Confirm the spec has what this task needs: logical → data model, API surface, security model, key invariants; UI → the screens and their states/requirements. A section missing or a placeholder → don't guess; ask. The options depend on whether the missing section is **load bearing** (a data model, API surface, security model, provider, or the feature's behavior, the decisions `/architect` owns) or a **local implementation detail** the spec already governs (a pagination size, a sort order, a label):
+**Spec completeness check (before building, not partway through the build).** Two passes, both before any code:
+
+1. **Sections present:** logical → data model, API surface, security model, key invariants; UI → the screens and their states/requirements. A section missing or a placeholder → don't guess; ask (panel below).
+2. **Input coverage (the check that catches a silent decision, spec 0002):** enumerate every value each code path must produce, compute, or display to satisfy the acceptance criteria, and for each confirm the spec names its source (an input, a DB column, a derivation from a named value, a prior decision, the spec's **Value sourcing** table is where this lives). A required value with **no named source** is a load bearing gap, exactly the case the build model is tempted to fill silently as "local wiring." It is not local: it decides the source of a value an AC constrains. Treat it as a missing load bearing section and ask (panel below); never invent the source. (Timezone sourcing is one illustration; apply the test to every produced value, not a fixed list.)
+
+A gap from either pass → don't guess; ask. The options depend on whether the gap is **load bearing** (a data model, API surface, security model, provider, the feature's behavior, or an unnamed source for a required value, the decisions `/architect` owns) or a **local implementation detail** the spec already governs (a pagination size, a sort order, a label):
 
 - **question**: "The spec for this is missing `<section>`. I need it to build correctly. How do you want to proceed?"
 - **header**: "spec gap"

@@ -100,6 +100,12 @@ Do not repeat the pros/cons list, explain the reasoning. 1 to 3 paragraphs.>
 |---|---|---|---|---|---|
 | /resource | POST | field:type (req) | id, status | bearer | 409, 422 |
 
+**Value sourcing** (every value each action produces, computes, or displays names where it comes from; a required value with no named source is an undecided input, resolve it before this spec is done, do NOT leave the build to invent it):
+| Action | Value produced / displayed | Source |
+|---|---|---|
+| <action> | <the value> | <an input param · a DB column · derived from X · decided in spec N> |
+<!-- List every value each acceptance criterion needs this action to produce, not just the obvious ones. The point is to expose inputs the API table omits: a value the AC requires whose source is not an input, a column, or a prior decision is a gap. Diverse illustrations (pattern, not a checklist): a read that must show "the user's local day" names where the timezone comes from; a total shown to a user names the rounding/currency rule's source; a per-tenant list names how the tenant is resolved. Keep it procedural: trace each produced value to a named source; never work from a fixed list of "sources to check". -->
+
 **Key invariants**:
 <Rules that must always hold, enforced at application or DB layer>
 
