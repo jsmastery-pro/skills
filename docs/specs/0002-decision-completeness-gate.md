@@ -36,7 +36,7 @@ Before building each code path, enumerate the values it must produce (from the a
 
 ### 3. An independent cross model decision critic (the real backstop, `/architect`)
 
-`/architect` already has a read only cross check hook (`internal/after-subagent.md`). Upgrade it: at `Full` and `Medium` tier it runs automatically on a different model, with a decision completeness mandate: *list every value each action produces whose source the spec does not name, and every decision the builder will have to make that this spec does not settle.* `/architect` resolves the gaps before the spec is finalized. This is the same cross model principle already trusted for code in `/check review`, applied to decision completeness, held by a model not motivated to finish the build.
+`/architect` already has a read only cross check hook (`internal/after-subagent.md`). Upgrade it: `/architect` always asks whether to run it (recommending it strongly on a different model at `Full`/`Medium`, the tiers where these bugs live; never running or skipping it for the engineer), with a decision completeness mandate: *list every value each action produces whose source the spec does not name, and every decision the builder will have to make that this spec does not settle.* Every gap it finds is presented to the engineer with a recommended fix for them to decide, not auto resolved. This is the same cross model principle already trusted for code in `/check review`, applied to decision completeness, held by a model not motivated to finish the build.
 
 ### 4. Honest copy (`README`, `workflow-guide`)
 
@@ -47,13 +47,13 @@ No prompt gate is "physical." Reword absolute claims ("won't invent a decision a
 - The specific hole Oleh found is closed by (1) at design time and (2) at build time; (3) makes the guarantee as strong as an LLM system honestly can, held by an independent model; (4) stops promising an invariant.
 - **This remains defense in depth, not an invariant.** Each layer is still an LLM judgment and can miss. The most robust piece is (1), because it is a visible artifact with a checkable completeness property, not a vibe check.
 - **No hardcoding.** All rules are procedural (any produced value, any unnamed source), illustrated with 2 to 3 diverse examples, never a canonical checklist of sources to tick. Drift toward such a checklist would be overfitting and is out of bounds.
-- (3) adds model cost, so it is tier gated: automatic at `Full` and `Medium` (the tiers where these bugs live, and where the motivating bug sat), offered at `Lean`, off at `Vibe` (which rely on the mechanical gate). This uses the single workflow tier dial (see spec 0003 for the Weight/Workflow reconciliation).
+- (3) adds model cost and is a decision the engineer should make, so `/architect` always asks: recommended strongly at `Full` and `Medium` (the tiers where these bugs live, and where the motivating bug sat), offered at `Lean`, recommend Skip at `Vibe`. Its findings are surfaced to the engineer with a recommended fix, never auto resolved. This uses the single workflow tier dial (see spec 0003 for the Weight/Workflow reconciliation and the ask-don't-auto-run correction).
 
 ## Follow-up
 
 Files this decision changes:
 - `skills/architect/spec-template.md`: value to source requirement in the design section.
 - `skills/architect/agent-prompt.md` and `internal/design-conversation.md`: the value sourcing expert rule and interview checklist item.
-- `skills/architect/internal/after-subagent.md`: the auto running, decision completeness cross check at `full`/Medium.
+- `skills/architect/internal/after-subagent.md`: the always asked, decision completeness cross check (recommended at `Full`/`Medium`); findings surfaced to the engineer to decide.
 - `skills/develop/SKILL.md` and `flow/build.md`: the positive input coverage gate and the tightened local vs load bearing definition.
 - `README.md`, `docs/workflow-guide.md`: honest copy.

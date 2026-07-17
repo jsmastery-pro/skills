@@ -6,7 +6,7 @@
 
 ## Summary
 
-The tier work (the `Vibe`/`Lean`/`Medium`/`Full` project **Workflow** depth) and the pre existing per feature **Weight** (`lean`/`medium`/`full`) ended up as two overlapping scales sharing three of the same words, which is confusing. This spec unifies them into a single **workflow tier** concept, extends the cross model decision critic to auto run at `Medium` (not just `Full`), links value sourcing to verify steps, and reconciles the "no fixed tiers" messaging. It is a consolidation pass on the changes in specs 0001 and 0002, done before adding anything new.
+The tier work (the `Vibe`/`Lean`/`Medium`/`Full` project **Workflow** depth) and the pre existing per feature **Weight** (`lean`/`medium`/`full`) ended up as two overlapping scales sharing three of the same words, which is confusing. This spec unifies them into a single **workflow tier** concept, makes the cross model decision critic always asked with a strong recommendation at `Medium`/`Full` (rather than auto running it, and its findings go to the engineer to decide), links value sourcing to verify steps, and reconciles the "no fixed tiers" messaging. It is a consolidation pass on the changes in specs 0001 and 0002, done before adding anything new.
 
 ## Context
 
@@ -15,7 +15,7 @@ Across recent work we added a project **Workflow** depth (`Vibe`/`Lean`/`Medium`
 ## Decision
 
 1. **One scale.** Retire "Weight" as a separate concept. There is a single **workflow tier** (`Vibe`/`Lean`/`Medium`/`Full`) with a project default (recommended once, `/scope` Step 5b, on the `**Workflow:**` header line) and a per feature override (a heading tag like `· Full`, shown only when it differs; no tag = inherit). The effective tier drives design time rigor (`Needs spec` likelihood, the decision critic), the post `/develop` verification tail, and what closes `done`.
-2. **Critic auto runs at `Medium` and `Full`** (spec 0002 amended), offered at `Lean`, skipped at `Vibe`. `Medium` is where these bugs live.
+2. **The critic is always offered, never auto run** (spec 0002 amended). `/architect` asks whether to run it, recommending `Another model` strongly at `Medium` and `Full` (where these bugs live), offering it at `Lean`, recommending Skip at `Vibe`. It never runs or skips the check on the engineer's behalf, and the gaps it finds are presented to the engineer with a recommended fix for them to decide, never auto resolved. Rationale: the check exists to keep the engineer aware of load bearing decisions, so both running it and resolving its findings are the engineer's calls (with the AI always recommending its best answer). Every user facing question the workflow asks must carry exactly one recommended option.
 3. **Value sourcing feeds verify.** `/develop` derives a verify step from each row of the spec's Value sourcing table, so the behavioral layer exercises each sourced value (especially the input that would break it: timezone, locale, currency, tenant). This is what catches a mis sourced value even when the gate missed it.
 4. **Messaging.** `CLAUDE.md` no longer says "no fixed tiers"; it says there is no mandated playbook and the tier is a recommended default you override, never a forced track.
 
