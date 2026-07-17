@@ -39,7 +39,7 @@ Which check do you want to run? Type one:
   • both    verify first, then review
 ```
 
-Do not use an interactive picker or modal for this; it is a typed choice shown inline, so it behaves the same in every AI tool. (The `argument-hint` in this skill's frontmatter also surfaces `verify | review` in Claude Code's own type-time autocomplete, before submit; other tools ignore that field, which is why this inline panel is the portable path.)
+Do not use an interactive picker or modal for this; it is a typed choice shown inline, so it behaves the same in every AI tool. (The `argument-hint` in this skill's frontmatter also surfaces `verify | review` in Claude Code's own autocomplete as you type, before submit; other tools ignore that field, which is why this inline panel is the portable path.)
 
 If a feature name was passed with no mode (`/check auth`), carry it through as the target once the engineer picks the mode; still ask the mode.
 

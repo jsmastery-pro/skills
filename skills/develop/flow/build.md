@@ -27,22 +27,19 @@ Read:
 
 **Precedence on conflict:** the spec wins for the feature it governs; `AGENTS.md` is the general convention (`AGENTS.md` says Jest, this spec says "Vitest for this" → Vitest for this feature). Flag the conflict ("spec <NNNN> diverges from `AGENTS.md` on X, `/sync` should reconcile") rather than silently picking. spec silent on a point → `AGENTS.md` governs.
 
-**Spec completeness check (before building, not partway through the build).** Two passes, both before any code:
+**Spec completeness check (before any code, not partway).** Two passes:
 
-1. **Sections present:** logical → data model, API surface, security model, key invariants; UI → the screens and their states/requirements. A section missing or a placeholder → don't guess; ask (panel below).
-2. **Input coverage (the check that catches a silent decision, spec 0002):** enumerate every value each code path must produce, compute, or display to satisfy the acceptance criteria, and for each confirm the spec names its source (an input, a DB column, a derivation from a named value, a prior decision, the spec's **Value sourcing** table is where this lives). A required value with **no named source** is a load bearing gap, exactly the case the build model is tempted to fill silently as "local wiring." It is not local: it decides the source of a value an AC constrains. Treat it as a missing load bearing section and ask (panel below); never invent the source. (Timezone sourcing is one illustration; apply the test to every produced value, not a fixed list.)
+1. **Sections present:** logical → data model, API surface, security model, key invariants; UI → screens and their states. Missing or placeholder → ask (panel below).
+2. **Input coverage (catches the silent decision, spec 0002):** enumerate every value each code path must produce or display for the ACs; for each, confirm the spec names its source (input, DB column, derivation, prior decision, the spec's **Value sourcing** table). A required value with **no named source** is a load bearing gap, the case the builder is tempted to fill as "local wiring": it decides the source of an AC constrained value, so treat it as a missing load bearing section and ask; never invent the source. (Timezone sourcing is one illustration; apply it to every produced value.)
 
-A gap from either pass → don't guess; ask. The options depend on whether the gap is **load bearing** (a data model, API surface, security model, provider, the feature's behavior, or an unnamed source for a required value, the decisions `/architect` owns) or a **local implementation detail** the spec already governs (a pagination size, a sort order, a label):
+A gap → ask. Options depend on whether it is **load bearing** (data model, API surface, security model, provider, feature behavior, or an unnamed source for a required value) or a **local detail** the spec already governs (pagination size, sort order, label):
 
-- **question**: "The spec for this is missing `<section>`. I need it to build correctly. How do you want to proceed?"
+- **question**: "The spec for this is missing `<section>`. How do you want to proceed?"
 - **header**: "spec gap"
-- **Load bearing section missing** → `Update the spec first` (recommended: end with a paste ready `/architect <feature>: fill in <section>` handoff) · `Tell me the answer now` (engineer supplies it inline; **record it in the spec before building**, below). `Use your best judgment` is NOT offered for a load bearing gap: inventing one of these is exactly the decision `/architect` owns, and it must be persisted, not left in the chat.
-- **Local implementation detail missing** → the above two, plus `Use your best judgment` (proceed on a stated assumption, surfaced in the report for review). This stays only for details the spec already governs, never for the load bearing list.
+- **Load bearing** → `Update the spec first` (recommended: paste ready `/architect <feature>: fill in <section>`) · `Tell me the answer now` (persist it before building, below). `Use your best judgment` is NOT offered here (inventing one of these is `/architect`'s call, and it must be persisted, not left in chat).
+- **Local detail** → the above two, plus `Use your best judgment` (proceed on a stated assumption, surfaced in the report). Local only, never the load bearing list.
 
-**Persist a load bearing answer before building.** On `Tell me the answer now` for a load bearing gap, record the engineer's answer in the spec before you build, so a known decision never stays only in the chat:
-- The governing spec is a normal deliberated spec (`Proposed`/`In Progress`/`Accepted`) → this is a spec content gap `/develop` cannot fill; treat it like `Update the spec first` and route to `/architect <feature>: fill in <section>` (paste ready handoff), then resume once the spec has it. `/develop` does not write content into a deliberated spec.
-- The governing spec is already `Assumed` (you are here via the Step 0 escape hatch) → append the answer to that `Assumed` spec's `## Assumption built on` (the one narrow write `/develop` owns), then build. It still needs ratification like any `Assumed` spec.
-- There is no spec at all (you passed Step 0 as "no real decision here" but a load bearing gap has now surfaced) → this is a decision owed after all: go back to the Step 0 panel and either `Architect it first` or `Build now, record it as an assumed spec` (write the `Assumed` spec, folding this answer into it), then build.
+**Persist a load bearing answer before building** (`Tell me the answer now`), so a known decision never stays only in chat: deliberated spec (`Proposed`/`In Progress`/`Accepted`) → `/develop` can't write its content, route to `/architect <feature>: fill in <section>` and resume. Already `Assumed` → append to its `## Assumption built on` (the one write `/develop` owns), then build. No spec (you passed Step 0 as "no real decision") → a decision is owed after all: back to the Step 0 panel (`Architect it first`, or `Build now, record it as an assumed spec` folding this answer in).
 
 ### Step 2.5: Explore before building (isolate the reading, the top monorepo win)
 
@@ -73,7 +70,7 @@ Only when you genuinely need the current usage/setup/API of a tool the spec alre
 
 **Gather remaining inline answers** (the Step 2 spec gap answer, UI asset and design direction questions, an ambiguous business rule) before any build handoff; they need the engineer.
 
-**With the Step 2.5 map in hand, the build is a write step you do inline on the main thread.** Do not spawn a subagent to write code; the main thread does all the building. (Reading to locate files is the only thing offloaded, in Step 2.5; the writing stays here.) A normal feature slice, a page, an endpoint, a very large single build, and a big multi file rollout are all built inline, just sequenced sensibly.
+**With the Step 2.5 map in hand, the build is a write step done inline on the main thread** (only the file locating read was offloaded, in Step 2.5). Do not spawn a subagent to write code, even for a very large or multi file build; sequence it sensibly.
 
 Tracks:
 
@@ -99,13 +96,12 @@ Tracks:
 
 - **Only mark what actually landed.** Confirm first: files written, code present and typechecking; data layer task → migration applied and schema confirmed live, not merely generated. Interrupted or half done sub task → leave the task unchecked, keep the feature `in-progress`, report exactly what's incomplete and why. Never mark a task `done` on an unverified or incomplete build.
 - **Tick atomic tasks in the spec, milestones in the scope** (only what you verified built, only in the Step 0 scope file): each completed `## Build plan` task in the spec; a milestone sub box when its spec tasks are done; the `Build it` box when all milestones are done; fill the pointer line (`code in <path>`). No spec feature → tick its scope checkbox(es) directly.
-- **Who closes to `done` depends on the workflow tier** (the effective tier: the feature's own tier tag if set, else the scope header `**Workflow:**` default; no scope → infer as in the recommendation step):
-  - **Lean / Medium / Full** → do NOT tick `Verify it` or `Test it` and do NOT set `done`; leave the status `in-progress` (built but unverified is not `done`) and point to `/check verify <feature>` next. `Lean` closes when `/check verify` passes; `Medium`/`Full` close at `/test` (with verify passed).
-  - **Vibe** → there is no `Verify it`/`Test it` step. Once the build actually landed and your build-time self-check passed (typecheck/build green; UI rendered and eyeballed if you could; data migration applied and schema confirmed live), you may set the feature `done` yourself. This is the one tier where `/develop` closes a feature, because the engineer chose to opt out of separate verification for throwaway work.
-  - **All tiers**: an `Assumed` governing spec blocks `done` regardless (see the done gate below); leave it `in-progress` until `/architect` ratifies.
-- **Mirror `done` onto the governing spec.** When (and only when) the feature reaches `done` (every sub task checked, and the tier's required stages passed, which at `Vibe` is just the build plus self check), advance the spec's `**Status**:` line `In Progress` → `Accepted` ("done and dusted"; never while `in-progress`), surgically per Artifact ownership: read it again first; not `In Progress` (already `Accepted`, `Superseded`, `Assumed`) → flag, don't clobber. (At `Lean`/`Medium`/`Full` the closing skill, `/check verify` or `/test`, mirrors this instead, since `/develop` leaves those `in-progress`.)
-- **The done gate: an `Assumed` spec blocks `done`.** A feature governed by an `Assumed` spec cannot be marked `done`. This is structural: `/develop` only ever moves a spec `In Progress` → `Accepted`, never `Assumed` → `Accepted`, so an `Assumed` spec cannot reach `Accepted` until `/architect` ratifies it (clearing `Assumed`). Leave the feature `in-progress` with its `assumed decision (spec NNNN)` note, and tell the engineer ratification is owed before it can close.
-- **Emit verify steps, then ASK where they go (every run, never save automatically).** Derive concrete verification steps from the spec's acceptance criteria, actionable and specific, each tied to its `AC-N`, not vague advice (e.g. "visit `/signup` → sign up → expect redirect to `/auth/verify-email` → AC-1", "run `<migrate cmd>` → query confirms tables live → AC-4"). **Also derive one step per row of the spec's `## Feature design` Value sourcing table**, so the behavioral layer (which is the real correctness guarantee, the gate is only design time) exercises each value's source, especially the edge that breaks if the source is wrong. A sourced value that changes with an input, timezone, locale, currency, or tenant gets a step that varies that input and checks the output (e.g. "value `today` is sourced from the request's timezone → sign in from two timezones, confirm the streak boundary follows the caller, not stored data"). This is how a mis sourced value like spec 0002's timezone bug gets caught even if the gate missed it. Always present this panel; write `verify.md` only on "Save" (single select; `AskUserQuestion` on Claude Code):
+- **Who closes `done` depends on the effective workflow tier** (feature's own tier tag if set, else the scope header `**Workflow:**` default; no scope → infer as below):
+  - **Lean / Medium / Full** → do NOT set `done`; leave `in-progress` and point to `/check verify <feature>` next. `Lean` closes when `/check verify` passes; `Medium`/`Full` at `/test`.
+  - **Vibe** → no verify/test step; once the build landed and your self check passed (typecheck/build green; UI rendered and eyeballed if you could; migration applied and schema live), set `done` yourself. The one tier where `/develop` closes a feature (the engineer opted out of separate verification).
+  - **Every tier**: an `Assumed` governing spec blocks `done`, structurally, since `/develop` only moves a spec `In Progress` → `Accepted`, never `Assumed` → `Accepted`. Leave it `in-progress` with its `assumed decision (spec NNNN)` note until `/architect` ratifies.
+- **Mirror `done` onto the governing spec.** Only when the feature reaches `done` (all sub tasks checked, the tier's required stages passed, at `Vibe` just build + self check), advance the `**Status**:` line `In Progress` → `Accepted`, surgically per Artifact ownership (read it again first; not `In Progress`, e.g. `Accepted`/`Superseded`/`Assumed` → flag, don't clobber). At `Lean`/`Medium`/`Full` the closing skill (`/check verify` or `/test`) mirrors this instead.
+- **Emit verify steps, then ASK where they go (every run, never save automatically).** Derive concrete steps from the ACs, specific and each tied to its `AC-N` (e.g. "visit `/signup` → sign up → expect redirect to `/auth/verify-email` → AC-1"). **Also one step per row of the spec's Value sourcing table**, so the behavioral layer (the real correctness guarantee; the gate is only design time) exercises each value's source, especially the edge that breaks if it is wrong (vary the input, timezone, locale, currency, or tenant and check the output). This catches a mis sourced value like spec 0002's timezone bug even if the gate missed it. Present this panel; write `verify.md` only on "Save" (`AskUserQuestion` on Claude Code):
   - **question**: "Save these verify steps to the feature's `verify.md`, or just show them in this summary?"
   - **header**: "Save verify steps?"
   - **options**:
@@ -125,21 +121,13 @@ Tracks:
   - AC-1 … covered by step … · AC-2 … · …
   ```
 - Relay the track's report (the `## /develop complete` block from `ui-guide.md` and/or `logical-guide.md`).
-- **Built on an `Assumed` spec → recommend ratification first.** If a governing spec is `Assumed`, the closing report leads with the ratify handoff, before verify and test, because ratification can find the assumption wrong and force a rebuild (verify/test work against a doomed model is wasted):
+- **Recommend the next steps, scaled to the effective tier** (feature tier tag, else project `**Workflow:**` default, else infer from risk: auth/payments/PII/migrations/money → heavier; a copy tweak, styling, a self contained component → `Vibe`/`Lean`). Surface the tier as an overridable statement, not a gate. **If the spec is `Assumed`, lead with ratification** before verify/test (it can find the assumption wrong and force a rebuild, wasting verify/test work): `/architect <feature>: ratify the assumed <decision>`, and note the feature can't be `done` until ratified. Then:
+  - **Vibe** → nothing after the build; it's `done` (unless `Assumed` blocks it). "Built and self checked, no separate verify or tests. Say if it's higher risk and I'll suggest `/check verify` and tests."
+  - **Lean** → just `/check verify` (closes `done` on PASS); add `/test` only if there's runtime logic worth locking; no `/check review`.
+  - **Medium** → `/check verify`, then `/test` (closes `done`); `/check review` optional.
+  - **Full** → `/check verify`, `/test`, a fresh model `/check review`, then `/document`.
+  - Any tier: `/sync` at merge to promote new conventions into `AGENTS.md`.
 
-  > Built on an assumed decision (spec NNNN, status `Assumed`). Run this next to make it a real decision before you verify and test:
-  > ```
-  > /architect <feature>: ratify the assumed <decision>
-  > ```
-  > This feature can't be marked `done` until the assumption is ratified.
-
-- **Recommend the next steps, scaled to the workflow depth.** Read the effective tier in this precedence: this feature's own tier tag if set, else the project default on the scope header `**Workflow:**` line, else (no scope at all, e.g. a quick standalone `/develop`) infer it from the risk signals you already read (auth, payments, PII, data migrations, external money → heavier; a copy tweak, a styling change, a self contained component → `Vibe`/`Lean`). Then recommend only what that depth calls for, and surface the depth as an overridable statement, not a gate:
-  - **Vibe** → nothing after the build; you already self checked it (typecheck, and rendered the screen if you could). The feature is `done` (you marked it in Step 4, unless an `Assumed` spec blocks it). Say: "Treating this as vibe, so it's built and self checked, no separate verify or tests. Say if it's higher risk and I'll suggest `/check verify` and tests."
-  - **Lean** → recommend just `/check verify` (it marks the feature `done` on PASS); add `/test` only if the change has real runtime logic worth locking; do not mention `/check review`. Say: "Treating this as lean, so I'd just run `/check verify` next. Say if it's higher risk (auth, payments, data) and I'll add `/test` and a `/check review`."
-  - **Medium** → `/check verify`, then `/test` to lock the durable steps (and close it `done`); `/check review` optional.
-  - **Full** → `/check verify`, then `/test`, then a fresh model `/check review`, then `/document`.
-  - Any depth: `/sync` at merge to promote new area conventions into `AGENTS.md`.
-
-  Always end by advising `/clear` before the next feature (the scope, spec, and `AGENTS.md` hold the state, so a fresh session loses nothing; long sessions cost more even when cached). Suggest `/compact` partway through the build if this single feature runs long. (On Claude Code `/clear` / `/compact`; your agent's fresh session equivalent elsewhere.)
+  Always advise `/clear` before the next feature (state lives in files; long sessions cost more even when cached). Suggest `/compact` mid build if this feature runs long.
 
 `/develop` builds; it does not run `/check verify`, `/test`, `/sync`, or `/architect` for you, it points; you decide.
