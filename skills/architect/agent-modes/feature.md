@@ -39,7 +39,7 @@ Always include: the simplest approach (fewest moving parts, shortest time), your
 
 Use the spec template structure (its full text was injected into this prompt by the main agent; do not try to open `spec-template.md` yourself).
 
-Write `## Requirements` and `## Build plan` exactly as specified in `On the acceptance-criteria spine & build plan` under "Expert rules that apply to all modes" (ACs verbatim, ordering shaped by BUILD_APPROACH, migration normally task 1, tasks tagged with the AC they satisfy for full two way traceability).
+Write `## Requirements` and `## Build plan` exactly as specified in `On the acceptance-criteria spine & build plan` under "Expert rules that apply to all modes" (ACs verbatim, ordering shaped by BUILD_APPROACH, the data model is the coherent target and its migration is sized to the feature (one normally; sliced only for a large feature or a thin thread/Facade approach; omitted for a slice touching no schema), tasks tagged with the AC they satisfy for full two way traceability).
 
 Include `## Feature design` after `## Rationale`. Every field below is required; leave none as a placeholder:
 
