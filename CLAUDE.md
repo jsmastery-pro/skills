@@ -6,6 +6,7 @@ A collection of Claude Code skills encoding a phase based engineering workflow. 
 
 - **The engineer decides; the AI recommends.** Any AI initiated verification or critique (e.g. `/architect`'s cross model spec check) is *offered*, never run or skipped on the engineer's behalf. Whatever such a check finds, a gap, a load bearing decision, a fix, is *surfaced to the engineer to decide*, never silently resolved or auto applied. A check the engineer invokes directly (`/check verify`, `/check review`) is already their choice to run, and still reports rather than auto fixes.
 - **Every user facing question carries exactly one recommended option** with a one line why (make the call, let them override). Never a neutral menu, never a cold question, never a silent decision.
+- **Keep skills lean.** A skill loads in full on its path every run, so every line is a recurring cost. Cut lines that don't change the agent's behavior, put the reasoning in specs, name concepts instead of explaining them, and split out only rare, long content. Full guidance: [`docs/conventions.md`](docs/conventions.md). Run `npm run check` before committing skill edits.
 
 ## Stack
 
