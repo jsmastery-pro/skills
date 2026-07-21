@@ -59,7 +59,7 @@ Warnings, not hard blocks, but surface them.
 
 ### Step 0: The spec gate (always first)
 
-Is a decision owed and unrecorded? Do NOT judge this by introspection ("do I feel like I'm inventing something?"), the build model rationalizes a real decision as "just wiring" and waves it through (spec 0002). Use a positive **input coverage** test, which is mechanical and harder to talk yourself out of:
+Is a decision owed and unrecorded? Do NOT judge this by introspection ("do I feel like I'm inventing something?"), the build model rationalizes a real decision as "just wiring" and waves it through. Use a positive **input coverage** test, which is mechanical and harder to talk yourself out of:
 
 > **Enumerate every value this build must produce, compute, or display (from the acceptance criteria and the spec's design). For each, does the spec name where it comes from (an input, a DB column, a derivation from a named value, a prior decision)? Any required value with no named source is an owed decision.**
 

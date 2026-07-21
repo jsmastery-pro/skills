@@ -33,7 +33,7 @@ Spec status behaves one of two ways, decided by whether a buildable scope featur
 
 A spec documenting already shipped work (the "already built" path, or a linked feature already `existing`) is born `Accepted`.
 
-**The `Assumed` status.** `/develop` may create a spec in status `Assumed` when the engineer chooses to build before a load bearing decision is deliberated (see spec 0001). It records the assumption the build used, not a deliberated decision, and it blocks the feature from `done`. Only `/architect` clears it, by ratifying (below). `/architect` never creates an `Assumed` spec; it only deliberates one that already exists.
+**The `Assumed` status.** `/develop` may create a spec in status `Assumed` when the engineer chooses to build before a load bearing decision is deliberated. It records the assumption the build used, not a deliberated decision, and it blocks the feature from `done`. Only `/architect` clears it, by ratifying (below). `/architect` never creates an `Assumed` spec; it only deliberates one that already exists.
 
 Writes no code. Never updates `AGENTS.md`/`CLAUDE.md` (/sync owns that).
 
@@ -43,7 +43,7 @@ The main thread runs the whole design conversation AND writes the spec itself. I
 
 - **Read the codebase** (cheapest model, Claude Code `haiku`): a read only scan of existing code when the repo is large (ENHANCEMENT/CROSS-CUTTING). Claude Code: the `scout` type. Returns a compact map, never file dumps.
 - **Fetch from the web** (cheapest model, Claude Code `haiku`): the current tool landscape check and the Agent Skill / MCP discovery, both during the design conversation (Stage c), when a decision needs current facts. Claude Code: the `researcher` type. Returns a compact summary, never raw pages.
-- **Cross check the drafted spec** (its primary job is decision completeness: finding values an action must produce whose source the spec never names, and decisions the builder would otherwise invent, see spec 0002): a read only pass that reads the finished spec and returns a critique, writing nothing. `/architect` **always asks** whether to run it (never runs or skips it on the engineer's behalf), recommending `Another model` strongly at `Full`/`Medium` (the tiers where these bugs live), offering it at `Lean`, and recommending `Skip` at `Vibe`; any gap it finds is presented to the engineer with a recommended fix for them to decide, not auto resolved. See *After the spec is written*.
+- **Cross check the drafted spec** (its primary job is decision completeness: finding values an action must produce whose source the spec never names, and decisions the builder would otherwise invent): a read only pass that reads the finished spec and returns a critique, writing nothing. `/architect` **always asks** whether to run it (never runs or skips it on the engineer's behalf), recommending `Another model` strongly at `Full`/`Medium` (the tiers where these bugs live), offering it at `Lean`, and recommending `Skip` at `Vibe`; any gap it finds is presented to the engineer with a recommended fix for them to decide, not auto resolved. See *After the spec is written*.
 
 Web fetching happens once, at the point a decision needs it (the Stage (c) landscape and tool discovery checks). The links those checks return are written into the spec's References for a human to follow later; the AI never fetches them again, not during the cross check, not in /develop, not in /audit. No subagent ever writes to the spec; the main thread does all writing and all fixes.
 
