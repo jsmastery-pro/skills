@@ -97,10 +97,10 @@ Out of scope for the current build pass, kept so the plan stays honest.
 | State | Set by | The feature shows |
 |---|---|---|
 | `planned` · needs a decision | `/scope` | one box: `Design it (spec): /architect <feature>` |
-| `in-progress` (designed) | **`/architect` at spec capture** | `Design it` ticked; spec linked; `Build it: /develop <feature>` + **2 to 5 milestones rolled up from the spec**; `Verify it` + `Test it` boxes; any surfaced follow-up enrolled |
+| `in-progress` (designed) | **`/architect` at spec capture** | `Design it` ticked; spec linked; `Build it: /develop <feature>` + **2 to 5 milestones**; the tier's closing boxes (`Verify it` Lean+, `Test it` Medium+, `Review it` + `Document it` Full); any surfaced follow-up enrolled |
 | `in-progress` (building) | `/develop` | milestone sub-boxes tick one by one; code pointer filled |
 | `in-progress` (verified) | `/check verify` | `Build it` + milestones ticked; `Verify it` ticked |
-| `done` | the tier's last required stage (`Vibe` → `/develop`; `Lean` → `/check verify`; `Medium`/`Full` → `/test`), then `/sync` | the tier's required boxes ticked; `/sync` captures the slice's conventions into `AGENTS.md` |
+| `done` | the tier's last required stage (`Vibe` → `/develop`; `Lean` → `/check verify`; `Medium`/`Full` → `/test`), then `/sync` | required boxes ticked; `Review it`/`Document it` (Full) ticked by `/check review`/`/document`, tracked but not part of the `done` gate (Design/Build/Verify/Test); `/sync` captures conventions |
 
 - **Next step** = the first unticked box (always a command or a tracked milestone).
 - **needs a decision** = run `/architect` first; otherwise straight to `/develop` (or `/audit` for standards & tooling). The tag drops once the spec is captured.

@@ -153,6 +153,8 @@ Update the scope: if this feature is on the scope (`docs/scope/`) and the verdic
 
 On FAIL or BLOCKED, tick nothing and report the gaps. Advise `/clear` before moving to a new feature (the spec and `verify.md` hold the state, so a fresh session loses nothing and stays cheap).
 
+**Confirm the update as a closing gate** (don't skip it): state in the report exactly what you ticked in each file, e.g. "Scope: ticked `Verify it`. Spec: status → `Accepted`." No matching scope row → say so ("no scope row matched `<feature>`"), don't finish silently.
+
 ```
 ## /check verify complete
 

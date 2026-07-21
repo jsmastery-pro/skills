@@ -113,6 +113,8 @@ The inputs to apply:
 
 For `pr`, always show the full text in chat (so it's usable even without `gh`). For the file types, show a short preview and the path. This skill does not commit, push, or merge. It produces the prose.
 
+**Tick the scope box (closing gate).** If the documented feature has a row in `docs/scope/`, tick its `Document it` box and confirm it in the report ("Scope: ticked `Document it`"). No matching row → say so. This is the only scope edit `/document` makes; it writes no code or specs.
+
 ---
 
 ## Reference files
