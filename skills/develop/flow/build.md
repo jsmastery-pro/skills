@@ -45,8 +45,8 @@ A gap → ask. Options depend on whether it is **load bearing** (data model, API
 
 Locating files to touch and patterns/interfaces to match and reuse means reading code, the top context cost in a large or monorepo repo (inline, every opened file stays in the main context all session). Isolate it in a read only subagent that returns a compact map (~1 to 2k tokens).
 
-- **Skip it** when the change is tiny and you know the file, and on a fresh (just cleared) session where context is still light: inline reading is then fast and mostly cache cheap, while a subagent adds spawn latency for little saving. It only pays when context is the scarce thing, not on every build.
-- **Run it** when the reading would genuinely bloat the main context: a large or monorepo repo, many files, an unfamiliar area, or a session already carrying a lot.
+- **Skip it** when the change is tiny and you know the file, or on a fresh session where context is light: inline reading is fast and cache cheap, and a subagent only adds spawn latency. It pays only when context is the scarce thing.
+- **Run it** when the reading would bloat the main context: a large or monorepo repo, many files, an unfamiliar area.
 
 Spawn a read only exploration subagent (Claude Code: the `scout` subagent type, which is read only and pins its model to a fast, low cost tier; else Cursor `Explore`, Antigravity `research`, Codex `spawn_agent`; else a plain subagent, or inline if your agent has none). Where the type does not pin it, set its model explicitly to a fast, low cost tier and do not let it inherit this session's model. Tools `Read`/`Grep`/`Glob` only, no `Edit`/`Write`. Brief: target workspace, exact sub task, the spec's key interfaces; return only a compact map, files to create/edit (paths), patterns/conventions to match (`file:line`), symbols/types/helpers to reuse, and gotchas, no file contents or dumps.
 

@@ -174,6 +174,7 @@ Then update the feature's **status**, in the `At-a-glance` table AND beside its 
 - **Attribution across features and workspaces.** Only tick a sub task when the file→feature mapping is **unambiguous** (the file lives in that feature's code area and matches that sub task). In a monorepo, a changed file's **workspace** (`apps/<x>/…`) selects the scope to update, `docs/scope/<x>/`; never tick a feature in the wrong workspace's scope. If an area maps to more than one feature, do not guess; note `ambiguous: <area> → <featureA> / <featureB>` under `SCOPE_RECONCILED`.
 - **Idempotent**: a box already `[x]` stays `[x]`; running it again changes nothing.
 - **Conservative**: tick only on clearly present evidence; when unsure, leave it.
+- **Git**: if root `AGENTS.md` `## Git` says `integration: on` and `commit` is not `manual`, offer to commit the reconciliation with a one line subject (`chore(sync): reconcile docs`) plus the `Co-Authored-By` trailer; never push.
 
 ### 7. Report
 

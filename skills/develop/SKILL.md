@@ -55,6 +55,8 @@ Before mutating anything (skip silently if solo, offline, or not using git): `gi
 
 Warnings, not hard blocks, but surface them.
 
+**Git integration:** if the nearest `AGENTS.md` `## Git` says `integration: on`, read `flow/git.md` and follow it (branch before building, commit as milestones land); absent or `off` → do no active git.
+
 ### Step 0: The spec gate (always first)
 
 Is a decision owed and unrecorded? Do NOT judge this by introspection ("do I feel like I'm inventing something?"), the build model rationalizes a real decision as "just wiring" and waves it through (spec 0002). Use a positive **input coverage** test, which is mechanical and harder to talk yourself out of:
