@@ -4,6 +4,8 @@ Read this only when the nearest `AGENTS.md` `## Git` block says `integration: on
 
 Read the setting: `integration`, `branch prefix` (default `feat/`), `commit` (`per-milestone` default, `end-of-build`, or `manual`). Local ops (branch, commit) are offers with a recommendation; **push and PR always confirm** (outward) and PR is `/document`'s job, not this skill's.
 
+**Ensure a repo exists first.** If integration is on and the project is not yet a git repo (`git rev-parse` fails), run `git init` before any branch or commit, and stage what is already there for the first commit. `/audit` normally does this the moment integration is turned on; this is the backup for a project that reached a build without it.
+
 ## Branch (before building, in the freshness & collaboration check)
 
 - On the default branch (`main`/`master`) → **offer to branch** (recommended): `<prefix><feature-slug>` from the scope feature name (kebab case; e.g. `feat/accounts-sign-in`). Never build on the default branch.

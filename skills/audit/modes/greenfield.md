@@ -15,7 +15,7 @@ Tooling (asked here, installed by `/develop tooling`):
 - Checks before commit: lint + format + typecheck on every commit (suggested) · format only · none.
 - Testing gate (captured as the convention, the runner is set up by `/test`): unit + integration with a framework (suggested) · typecheck + manual `/check verify` only · tests first (TDD).
 - Continuous integration: a basic CI check on push (lint, typecheck, test) (suggested) · not yet · already configured.
-- Git integration (recorded as the `## Git` block in AGENTS.md): let the workflow branch per feature, commit as milestones land, and drive PRs (`on`, suggested for solo/most) · manage git yourself (`off`). If `on`, also capture `branch prefix` (default `feat/`) and `commit` granularity (`per-milestone` (suggested) · `end-of-build` · `manual`). Push and PRs always confirm regardless.
+- Git integration (recorded as the `## Git` block in AGENTS.md): let the workflow branch per feature, commit as milestones land, and drive PRs (`on`, suggested for solo/most) · manage git yourself (`off`). If `on`, also capture `branch prefix` (default `feat/`) and `commit` granularity (`per-milestone` (suggested) · `end-of-build` · `manual`). Push and PRs always confirm regardless. **On `on`, if the project is not yet a git repo (`git rev-parse` fails), run `git init` now and offer an initial commit of the scaffold and docs, so the repo exists from the moment integration is enabled.** On `off`, never init; the engineer owns git.
 
 Adapt the list: drop what doesn't apply (no CI question for a throwaway prototype, no type strictness for an untyped language); add any stack specific convention worth pinning.
 

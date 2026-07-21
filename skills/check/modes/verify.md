@@ -146,7 +146,7 @@ Overall verdict PASS requires every behavior verified with cited evidence, and (
 
 ### Step 5: Report
 
-Update the scope: if this feature is on the scope (`docs/scope/`) and the verdict is PASS, tick its `Verify it` box. What happens next depends on the workflow tier (the effective tier: the feature's own tier tag if set, else the scope header `**Workflow:**` default):
+Update the scope: if this feature is on the scope (`docs/scope/`) and the verdict is PASS, tick its `Verify it` box. **Also tick, in this feature's `verify.md`, each step you actually ran and that passed** (`- [ ]` → `- [x]`); leave a step unticked if it failed or you could not run it. This is per feature: only the feature you verified gets ticked, other features' `verify.md` files stay unchecked until you verify them (expected, not a miss). What happens next depends on the workflow tier (the effective tier: the feature's own tier tag if set, else the scope header `**Workflow:**` default):
 
 - **Lean** → `/check verify` is the last required stage, so on PASS also set the feature `done` (At a glance table and heading) and mirror the governing spec's `**Status**:` line `In Progress` → `Accepted` (surgically; not `In Progress` → flag, don't clobber). Exception: an `Assumed` spec blocks `done`, leave it `in-progress` and point to `/architect <feature>` to ratify first. Then point to `/sync`.
 - **Medium / Full** → leave `Test it` and the `done` status to `/test` and `/sync`; point to `/test <feature>` next.
