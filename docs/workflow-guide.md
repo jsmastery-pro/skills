@@ -131,8 +131,6 @@ You run `develop`. This is where the most branching happens, and it happens in a
 - **No real decision here, build directly.** You have judged there is nothing to decide, so it builds.
 - **Build now, record it as an assumed spec.** You want to keep moving, but the decision is real. So `develop` writes the assumption down first, as a small spec marked `Assumed`, then builds against it. This is the important part: the decision lives in the repository, not in the chat. The feature cannot be marked done until `architect` ratifies that assumption later, which is what keeps the override honest.
 
-The old behavior let you skip and "backfill later," which left the real decision only in the conversation. That was the one hole in the promise that every decision lives in a file, and the `Assumed` spec closes it.
-
 **Next, what kind of work is this.** `develop` sorts the task into user interface work, backend work, or both. Sign in is both, the sign in and sign up screens plus the session logic behind them, so it runs each part.
 
 **The backend part** is built in a fixed order of phases, each with a senior rule baked in.

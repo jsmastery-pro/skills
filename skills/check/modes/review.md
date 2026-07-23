@@ -98,7 +98,7 @@ Paths and cheap signals only; the subagent reads on demand. Using your file tool
 - `TESTS = none-by-design`: `test-preferences.json` has `"tool": null` and a `"gate"` (e.g. `"typecheck+verify"`), or the nearest `AGENTS.md`/governing spec states a "no test runner" convention. Deliberate: the gate is typecheck + `/check verify`, not a suite.
 - `TESTS = none-yet`: no `test-preferences.json` at all, and no stated convention. A genuine gap.
 
-Pass to the subagent: project-context contents inline (read `AGENTS.md`, canonical, or `CLAUDE.md` as fallback; short), the 3 recent spec paths, the base ref / merge-base, and the diff scope. The subagent reads specs only if they govern the changed code, runs `git diff` itself, and reads the changed files and their tests.
+Pass to the subagent: project-context contents inline (read `AGENTS.md`, canonical, or `CLAUDE.md` as fallback; short), the 3 recent spec paths, the base ref / merge-base, and the diff scope. The subagent reads a governing spec's **build-spec sections only** (`index.md`: Requirements, Decision, the design section, Consequences), the contract to review against; not `rationale.md` (decision history), unless a specific finding hinges on the reasoning. It runs `git diff` itself and reads the changed files and their tests.
 
 ### 4. Spawn the review subagent: on the contrasting Claude model
 
@@ -143,6 +143,8 @@ Show all blockers and majors in chat; collapse minors/nits to a count with a poi
 
 For a high-stakes change (verdict was Blocked or Changes requested, or the change is high/critical severity), append one line:
 > "For an independent second opinion from a different provider, switch your model with `/model` (or paste the diff into another assistant) and re-run /check review, no API keys needed."
+
+**Tick the scope box (closing gate).** If the reviewed feature has a row in `docs/scope/`, tick its `Review it` box (the review ran; the box marks that, not that it passed) and confirm it in the report: "Scope: ticked `Review it`." No matching row → say so ("no scope row matched `<feature>`, tick it manually or enroll it"). This is the only scope edit review makes; it writes no code, tests, or specs.
 
 This skill is complete after relaying. It does not fix the findings (the implementer does that) and does not invoke other skills. If the engineer wants the issues fixed, that's a normal follow-up; /check review's job is the assessment.
 

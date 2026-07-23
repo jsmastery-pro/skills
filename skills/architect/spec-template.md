@@ -143,8 +143,9 @@ Do not repeat the pros/cons list, explain the reasoning. 1 to 3 paragraphs.>
      criteria in ## Requirements. Each task names the AC(s) it satisfies, so every AC traces to at least
      one task and every task traces to an AC. The ORDER and slicing reflect the project's build approach
      (Tracer Bullet, Skateboard, Facade, Journey, or a variant, read in pre-flight), reasoned about for
-     this feature rather than by a fixed recipe. The data-model migration is normally task 1 (from the
-     confirmed data model) and stays early; a UI-first Facade/prototype approach may lead with the shell.
+     this feature rather than by a fixed recipe. The data model sketch is the coherent target; its
+     migration is sized to the feature (one migration normally; sliced across slices for a large feature
+     or a thin thread Tracer Bullet, deferred under Facade; omitted for a slice touching no schema).
      When a scope feature row links this spec, these tasks are also written into that row's sub-tasks;
      with no scope row, they live here as the source of truth (see /architect's derive-tasks step). -->
 

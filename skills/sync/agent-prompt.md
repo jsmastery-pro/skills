@@ -162,6 +162,8 @@ Evidence per sub task type (tick `[ ]` → `[x]` when the evidence is clearly pr
 - **Build it (+ milestones)** → the feature's code exists in its area (milestone chunks present); `/develop` usually ticks these itself.
 - **Verify it** → a `verify.md` beside the spec, or a recorded passing runtime verification for the feature.
 - **Test it** → test files cover this feature's area (search the area + test dirs).
+- **Review it (fresh model)** → a findings file for this feature under `docs/reviews/` (`/check review`'s output).
+- **Document it** → a PR body, a `CHANGELOG.md` entry, or a release note covering this feature (`/document`'s output).
 - **SEO & metadata** → metadata/structured data present on the feature's pages.
 - **Sync (record conventions)** → the area's `AGENTS.md` exists and reflects the feature.
 - **Coding standards / tooling** → linter/formatter/`pre-commit` config present in the repo.
@@ -172,6 +174,7 @@ Then update the feature's **status**, in the `At-a-glance` table AND beside its 
 - **Attribution across features and workspaces.** Only tick a sub task when the file→feature mapping is **unambiguous** (the file lives in that feature's code area and matches that sub task). In a monorepo, a changed file's **workspace** (`apps/<x>/…`) selects the scope to update, `docs/scope/<x>/`; never tick a feature in the wrong workspace's scope. If an area maps to more than one feature, do not guess; note `ambiguous: <area> → <featureA> / <featureB>` under `SCOPE_RECONCILED`.
 - **Idempotent**: a box already `[x]` stays `[x]`; running it again changes nothing.
 - **Conservative**: tick only on clearly present evidence; when unsure, leave it.
+- **Git**: if root `AGENTS.md` `## Git` says `integration: on` and `commit` is not `manual`, offer to commit the reconciliation with a one line subject (`chore(sync): reconcile docs`) plus the `Co-Authored-By` trailer; never push.
 
 ### 7. Report
 
