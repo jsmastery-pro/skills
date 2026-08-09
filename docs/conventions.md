@@ -23,7 +23,7 @@ The report a skill prints at the end is read by a human scanning fast, so it lea
 - **Heads up**: blockers, or anything the engineer must review or decide, **only when there is one** (never a manufactured section).
 - A **pointer**, not a restatement: name the file that holds the detail.
 
-Cut the field dump and the checklist of yeses (`Semantic HTML: correct`, `Keyboard: navigable`) Â· that is confirmation noise or already in a file, not something to reprint or relocate. Keep only the fields that are actionable for that skill (a PASS/FAIL verdict and its gaps, findings to fix, items invented for the engineer to review).
+Cut the field dump and the checklist of yeses (`Semantic HTML: correct`, `Keyboard: navigable`) · that is confirmation noise or already in a file, not something to reprint or relocate. Keep only the fields that are actionable for that skill (a PASS/FAIL verdict and its gaps, findings to fix, items invented for the engineer to review).
 
 ## When to add a file
 

@@ -137,7 +137,7 @@ When `scope.md` outgrows a comfortable scan (roughly a dozen plus features acros
 Lead with what the pass produced and the first step; the approach, tier, and full list are in the scope file itself (per `docs/conventions.md`). Template:
 
 ```
-## /scope <plan | replan | add> Â· <product, one line>
+## /scope <plan | replan | add> · <product, one line>
 
 **<N> features planned (<M> already on the scope, <K> deferred), build approach <name>, workflow <tier>.**
 Next: /clear, then <the first unticked box, usually `/architect <first feature>`, or `/audit` if a brownfield repo has no root AGENTS.md>

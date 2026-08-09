@@ -120,12 +120,12 @@ Resolve this skill's folder to an absolute path (you, the main agent, already re
 If the subagent errored or wrote no findings file, report the failure and offer to re-run; don't relay an empty or fabricated review. Otherwise it writes the findings file and returns a compact summary. Relay:
 
 ```
-## /check review <feature> Â· <Approve | Approve with nits | Changes requested | Blocked>
+## /check review <feature> · <Approve | Approve with nits | Changes requested | Blocked>
 
-Blockers (<count>) Â· fix before merge:
-- <file:line Â· one line>
+Blockers (<count>) · fix before merge:
+- <file:line · one line>
 Major (<count>):
-- <file:line Â· one line>
+- <file:line · one line>
 <count> minor/nits · strengths: <one line> · reviewed by <reviewer-model> over <N> files. Full findings in docs/reviews/<date>-<branch>.md.
 ```
 

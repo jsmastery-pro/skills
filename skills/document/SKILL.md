@@ -104,9 +104,9 @@ The inputs to apply:
 Lead with the type and where it landed; for `pr` the body IS the deliverable, so show it in full (per `docs/conventions.md`). Template:
 
 ```
-## /document <pr | changelog | release-note | postmortem> Â· <PR body below | CHANGELOG.md | docs/releases/<v>.md | docs/postmortems/<file> | PR #N updated>
+## /document <pr | changelog | release-note | postmortem> · <PR body below | CHANGELOG.md | docs/releases/<v>.md | docs/postmortems/<file> | PR #N updated>
 
-<for pr: the title + full body, ready to paste Â· always shown in chat so it works without gh>
+<for pr: the title + full body, ready to paste · always shown in chat so it works without gh>
 <for the others: a 2 to 3 line preview>
 Scope: ticked `Document it`   (or "no scope row matched"; omit if not on the scope)
 ```

@@ -189,11 +189,11 @@ Update the scope: if this feature is on the scope (`docs/scope/`) and the suite 
 Lead with the result; the per file list and AC traceability are in the test files (per `docs/conventions.md`). Template:
 
 ```
-## /test <feature> Â· <all N passed | Y failed | not run>
+## /test <feature> · <all N passed | Y failed | not run>
 
 **Wrote <N> tests across <M> files (happy path / edges / errors / a11y). <X passed, Y failed via `<RUN_COMMAND>` | not run>.**
 Next (this feature's next unticked box in the scope): all pass → `/check review` if a `Review it` box remains, else `/sync` or the next feature · Y failed → fix them, or `/debug <feature>` if the code is wrong · not run → `<RUN_COMMAND>`
-Heads up: <bugs the tests caught Â· file:line + the failing expectation> · <uncovered AC-N or area, why>   (omit the whole line if none)
+Heads up: <bugs the tests caught · file:line + the failing expectation> · <uncovered AC-N or area, why>   (omit the whole line if none)
 ```
 
 Only when `RUN_AFTER = no`, append the run steps: `<setup if INSTALL=deferred>` then `<RUN_COMMAND>` (watch one file with `<focused command>`). The framework choice is in `test-preferences.json`; the per test detail and AC traceability live in the test files, so don't reprint them.

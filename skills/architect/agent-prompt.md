@@ -237,7 +237,7 @@ Read MODE_FILE_PATH now and follow that mode file as the only mode specific inst
 Lead with the decision; the mode, operation, and follow-up detail are in the spec (per `docs/conventions.md`). This block feeds the preview and the spoken summary in `after-subagent.md`. Template:
 
 ```
-## /architect complete Â· <create | update | supersede> <mode> spec
+## /architect complete · <create | update | supersede> <mode> spec
 
 **Decided: <one sentence>.** Key tradeoff: <one sentence>.
 Spec written to <file path>.

@@ -127,7 +127,7 @@ The inputs to apply:
 Lead with what it reconciled in one line; then list only what needs the engineer (per `docs/conventions.md`). The edits themselves are in the files. Template:
 
 ```
-## /sync complete Â· reconciled <N> changed files
+## /sync complete · reconciled <N> changed files
 
 **Updated <AGENTS.md files · scope features · spec statuses> to match the diff.**   (or "everything already current, nothing to sync")
 Heads up (need you):

@@ -149,7 +149,7 @@ On FAIL or BLOCKED, tick nothing and report the gaps. Advise `/clear` before mov
 Lead with the verdict; list only what failed or is owed; point to verify.md for the rest (per `docs/conventions.md`). Template:
 
 ```
-## /check verify <feature> Â· <PASS | FAIL | BLOCKED>
+## /check verify <feature> · <PASS | FAIL | BLOCKED>
 
 **<PASS: all N behaviors met, every specced surface built · FAIL: M of N failed · BLOCKED: K couldn't be exercised>.**   (never PASS or ✅ if you did not actually run the app; say "not started")
 Next (this feature's next unticked box in the scope): PASS → `/test <feature>` if a `Test it` box remains, else the next feature · FAIL → `/debug <feature>` · missing surface → `/develop <feature>` · BLOCKED → what's needed to run it

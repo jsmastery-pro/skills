@@ -90,7 +90,7 @@ For a hunt that is not trivial, spawn an investigation subagent so the iterative
 Lead with the root cause and the fix; the reproduction and evidence are the trail, not the headline (per `docs/conventions.md`). Template:
 
 ```
-## /debug complete Â· <the bug, one line>
+## /debug complete · <the bug, one line>
 
 **Root cause: <the proven cause>. Fixed by <the minimal change, files touched>.**
 Next: /test <feature>   (lock in the regression test, added inline or handed over)
