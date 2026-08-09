@@ -6,3 +6,4 @@ node_modules
 # Ignore everything under .claude/ EXCEPT the shipped role subagents (Layer B model pinning).
 .claude/*
 !.claude/agents/
+docs/tickets
