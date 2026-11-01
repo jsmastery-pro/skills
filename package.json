@@ -20,7 +20,7 @@
   "author": "JavaScript Mastery",
   "type": "module",
   "engines": {
-    "node": ">=18"
+    "node": ">=22.20"
   },
   "scripts": {
     "check": "node scripts/check-portability.mjs",

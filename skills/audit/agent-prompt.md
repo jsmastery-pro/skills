@@ -223,8 +223,8 @@ Be conservative: flag only durable findings you're confident about; when unsure,
 
 ## Stack
 
-- **Language / Runtime**: <e.g. TypeScript, Node 20>
-- **Framework**: <e.g. Next.js 14, Express>
+- **Language / Runtime**: <e.g. TypeScript, Node 24>
+- **Framework**: <e.g. Next.js 16, Express>
 - **Key dependencies**: <3 to 5 most important>
 - **Package manager**: <npm / pnpm / yarn / pip / cargo>
 

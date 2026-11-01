@@ -69,7 +69,7 @@ Still infer the framing, but ASK the design inputs. Within each stage, sort ever
 - **External integrations**: providers, webhooks, idempotency, reconciliation
 - **Library / provider & build vs buy**: central for any feature with a real implementation choice (auth, payments, search, storage, email, realtime); owned by Stage (c), whose rules apply (fresh current options, suggested pick, engineer chooses). For auth the mechanisms are: the project's existing platform/BaaS auth · a hosted auth provider · an auth library you host yourself · roll your own; pick the specific current products at runtime, never a frozen list.
 - **Failure & edge cases**: concurrency, retries, timeouts, partial failure, empty/error/loading states
-- **Performance & scale**: expected volume, pagination, async vs sync, caching
+- **Performance & scale**: expected volume now and at 10x, latency or availability targets (ASK; never invent one), pagination, async vs sync, caching
 - **Security & compliance**: PII, encryption, audit logging, rate limiting, regulatory scope
 - **Observability**: what to log, metrics, alerts
 - **Configuration & secrets**: new env vars, feature flags, credentials
@@ -107,7 +107,7 @@ Then walk the stages in order as one continuous, step by step interview. Ask eac
 
 **Stage (e): Security & authorization (walk each rule).** Who may do what, rule by rule (ownership, roles, scoping across tenants and orgs), plus any compliance scope this feature triggers (payments/PII/health).
 
-**Stage (f): Edge cases & failure modes (walk each case).** The handling one failure at a time (concurrency, retries, timeouts, partial failure, empty/error/loading states).
+**Stage (f): Edge cases & failure modes (walk each case).** The handling one failure at a time (concurrency, retries, timeouts, partial failure, empty/error/loading states). When the change reaches live users, also settle its rollout and rollback and the signal that shows it is healthy (fills `Rollout & operations`).
 
 **(UI page features**, topic IS a page/screen: insert a page design stage between (a) and (d) that walks page composition/sections, design system direction, component inventory, and asset strategy (the UI design checklist bullet) one question at a time, suggesting a pick each. No upfront full layout to accept or reject.**)**
 

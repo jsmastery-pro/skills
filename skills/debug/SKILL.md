@@ -1,6 +1,6 @@
 ---
 name: debug
-allowed-tools: Bash, Read, Grep, Glob, Write, Edit, Agent
+allowed-tools: Bash Read Grep Glob Write Edit Agent
 description: "Run /debug to find and fix a bug's root cause: a test failing for an unclear reason, /check verify finding a failure, or behavior being wrong. Runs a reproduce, localize, hypothesize, test, fix, verify loop, makes the minimal fix, and hands a regression test to /test. No features, no extra refactors."
 ---
 

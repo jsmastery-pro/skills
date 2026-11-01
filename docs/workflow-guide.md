@@ -16,7 +16,7 @@ There are nine. You run only the ones a change needs, in whatever order fits.
 | `audit` | Writes the context files that tell every other skill how your project works. |
 | `architect` | Makes a real decision (a stack, a data model, a page design) and writes it as a spec. |
 | `develop` | Builds a feature, user interface or backend, from its spec. |
-| `check` | Confirms a change before merge, by running the real app and by a second review. |
+| `check` | Confirms a change before merge or launch: runs the real app, gets a second review, or checks launch readiness. |
 | `test` | Writes a test suite for the code you just changed. |
 | `document` | Writes the human facing text, a pull request body, a changelog, a release note. |
 | `sync` | Brings the context files, the scope, and the specs back in line with the code. |
@@ -87,7 +87,7 @@ Before it finishes, `scope` makes one more recommendation, how much workflow thi
 - **Prototype.** Just `develop`, nothing after it. You rely on `develop`'s own build time self check, it typechecks the code and renders the screen to look at it when it can, plus your own eye. No `check` verify, no test suite, no review. Because you have chosen to skip separate verification, `develop` marks the feature done itself once it is built and self checked. Good for throwaway prototypes, experiments, and personal projects.
 - **Alpha.** After `develop`, `check` in verify mode on the real running app, which marks the feature done when it passes. No separate test suite or second opinion unless a feature asks for it. Good for low risk features and internal tools you still want proven.
 - **Beta.** After `develop`, `check` in verify mode, then `test`, which closes the feature. No fresh model review by default. Good for most real products.
-- **GA.** After `develop`, `check` in verify mode, `test`, a `check` review on a different model, then a `document` step, and most features are treated as needing a spec. Good for high risk work, payments, sign in, compliance, or a team codebase.
+- **GA.** After `develop`, `check` in verify mode, `test`, a `check` review on a different model, a `check` in ready mode before a feature first meets real traffic, then a `document` step, and most features are treated as needing a spec. Good for high risk work, payments, sign in, compliance, or a team codebase.
 
 So a light tier does not mean skipping `architect`. It means low rigor features rarely need a decision in the first place, so you seldom reach it, and when one does need a decision the gate still routes you there. Every stage after `develop` is a suggestion you run or skip, and `done` is always yours to declare, never a status a skill withholds until boxes are ticked. The `Prototype` tier is simply the one where, having opted out of separate verification up front, `develop` will offer `done` the moment a build self checks. The one thing the workflow still asks at every tier: write a load bearing decision down. A feature built on an assumed decision owes ratification (`architect`), and stays flagged until it gets it, but that flag never blocks you from marking `done`.
 
@@ -173,6 +173,8 @@ You run `test`. It writes a real test suite for the code you just changed, worki
 
 You run `check` in its review mode. It runs a senior code review, and it runs on a different model than the one that wrote the code, because a model reviewing its own work tends to agree with itself. It writes its findings to `docs/reviews/`, sorted from the most serious down to small preferences, and it also says what the change did well. It reads the code, it does not change it.
 
+Before the app first meets real users, you can also run `check` in its ready mode. It asks a different question than review: not whether the code is right, but whether production survives it. It checks, from evidence in the repo, that the expected load is known, that a slow or broken dependency does not take everything down, that backups restore, that someone is alerted when users are hurting, and that a bad release can be rolled back in one step. Anything the repo cannot show, like an on call rota, it lists for you to confirm. It writes the result to `docs/reviews/`, and like every check it is a recommendation, never a gate.
+
 #### Stage 9, write it up
 
 You run `document`. It reads the real commits and the real difference in the code and writes the human facing text, a pull request body, a changelog entry, a release note, whatever the moment needs, and puts each in the right place. It writes no code and no specs.
@@ -240,6 +242,8 @@ The limits matter as much as the features.
 ## Getting started
 
 Install with `npx skills`. Pick the line for your agent.
+
+Needs Node.js 22.20 or later (the `npx skills` minimum).
 
 ```bash
 # Claude Code, installs into .claude/skills, then restart Claude Code

@@ -1,6 +1,6 @@
 ---
 name: scope
-allowed-tools: Bash, Read, Grep, Glob, Write, Edit, Agent, AskUserQuestion
+allowed-tools: Bash Read Grep Glob Write Edit Agent AskUserQuestion
 description: "Run /scope to turn a product idea into a living, coarse scope in docs/scope/ and keep it current: plan a new product, plan the next slice, enroll one named feature, or run with no argument to reconcile after shipping and queue what is next. Seeds WHAT to build; /architect designs, /develop builds."
 ---
 
@@ -51,7 +51,7 @@ Status lifecycle (`/scope` sets initial status; the pipeline advances it):
 
 Workflow tier (one rigor dial per feature, `Prototype` · `Alpha` · `Beta` · `GA`): how much process a feature warrants. ONE project default (recommended once, plan Step 5b, recorded on the scope header `**Workflow:**` line) and a per feature override (a tag beside the heading, e.g. `· GA`, only when a feature differs from the default; no tag = inherit). What the tier drives:
 - **Design time**: higher tier → more likely `Needs spec: yes`, and the spec's cross model decision critic runs (auto at `GA`/`Beta`). `Prototype`/`Alpha` features are often `Needs spec: no`.
-- **After `/develop`** (the verification tail): `Prototype` = nothing (rely on `/develop`'s own build time self check); `Alpha` = `/check verify`; `Beta` = `/check verify` + `/test`; `GA` = adds a fresh model `/check review` + `/document`.
+- **After `/develop`** (the verification tail): `Prototype` = nothing (rely on `/develop`'s own build time self check); `Alpha` = `/check verify`; `Beta` = `/check verify` + `/test`; `GA` = adds a fresh model `/check review` + `/document`, and `/check ready` when the spec has `Rollout & operations`.
 - **What closes `done`** (the last required stage marks it): `Prototype` → `/develop` (build + self check); `Alpha` → `/check verify`; `Beta`/`GA` → `/test`. An `Assumed` spec never blocks `done`; it stays flagged as owing ratification (`/architect`) at every tier.
 
 `/scope` recommends the project default from the risk and size of the feature mix (Step 5b), the same signals `/architect` and `/develop` read; `/develop` reads the effective tier (feature override, else project default, else inferred) to scale the next steps it recommends, so a `Prototype` project is not told to run verify and a `Alpha` project is not told to run a full review chain.

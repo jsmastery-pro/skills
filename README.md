@@ -20,7 +20,7 @@ Run `/debug` anytime something breaks. Run a bare `/scope` anytime to see where 
 | `audit` | Writes the AGENTS.md context files every other skill reads. |
 | `architect` | Makes a load bearing decision and writes it as a build spec in `docs/specs/`. |
 | `develop` | Builds a feature, UI or backend, from its spec. Gates to `/architect` if a decision is owed. |
-| `check` | Confirms a change before merge. `/check verify` runs the real app; `/check review` reads the code on a second model. |
+| `check` | Confirms a change before merge or launch. `/check verify` runs the real app; `/check review` reads the code on a second model; `/check ready` checks it can be run, watched, and rolled back before real traffic. |
 | `test` | Writes a test suite for the code you just changed. |
 | `document` | Writes the PR text, changelog, release note, or postmortem from the real diff. |
 | `sync` | Keeps AGENTS.md, the scope, and spec statuses current after a change. |
@@ -30,7 +30,7 @@ Hardening (systems level failure mode analysis) is temporarily removed and will 
 
 ## Install
 
-Uses [npx skills](https://github.com/vercel-labs/skills). Pick your agent:
+Uses [npx skills](https://github.com/vercel-labs/skills), which needs Node.js 22.20 or later. Pick your agent:
 
 ```bash
 # Claude Code (installs into .claude/skills, then restart Claude Code)
@@ -60,7 +60,7 @@ Each skill's instructions live in its `SKILL.md`, which is what every client rea
 /architect → /develop → /check verify → /test → /check review → /document → /sync
 ```
 
-At the end of `/scope` you also pick a **workflow depth** for the project (override per feature anytime): `Prototype` (just `/develop`, self-checked, for throwaway work), `Alpha` (adds `/check verify`), `Beta` (adds `/test`), or `GA` (adds a fresh-model `/check review` and `/document`). The depth is a *suggested* checking tail after `/develop`, never a track you're locked onto: you're in charge, you run or skip any step and mark a feature `done` when you decide it is. The one thing the workflow asks — at every depth — is that a load-bearing decision gets written down (`/architect`), not that any check be run.
+At the end of `/scope` you also pick a **workflow depth** for the project (override per feature anytime): `Prototype` (just `/develop`, self-checked, for throwaway work), `Alpha` (adds `/check verify`), `Beta` (adds `/test`), or `GA` (adds `/check ready` before a feature meets real traffic, and a fresh-model `/check review` and `/document`). The depth is a *suggested* checking tail after `/develop`, never a track you're locked onto: you're in charge, you run or skip any step and mark a feature `done` when you decide it is. The one thing the workflow asks — at every depth — is that a load-bearing decision gets written down (`/architect`), not that any check be run.
 
 `/scope` fixes what to build. `/architect` designs how, as a spec whose acceptance criteria are the contract; every later step traces back to that contract. `/develop` gates on the spec: if building would mean inventing an undecided design, provider, or data model, it stops and routes you to `/architect`. You can override and build anyway, but the override is not free: the assumption is recorded as an `Assumed` spec in `docs/specs/` and flagged on the feature until `/architect` ratifies it. The flag doesn't block you from marking `done` — it's a standing reminder that a decision still owes ratification, so it never gets silently lost in chat.
 
@@ -74,7 +74,7 @@ The gate is layered, not magic: `/architect` names the source of every value a f
 | Specs | `docs/specs/` | architect |
 | Context files | AGENTS.md (plus a thin CLAUDE.md pointer) | audit, kept current by sync |
 | Design system | `design.md` (art direction; token values live in CSS) | develop |
-| Review findings | `docs/reviews/` | check |
+| Review findings, launch readiness | `docs/reviews/` | check |
 | Tests | your test dirs | test |
 | App code | your source tree | develop |
 | Human docs | PR body, CHANGELOG.md, `docs/releases/`, `docs/postmortems/` | document |
@@ -98,7 +98,7 @@ When: a load bearing choice is unmade (a stack, a data model, a provider, a page
 When: after the decision exists. It gates to `/architect` if a design is owed. Monorepo: builds inside the target workspace using its commands.
 
 **check**: Confirms a change before merge, in two modes.
-When: `/check verify` after `/develop` to run the real app and prove the feature works against the spec; `/check review` before a PR for a senior review on a different model than wrote the code. Any project type.
+When: `/check verify` after `/develop` to run the real app and prove the feature works against the spec; `/check review` before a PR for a senior review on a different model than wrote the code; `/check ready` before a feature or service first meets real traffic, a launch readiness review (capacity, dependency failure, data safety, observability, rollback, security, ownership) modeled on Google SRE's launch checklist and AWS's operational readiness review. Any project type.
 
 **test**: Writes a senior test suite for your uncommitted change and saves your framework choice.
 When: after building a feature or fixing a bug. Monorepo: resolves the framework per package.

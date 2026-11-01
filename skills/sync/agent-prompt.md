@@ -163,6 +163,7 @@ Evidence per sub task type (tick `[ ]` → `[x]` when the evidence is clearly pr
 - **Verify it** → a `verify.md` beside the spec, or a recorded passing runtime verification for the feature.
 - **Test it** → test files cover this feature's area (search the area + test dirs).
 - **Review it (fresh model)** → a findings file for this feature under `docs/reviews/` (`/check review`'s output).
+- **Launch check** → a `*-ready.md` file for this feature under `docs/reviews/` (`/check ready`'s output).
 - **Document it** → a PR body, a `CHANGELOG.md` entry, or a release note covering this feature (`/document`'s output).
 - **SEO & metadata** → metadata/structured data present on the feature's pages.
 - **Sync (record conventions)** → the area's `AGENTS.md` exists and reflects the feature.

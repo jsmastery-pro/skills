@@ -5,16 +5,21 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   portability:
     name: Portability and budgets
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
         with:
-          node-version: 20
+          persist-credentials: false
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
 
       # No dependencies to install: the checker is zero-dependency, stdlib only.
       - name: Run the portability and budget check

@@ -39,5 +39,5 @@ One line, imperative mood, ≤ 72 chars. Match the project's commit convention i
 Rules:
 - Group changes by intent, not by file or commit. A reviewer wants the story, not `git log`.
 - Keep "What" skimmable. A busy reviewer reads it first.
-- If review findings exist for this change, reference accepted residual risks under "Risk & rollout".
+- Fill "Risk & rollout" from the spec's `Rollout & operations` (flag, stages, rollback) and any `*-ready.md` under `docs/reviews/` (open gaps, items still to confirm); if review findings exist, reference accepted residual risks there too. Never invent a rollout.
 - Do not invent test steps. Derive them from the actual tests or the change's behaviour.

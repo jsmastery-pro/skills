@@ -41,7 +41,7 @@ Use the spec template structure (its full text was injected into this prompt by 
 
 Write `## Requirements` and `## Build plan` exactly as specified in `On the acceptance-criteria spine & build plan` under "Expert rules that apply to all modes" (ACs verbatim, ordering shaped by BUILD_APPROACH, the data model is the coherent target and its migration is sized to the feature (one normally; sliced only for a large feature or a thin thread/Facade approach; omitted for a slice touching no schema), tasks tagged with the AC they satisfy for full two way traceability).
 
-Include `## Feature design` after `## Rationale`. Every field below is required; leave none as a placeholder:
+Include `## Feature design` after `## Rationale`. Every field below is required unless it says when to omit it; leave none as a placeholder. Add `Quality targets` under `## Requirements` (spec template) when the conversation settled any:
 
 ```markdown
 ## Feature design
@@ -67,7 +67,10 @@ Include `## Feature design` after `## Rationale`. Every field below is required;
 <Rules that must always hold, enforced at application or DB layer. E.g. "order total = sum of line items", "email is unique per account">
 
 **Security model**:
-<Who can read/write what. Roles, ownership rules, public/private. If the feature touches regulated data, name the compliance scope here.>
+<Who can read/write what. Roles, ownership rules, public/private. Trust boundaries and the abuse cases at each. If the feature touches regulated data, name the compliance scope here.>
+
+**Rollout & operations** (a change that reaches live users; omit before first launch or at Prototype):
+<rollout: flag, staged percentage, or plain deploy · rollback, including config and data · migration steps as expand then contract · the health signal and alert to watch · behavior when each dependency is slow or down>
 
 **Configuration required**:
 - `ENV_VAR_NAME`: purpose (e.g. `<SERVICE>_API_KEY`, the external API key this feature needs)
