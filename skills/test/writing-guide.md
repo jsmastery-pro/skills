@@ -143,7 +143,7 @@ Follow TEST_DIR and FILE_PATTERN exactly, and match any existing test convention
 
 Run from `PACKAGE_ROOT`. Keep your own context small, test output is verbose, so:
 
-- **First run**: use the terse reporter for your tool (`--reporter=dot` for Vitest/Jest, `--reporter=line` for Playwright, `-q` for pytest, `-q` for `go test`). You want pass/fail counts and the failing names, not full passing output.
+- **First run**: use the terse reporter for your tool (`--reporter=dot` for Vitest, `--reporters=summary` for Jest, `--reporter=line` for Playwright, `-q` for pytest, `-q` for `go test`). You want pass/fail counts and the failing names, not full passing output.
 - **On each retry, run only the file(s) that failed**, never the whole suite. E.g. `<RUN_COMMAND> path/to/failing.test.ts`. This keeps each iteration's output small and fast.
 
 Then iterate:

@@ -1,6 +1,6 @@
 ---
 name: check
-allowed-tools: Bash, Read, Grep, Glob, Write, Agent
+allowed-tools: Bash Read Grep Glob Write Agent
 argument-hint: [verify | review]
 description: "Confirm a change before merge. `/check verify` drives the real app to prove behavior against the spec (every acceptance criterion met, every surface built). `/check review` runs a senior code review on a fresh model, one that did not write the code. Verify after /develop, review before a PR. Writes to docs/reviews/, never edits code."
 ---

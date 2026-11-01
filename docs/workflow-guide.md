@@ -241,6 +241,8 @@ The limits matter as much as the features.
 
 Install with `npx skills`. Pick the line for your agent.
 
+Needs Node.js 22.20 or later (the `npx skills` minimum).
+
 ```bash
 # Claude Code, installs into .claude/skills, then restart Claude Code
 npx skills@latest add JavaScript-Mastery-Pro/skills -a claude-code

@@ -19,12 +19,12 @@ Read the setting: `integration`, `branch prefix` (default `feat/`), `commit` (`p
 - `end-of-build` → one commit when the build lands.
 - `manual` → never commit; the engineer does.
 
-Message: a **one line Conventional Commit subject**, no prose body, plus the `Co-Authored-By` trailer (required). Type from the work (`feat`, `fix`, `refactor`, `test`, `chore`), optional scope from the feature, summary in the imperative:
+Message: a **one line Conventional Commit subject**, no prose body, plus your agent's `Co-Authored-By` trailer (required), naming the model actually writing, never a copied example. Type from the work (`feat`, `fix`, `refactor`, `test`, `chore`), optional scope from the feature, summary in the imperative:
 
 ```
 feat(auth): add session persistence
 
-Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+Co-Authored-By: <agent and model> <its noreply address>
 ```
 
 The why lives in the spec and the PR, never in the commit body (single source). Commit only what actually landed and typechecks; never commit a half done milestone. Never `git push` here (that is `/document` at PR time, confirmed).

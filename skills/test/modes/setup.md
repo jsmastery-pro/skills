@@ -5,7 +5,7 @@ Read this only when `test-preferences.json` is absent. It holds the two first ru
 ## Step 4: Stack detection and first run questions
 
 With file tools (not shell utilities), determine:
-- Package manager by lockfile: `pnpm-lock.yaml` → pnpm, `yarn.lock` → yarn, `bun.lockb` → bun, `package-lock.json` → npm.
+- Package manager by lockfile: `pnpm-lock.yaml` → pnpm, `yarn.lock` → yarn, `bun.lock` (or legacy `bun.lockb`) → bun, `package-lock.json` → npm.
 - Language and framework: `package.json` for `next`/`vite`/`nuxt`/`svelte`/`react`; `pyproject.toml` (pytest/unittest) → Python; `go.mod` → Go; `Cargo.toml` → Rust.
 - Installed test tools: `vitest`/`jest`/`@playwright/test`/`cypress`/`@testing-library/*` in `package.json`. A different runner already in use (`bun test`, `node:test`, `ava`, `deno test`, etc.): detect and use it instead of installing a new one.
 

@@ -30,7 +30,7 @@ Hardening (systems level failure mode analysis) is temporarily removed and will 
 
 ## Install
 
-Uses [npx skills](https://github.com/vercel-labs/skills). Pick your agent:
+Uses [npx skills](https://github.com/vercel-labs/skills), which needs Node.js 22.20 or later. Pick your agent:
 
 ```bash
 # Claude Code (installs into .claude/skills, then restart Claude Code)
