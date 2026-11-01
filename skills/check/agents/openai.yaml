@@ -3,5 +3,5 @@
 # Agent Skills client installs alongside this file and loads when the skill runs.
 interface:
   display_name: "Check"
-  short_description: "Prove a change works, or review it, before merge"
-  default_prompt: "Run the check skill: read its SKILL.md, then pick a mode. Use verify to drive the real app and prove the change works, or review for a fresh-model code review of the diff."
+  short_description: "Prove a change works, review it, or check launch readiness"
+  default_prompt: "Run the check skill: read its SKILL.md, then pick a mode. Use verify to drive the real app and prove the change works, review for a fresh-model code review of the diff, or ready to check it can be run, watched, and rolled back before launch."

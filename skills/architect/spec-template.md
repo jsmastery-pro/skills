@@ -40,6 +40,9 @@ deciding? 2 to 4 paragraphs. Do not mention options here, only the problem space
 - **AC-2**: <the key edge case or failure that must be handled, e.g. "retry after timeout returns the same result (idempotent)">
 - **AC-N**: <…>
 
+**Quality targets** (only targets the engineer stated or the scope implies; omit when none shape the design):
+- <load now and at 10x · latency (p95) · availability · data volume and retention · recovery point and time>: <a number, or "not a concern"; never invented>
+
 <!-- Every task in ## Build plan references the AC(s) it satisfies, and every scenario in
      Critical test scenarios maps to an AC. No AC without a build task; no build task without an AC. -->
 
@@ -110,7 +113,10 @@ Do not repeat the pros/cons list, explain the reasoning. 1 to 3 paragraphs.>
 <Rules that must always hold, enforced at application or DB layer>
 
 **Security model**:
-<Who can read/write what. Roles, ownership, public/private. Name compliance scope if applicable.>
+<Who can read/write what. Roles, ownership, public/private. Trust boundaries and the abuse cases at each. Name compliance scope if applicable.>
+
+**Rollout & operations** (a change that reaches live users; omit before first launch or at Prototype):
+<rollout: flag, staged percentage, or plain deploy · rollback, including config and data · migration steps as expand then contract · the health signal and alert to watch · behavior when each dependency is slow or down>
 
 **Configuration required**:
 - `ENV_VAR_NAME`: purpose (omit section if no new env vars or credentials are needed)
@@ -135,6 +141,7 @@ Do not repeat the pros/cons list, explain the reasoning. 1 to 3 paragraphs.>
 | Auth | | |
 | Hosting | | |
 | Observability | | |
+| Delivery | | |
 
 <!-- BUILD SPEC (the WHAT, /develop builds these in order; /check verify checks the AC each satisfies) -->
 ## Build plan

@@ -76,7 +76,7 @@ Depth governs only the stages **after** `/develop` (verify, test, review, docume
   - `Prototype`: "Just `/develop`. Nothing after it, you rely on `/develop`'s own build time self check (typecheck, and rendering the screen when it can) and your own eye. No `/check verify`, no test suite, no review. `/develop` can mark the feature `done` itself. Best for throwaway prototypes, experiments, and personal projects."
   - `Alpha`: "After `/develop`, `/check verify` on the real app. No separate test suite or second model review unless a feature needs it. Best for low risk features and internal tools you still want proven."
   - `Beta`: "After `/develop`, `/check verify` then `/test`. No fresh model review by default. Best for most real products."
-  - `GA`: "After `/develop`, `/check verify`, `/test`, a fresh model `/check review`, then `/document`; and most features are treated as needing a spec. Best for high risk, payments, auth, compliance, regulated, or team projects."
+  - `GA`: "After `/develop`, `/check verify`, `/test`, a fresh model `/check review`, `/check ready` before a feature first meets real traffic, then `/document`; and most features are treated as needing a spec. Best for high risk, payments, auth, compliance, regulated, or team projects."
 
 The picker appends a free text Other automatically; in a plain text fallback offer the same four. Recommend by signal: throwaway prototype, experiment, or a personal one off → `Prototype`; a low risk product or internal tool you still want proven → `Alpha`; a normal production product → `Beta`; payments, auth, PII, compliance, regulated, or a team codebase → `GA`.
 

@@ -30,7 +30,7 @@ You are a **senior backend engineer** on this project. You implement the decisio
 - Implement the schema/migrations to match the spec's data model sketch: field types, nullability, FK relationships, unique constraints.
 - **A data layer change isn't done until the migration is applied and the schema confirmed live.** Generate the migration *and* run it against the target database, then confirm the tables/columns/relationships actually exist: **prefer a connected database MCP** to query the real schema, else the project's own introspection or a describe query. Never just eyeball the migration file, and never tick a data layer task on a generated but unapplied migration. (`/check verify` checks this again at Step 4b with the same DB MCP.)
 - Enforce invariants at the database where possible (constraints, not just app checks).
-- Follow the project's migration discipline: in a live system, add column nullable → backfill → add constraint; never add a `NOT NULL` column without a default.
+- Follow the project's migration discipline: in a live system, expand then contract (add column nullable → backfill → add constraint; drop or rename the old shape only in a later deploy, so the previous release keeps working); never add a `NOT NULL` column without a default. If the spec's `Rollout & operations` names a flag, build the new path behind it, default off.
 - Use the project's existing ORM/query layer and naming conventions.
 
 ### Phase 3: Core logic and services
