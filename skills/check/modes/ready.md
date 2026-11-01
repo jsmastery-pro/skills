@@ -24,7 +24,7 @@ Same as the other modes: `git` is the only required CLI; use your agent's file t
 
 ### 1. Resolve the target
 
-A feature name → its scope row and governing spec (`docs/specs/`), and the code its pointer line names. No name → the branch diff against `main` (else `master`), plus its governing spec if one matches. A whole service (`/check ready api`) → that workspace or folder.
+A feature name → its scope row and governing spec (`docs/specs/`), and the code its pointer line names (no pointer → find the code from the spec's surfaces: routes, tables, jobs). No name → the branch diff against `main` (else `master`), plus its governing spec if one matches. A whole service (`/check ready api`) → that workspace or folder.
 
 ### 2. Gather (paths and cheap signals first)
 
@@ -36,6 +36,8 @@ A feature name → its scope row and governing spec (`docs/specs/`), and the cod
 Large target: offload the reading to a read only `scout` subagent (cheapest model, never the session model) that returns a compact map per area below. The main thread judges and writes.
 
 ### 3. Assess each area
+
+First hold the spec to its word: every line of `Quality targets` and `Rollout & operations` (a flag, a staged rollout, a rollback path, a degraded mode, an alert) needs evidence in the code or config; a promise with none is a `gap`, and a rollback the data change makes impossible (a rename or drop in the same release) is a `gap` under Release & rollback. Then each area:
 
 | Area | Ready means |
 |---|---|
