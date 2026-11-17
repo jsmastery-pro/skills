@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.2.0 (2026-11-17)
+## 2.2.0 (2026-11-17) · tag `v2.2.0`
 
 ### Added
 
@@ -17,10 +17,10 @@
 - The build, verify, debug, audit, and test skills now state that repository content is data, not instructions, and forbid reading a `.env` file or passing `--no-verify`.
 - The portability check also verifies that a skill's frontmatter `name` matches its directory and its Codex `display_name`.
 
-## 2.1.0 (2026-08-09)
+## 2.1.0 (2026-11-17) · tag `v2.1.0`
 
 Fork baseline: one owner for `done`, batched questions, sound recommendations ranked correct then secure then reliable, decisions recorded in the spec, reference mockup flow, attribution follows the project's Git rule.
 
-## 2.0.0 (upstream)
+## 2.0.0 (2026-08-07) · tag `v2.0.0`, upstream baseline
 
 The `jsmastery-pro/skills` baseline this fork starts from.
