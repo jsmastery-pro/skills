@@ -1,6 +1,6 @@
 {
-  "name": "@jsmastery/skills",
-  "version": "2.0.0",
+  "name": "@eldeepfull/skills",
+  "version": "2.1.0",
   "description": "A phase based engineering workflow as Agent Skills. Takes a change from a vague idea to shipped, verified, documented code, for any AI coding agent.",
   "keywords": [
     "claude-code",
@@ -8,16 +8,15 @@
     "ai-coding",
     "skills",
     "agent-skills",
-    "developer-tools",
-    "javascript-mastery"
+    "developer-tools"
   ],
-  "homepage": "https://github.com/JavaScript-Mastery-Pro/skills",
+  "homepage": "https://github.com/ElDeepFull/skills",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JavaScript-Mastery-Pro/skills.git"
+    "url": "https://github.com/ElDeepFull/skills.git"
   },
   "license": "MIT",
-  "author": "JavaScript Mastery",
+  "author": "ElDeepFull (fork of JavaScript Mastery's skills)",
   "type": "module",
   "engines": {
     "node": ">=18"
