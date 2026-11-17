@@ -57,7 +57,7 @@ The spec carries the contract: `## Requirements` with IDed acceptance criteria (
    - AC-1 … · AC-2 … · …
    ```
 2. Else fall back to the spec's `## Requirements` directly, and turn each `AC-N` into an observable check yourself.
-3. The spec's `## Target devices` line, when present, sets the device matrix for this run: which OS versions, which screen sizes, a simulator or a real device. No line on a web feature: use the project's primary viewport plus one narrow width. No line on a mobile feature: use the primary device the project targets, and say so in the report.
+3. The spec's `**Target devices**` field (under `## Feature design`), when present, sets the device matrix for this run: which OS versions, which screen sizes, a simulator or a real device. No line on a web feature: use the project's primary viewport plus one narrow width. No line on a mobile feature: use the primary device the project targets, and say so in the report.
 
 You now hold the `AC-N` list to confirm and the specced surface list to confirm exists. Carry both into Steps 1 to 4; the per AC verdict comes in Step 4b, reported in Step 5. Spec conformance decides what to check and what "met" means; the feature/refactor modes are how you drive the app to check it.
 

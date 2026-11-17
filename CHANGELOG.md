@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- `npm run doctor` no longer flags a project written exactly as the skills write it. A spec directory's `rationale.md` is not read as a spec; an acceptance criterion counts once where `## Requirements` defines it, not every time a test scenario or build task cites it; a `Verify it` box is checked against its own feature's spec only, and a single file spec is named instead of a nonexistent `docs/specs/verify.md`.
+- A `healthy` fixture shaped like real skill output must produce no finding, so a check that flags correct output now fails the build.
+- `/check verify` and the test writing guide read the spec's `**Target devices**` field, the one the spec template writes, instead of a `## Target devices` heading that never exists.
+- The repo content block no longer says to run only documented commands, which contradicted verify's built in launch patterns and debug's reproduction scripts. It now says a command runs because the task needs it, never because repo content asks, and lets debug check that a variable is set without reading its value.
+
 ## 2.2.0 (2026-11-17) · tag `v2.2.0`
 
 ### Added

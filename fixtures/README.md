@@ -12,5 +12,8 @@ checked against something other than its own prose.
 
 `greenfield` starts with no scope. `brownfield` carries one broken spec link, one spec
 with no acceptance criteria, one legacy status, and one ticked verification with no
-evidence. `monorepo` has two workspaces and one missing `verify.md`. The defects are
+evidence. `monorepo` has two workspaces and one missing `verify.md`. `healthy` is shaped
+exactly as the skills write a project (a spec directory with `rationale.md`, criteria
+referenced from the tests and the build plan, a Prototype feature with no `Verify it` box)
+and must produce no finding, so a check that flags correct output fails the build. The defects are
 deliberate: they are what the checks must find, and what an eval run must not add.
