@@ -36,7 +36,7 @@ Builds, then reports. At most one question round per run, in Step 0 before any c
 - Writes app code (plus CSS/tokens for UI).
 - Scope (`docs/scope/`): only the Step 4 touches (feature status → `in-progress`, milestone sub boxes, `Build it` box, code pointer). Asks to close `done` only at `Prototype` (it is the closing skill there); at `Alpha`/`Beta`/`GA` it never asks, never ticks `Verify it` or `Test it`, and just names the next step. Never creates files in `docs/scope/` (scopes only; analysis/research is `/architect`'s, in the spec's `rationale.md`).
 - Never deliberates a decision in depth (that is `/architect`); never restructures root `AGENTS.md` (that's `/audit`); new area conventions go via `/sync` afterwards.
-- Spec writes, only these: append `## Build decisions` lines, tick `## Build plan` tasks, and create an `Assumed` spec when the feature has none (Step 0). Never other spec content, never the `**Status**:` line of an existing spec.
+- Spec writes, only these: append `## Build decisions` lines, tick `## Build plan` tasks, add a missing `Reference mockup` line for a mockup validated in `/architect` (`flow/build.md` Step 3), and create an `Assumed` spec when the feature has none (Step 0). Never other spec content, never the `**Status**:` line of an existing spec.
 - Artifact base: `docs/` by default, `.workflow/` if `docs/` is a published docs site. Read from whichever exists (paths here assume `docs/`).
 - Shared scope: read it again right before ticking, edit only the specific checkbox, status, or pointer line (never rewrite the file); feature not as expected (already `done`, reworked) → flag, don't overwrite.
 

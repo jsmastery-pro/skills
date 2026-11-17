@@ -19,13 +19,13 @@ Read the setting: `integration`, `branch prefix` (default `feat/`), `commit` (`p
 - `end-of-build` → one commit when the build lands.
 - `manual` → never commit; the engineer does.
 
-Message: a **one line Conventional Commit subject**, no prose body, plus the `Co-Authored-By` trailer (required). Type from the work (`feat`, `fix`, `refactor`, `test`, `chore`), optional scope from the feature, summary in the imperative:
+Message: a **one line Conventional Commit subject**, no prose body, plus the attribution trailer only when attribution is on (the default; root `AGENTS.md` `## Git` saying `attribution: off`, or any written rule there against attribution lines, means none: no `Co-Authored-By`, no session link). Type from the work (`feat`, `fix`, `refactor`, `test`, `chore`), optional scope from the feature, summary in the imperative:
 
 ```
 feat(auth): add session persistence
-
-Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
 ```
+
+With attribution on, add your agent's own `Co-Authored-By` line after a blank line.
 
 The why lives in the spec and the PR, never in the commit body (single source). Commit only what actually landed and typechecks; never commit a half done milestone. Never `git push` here (that is `/document` at PR time, confirmed).
 
