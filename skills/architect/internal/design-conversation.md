@@ -39,6 +39,7 @@ Infer the framing from the topic + `AGENTS.md` + codebase, don't ask it. State i
 - **Workspace (monorepo)**: if a monorepo (workspaces config, or `apps/*`/`packages/*` manifests), identify which workspace this feature belongs to (topic, path, or the scope row's `Code area`; ask if unclear). Read that workspace's nested `AGENTS.md` for *its* stack (apps often differ; don't assume the root stack). Note the workspace in the spec's Context, and whether the decision is app-specific or repo-wide.
 - **Stack & conventions**: language, framework, DB, community skills, from `AGENTS.md` (the target workspace's in a monorepo). Inferred, never asked.
 - **Constraints**: team size, scale, compliance, from `AGENTS.md` / the product. Ask a per-feature compliance question only when *this* feature touches regulated data (payments, PII, health), never a generic deadline/team menu.
+- **Inherited premises**: check every claim a parent spec or the scope row makes about the current system against the code. A premise the code contradicts is stated back as a finding (what the spec says, what the code shows), never designed around, and the stale spec line goes in the spec's Follow-up.
 
 State it: *"Reading this as a new **FEATURE** on your existing stack (from `AGENTS.md`), web (correct me if not)."* Then begin the design conversation.
 
