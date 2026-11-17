@@ -9,6 +9,11 @@ A collection of Claude Code skills encoding a phase based engineering workflow. 
 - **Every user facing question carries exactly one recommended option** with a one line why (make the call, let them override). The recommendation is the soundest option, not the easiest: correct, then secure, then reliable, then fits the project, then simple (the shared `RECOMMEND` block in each `SKILL.md`). Never a neutral menu, never a cold question, never a silent decision.
 - **Keep skills lean.** A skill loads in full on its path every run, so every line is a recurring cost. Cut lines that don't change the agent's behavior, keep the reasoning in the commit or PR (not the skill body), name concepts instead of explaining them, and split out only rare, long content. Full guidance: [`docs/conventions.md`](docs/conventions.md). Run `npm run check` and `npm run fixtures` before committing skill edits.
 
+## Git
+
+- attribution: on
+- Claude contributes to this project, and its work is credited. Every commit Claude writes or helps write ends with a `Co-Authored-By: Claude <model> <noreply@anthropic.com>` trailer, and every PR it opens ends with the Claude Code line. Keep the trailer when amending, rebasing, or squash merging; never drop it.
+
 ## Layout
 
 - Skills (source, for distribution via `npx skills`): `skills/<name>/SKILL.md`
