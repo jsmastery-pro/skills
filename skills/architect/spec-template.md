@@ -248,7 +248,7 @@ A spec's status records the decision, never build progress (that lives only in t
 | `Assumed` | Created by `/develop` for a feature built with no spec; its `## Build decisions` list is the record. Complete as is and never blocks `done`; `/architect` revisits it only when asked (→ `Decided`, or supersede). |
 | `Superseded by [NNNN](NNNN-title.md)` | Replaced by a newer spec. |
 
-Legacy `Proposed`, `In Progress`, and `Accepted` lines read as `Decided`; leave them as they are, never rewrite them to track a build.
+Legacy `Proposed`, `In Progress`, and `Accepted` lines read as `Decided`; leave them as they are, never rewrite them to track a build. A legacy `Assumed` spec's `## Assumption built on` reads as its build decisions, and its `## Ratify` note is no longer a debt.
 
 **Umbrella child specs carry no status.** In an umbrella directory (`NNNN-<x>/`), only the `index.md` has a `**Status**:` line. Omit it on children (they're governed by the umbrella).
 
