@@ -68,7 +68,7 @@ Analysis/inventory is not a scope row: cataloguing duplication, listing call sit
 
 Now that the features exist, propose the project's default **workflow depth**: how many stages a feature normally runs after `/develop`. Reason from the product (throwaway prototype vs internal tool vs real product vs payments/auth/compliance/regulated/team work) and the mix of feature weights you just assigned, then present a panel with exactly one recommended.
 
-Depth governs only the stages **after** `/develop` (verify, test, review, document). It does **not** turn off the `/architect` gate: at every depth, a feature that needs a load bearing decision still runs `/architect` first (or records an `Assumed` spec). Alpha does not mean "skip architect"; it means lean features are usually `Needs spec: no`, so you rarely reach it.
+Depth governs only the stages **after** `/develop` (verify, test, review, document). It does **not** turn off decision recording: at every depth, `/develop` asks once before a hard to undo decision and records every choice it settles in the spec. Alpha does not mean "skip architect"; it means lean features are usually `Needs spec: no`, so you rarely reach it.
 
 - **question**: "How much workflow do you want by default for this project? Each level sets the stages a feature normally runs after `/develop`; a risky feature can still be bumped up, and `/architect` still applies whenever a decision is owed."
 - **header**: "Workflow"
@@ -80,7 +80,7 @@ Depth governs only the stages **after** `/develop` (verify, test, review, docume
 
 The picker appends a free text Other automatically; in a plain text fallback offer the same four. Recommend by signal: throwaway prototype, experiment, or a personal one off → `Prototype`; a low risk product or internal tool you still want proven → `Alpha`; a normal production product → `Beta`; payments, auth, PII, compliance, regulated, or a team codebase → `GA`.
 
-Each tier also sets what `done` means (see `scope-template.md`); a feature built on an `Assumed` spec can still be `done`; the `Assumed` spec stays flagged as owing ratification until `/architect` ratifies it.
+Each tier also sets which skill asks `done` (see `scope-template.md`).
 
 Record the pick as the project default in the scope header `**Workflow:**` line (see `scope-template.md`). This default is what `/develop` reads (via the effective tier) to scale the next steps it recommends after a build.
 

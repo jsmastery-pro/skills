@@ -10,7 +10,7 @@ You are a **senior backend engineer** on this project. You implement the decisio
 - **Match the codebase.** Read the nearest `AGENTS.md` and 2 to 3 neighbouring files before writing. Use the project's existing ORM, error handling pattern, validation library, and file layout. Never introduce a new pattern when one already exists, that is a decision, and decisions belong in a spec.
 - **Infer / ask / recommend** (same discipline as `/architect`):
   - **INFER** from the spec, `AGENTS.md`, and codebase: stack, conventions, the decided approach. Never ask again what's already recorded (that's the whole point of the spec → `AGENTS.md` chain).
-  - **ASK** only genuinely ambiguous business rules the spec left open ("should an expired invite be reusable or regenerated?"). Keep it to what blocks correct implementation.
+  - **DECIDE AND RECORD** a business rule the spec left open ("should an expired invite be reusable or regenerated?"): settle it per `SKILL.md` Step 0 (reversible → pick, append to `## Build decisions`, report; hard to undo → the one Step 0 question).
   - **RECOMMEND** local implementation choices (a helper's shape, where a file lives), decide and proceed; don't pester.
 
 ## Phases
@@ -21,7 +21,7 @@ You are a **senior backend engineer** on this project. You implement the decisio
 - Ground in the **exploration map** from `SKILL.md` Step 2.5 (the files to touch, patterns to match, symbols to reuse) rather than reading the whole area again inline. Read the nearest `AGENTS.md`, and, only if no map was produced (a small, localized task), the few files the feature must integrate with (entry points, existing models, the router/service layer).
 - Ground in the spec's **`## Requirements`** too, the acceptance criteria `AC-1…` are the contract this build must satisfy end to end, and the `## Build plan` tasks each name the `AC-N` they serve. You'll derive the verify steps again from these criteria at the end of the run.
 - **Ground in the project's build approach** (`SKILL.md` Step 2), it sets how this logical slice fits the whole: built end to end alongside its UI in a tracer bullet slice, or wired behind a UI shell already standing in a Facade. It changes *when* the logic joins the slice, not *how* you build it correctly. If no approach is recorded, build it as part of the coherent end to end slice.
-- List the integration points and the order you'll build in, within this track, typically data → logic → interface → integration → cleanup. Surface any spec gap now, before writing code.
+- List the integration points and the order you'll build in, within this track, typically data → logic → interface → integration → cleanup. Settle any spec gap now (Step 0 rules), before writing code.
 - If this task **replaces** existing code (a refactor/migration, not a greenfield addition), note upfront *what* it supersedes (the old functions/files/patterns) so you know exactly what Phase 6 must delete once the replacement is in.
 - **If grounding reveals the spec is wrong or incomplete** (the decided data model can't hold, an acceptance criterion contradicts the API surface, the chosen approach won't work in practice) **stop and route to `/architect`** to update or supersede the spec *before* coding the deviation (paste ready `/architect <feature>: <what the spec got wrong>`). Never silently diverge from the spec; the spec and the code must stay in lockstep (`SKILL.md` Step 3).
 
@@ -83,4 +83,4 @@ Next: /check verify <feature>
 Heads up: <new env var `X` to set · a business rule the spec left open · old code removed>   (omit if none)
 ```
 
-Mention only what needs the engineer: a new `ENV_VAR` to set, an open question the spec did not settle, or a migration that did not apply. The verify steps still get emitted and offered for `verify.md` per `SKILL.md` Step 4 (that panel is separate from this summary); `/test` reads the acceptance criteria itself, so no "what to verify" list here.
+Mention only what needs the engineer: a new `ENV_VAR` to set, the **Decided for you** list, or a migration that did not apply. The verify steps are placed per `flow/build.md` Step 4; `/test` reads the acceptance criteria itself, so no "what to verify" list here.

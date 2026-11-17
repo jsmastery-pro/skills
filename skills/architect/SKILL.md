@@ -10,6 +10,19 @@ description: "Run /architect when choosing between approaches, designing a featu
 Write everything this skill produces, files and messages alike, in plain simple language. Talk to the reader as `you`, warm and direct like a colleague, and present every step as a recommendation they may run or skip, never an order. Keep technical terms that carry real meaning; explain each in plain words. Never use a dash or a hyphen as punctuation: no em dash, no en dash, and no hyphenated compounds. Write `read only`, not `read-only`. Say it in simple words, or reword the sentence. Code, file paths, command flags, and values other skills match on keep their hyphens. Use short sentences, commas, or parentheses. Clear beats clever.
 <!-- OUTPUT-STYLE:END -->
 
+## How to pick the recommended option
+
+<!-- RECOMMEND:START -->
+A recommendation is the best option for this project, not the easiest one to build. Rank options in this order and recommend the first one that passes all of the top three:
+1. **Correct**: meets every acceptance criterion and handles the failures that will really happen (bad input, network errors, retries, concurrent writes, partial failure) without losing data.
+2. **Secure**: opens no hole in auth, access control, secrets, input validation, or personal data.
+3. **Reliable**: proven and maintained, with known failure modes and a way to recover; still sound as the project grows on its current path.
+4. **Fits the project**: its stack, its `AGENTS.md` conventions, and the people who will run it.
+5. **Simple and fast**: only breaks ties between options that pass 1 to 3.
+
+Never recommend a shortcut that fails 1 to 3 because it is quicker: a workaround, a swallowed error, a disabled check, a hardcoded value, skipped validation, or a library you cannot vouch for. If the easiest option has a known flaw, name the flaw and recommend the sound option, with its extra cost in one line. Not sure an option is sound? Say so plainly instead of recommending it.
+<!-- RECOMMEND:END -->
+
 ## What this skill does
 
 Runs structured discovery, weighs options, and writes or updates a build spec in `docs/specs/`. The main thread writes; it offloads only reading the codebase or fetching the web to a cheap subagent (see *Subagents*). Four modes:
@@ -21,19 +34,14 @@ Runs structured discovery, weighs options, and writes or updates a build spec in
 | `ENHANCEMENT` | Improving, replacing, or scaling something that already exists | Read existing code + specs, focused option comparison |
 | `CROSS-CUTTING` | Standardising a pattern across the whole codebase (error handling, logging, auth, naming) | Sample current state, define the standard precisely, recommend enforcement |
 
-- **Create**: new decision → new spec with status `Proposed`
+- **Create**: new decision → new spec with status `Draft`, set to `Decided` when the engineer accepts it
 - **Update**: evolving an existing decision → edit existing spec in place
 - **Supersede**: replacing a past decision → new spec + update old spec's status line
-- **Ratify**: deliberating an `Assumed` spec that `/develop` recorded when the engineer chose to build before deciding → see *Ratify an assumed decision* below
+- **Revisit**: an `Assumed` spec, only when the engineer asks → see *Revisit an assumed spec* below
 
-Spec status behaves one of two ways, decided by whether a buildable scope feature links the spec (a `docs/scope/` row whose `spec` cell points to it):
+Spec status records the decision, never build progress: `Draft` until the engineer accepts the spec, then `Decided` (also for already shipped work), `Assumed` (below), or `Superseded by …`. No skill moves it as the feature is built; build progress lives only in the scope. Legacy `Proposed`/`In Progress`/`Accepted` read as `Decided`; leave them.
 
-- **Feature linked spec** (typical FEATURE/ENHANCEMENT, or an ARCHITECTURE foundation that has a scope row): status mirrors the feature lifecycle. /architect creates it as `Proposed` and owns its content but never advances the status; /develop advances it to `In Progress` when the feature goes in-progress, then `Accepted` when built and verified (scope `done`). Engineer confirmation ratifies content only; `Accepted` means shipped.
-- **Standalone decision spec** (foundational/stack or cross cutting standard, no scope row links it): decision status. `Proposed` when written, `Accepted` once the engineer ratifies it on confirmation (the decision is then in force). /develop does not advance it.
-
-A spec documenting already shipped work (the "already built" path, or a linked feature already `existing`) is born `Accepted`.
-
-**The `Assumed` status.** `/develop` may create a spec in status `Assumed` when the engineer chooses to build before a load bearing decision is deliberated. It records the assumption the build used, not a deliberated decision. The feature can still be marked `done`; the `Assumed` spec stays flagged as owing ratification and does not block it. Only `/architect` clears the `Assumed` status, by ratifying (below). `/architect` never creates an `Assumed` spec; it only deliberates one that already exists.
+**The `Assumed` status.** `/develop` creates it when it builds a feature that has no spec: its `## Build decisions` list is a complete record, not debt. Nothing nags about it and it never blocks `done`. `/architect` never creates one, and revisits one only when asked. On any update, keep a spec's `## Build decisions` lines (fold the ones you adopt into `## Decision`).
 
 Writes no code. Never updates `AGENTS.md`/`CLAUDE.md` (/sync owns that).
 
@@ -120,7 +128,7 @@ From the spec list (paths relative to `$SPEC_DIR`):
 - **Related specs**: go in two passes so this stays cheap as specs accumulate. First read only the title line of each existing spec (cheap even at dozens of them); then read the first 20 lines (title, status, opening of Context) of just the few whose title plausibly overlaps this topic, to confirm. Flag matches.
 - **Child of umbrella detection**: if the topic is a sub decision of an existing umbrella (`$SPEC_DIR/NNNN-<umbrella>/`), e.g. one that surfaced while building under it, place the new spec inside that directory as the next child (`NNNN-child.md`) and add it to the umbrella's `index.md` list, not a new top level spec. Same path when `/develop` hits a decision partway through a build. Tell the engineer where it's going.
 - **Update/supersede detection**: if an existing spec clearly overlaps the topic (same domain, system, decision), before the staged conversation present a decision panel (plain text options where the agent has no picker; the picker adds Other automatically): "I found an existing spec that may overlap: `[path]`, [title]. How should I treat this?", options: **New decision (create a new spec)** · **Update the existing spec in place** · **Supersede it (a new spec replaces it)**. Default to the "(recommended)" option by overlap strength (nearly identical → Update or Supersede; adjacent → New). On update/supersede: set OPERATION, read the existing spec in full, and skip the staged conversation for in place updates.
-  - **Assumed spec found**: if the overlapping spec's `**Status**:` is `Assumed`, this is a ratify, not the panel above. Follow *Ratify an assumed decision* (run the design conversation, then either fill in the real content and clear `Assumed`, or supersede if the assumption was wrong).
+  - **Assumed spec found**: if the overlapping spec's `**Status**:` is `Assumed`, follow *Revisit an assumed spec* instead of the panel above.
 
 **Community skills** come from the project's `AGENTS.md`, never a hardcoded name table (names and stacks change). Project wide skills/conventions live in root `AGENTS.md`, area specific ones in the nested `<area>/AGENTS.md` (maintained by `/audit` and `/sync`):
 
@@ -184,14 +192,9 @@ If the task is to update or supersede an existing spec:
 - Set the operation: `update` or `supersede`
 - If supersede: write the new spec AND update the old spec's status to `Superseded by [NNNN](NNNN-title.md)`
 
-### Ratify an assumed decision
+### Revisit an assumed spec (only when asked)
 
-When the topic resolves to an existing `Assumed` spec (the engineer built first via `/develop`'s escape hatch and is now ratifying, often phrased `/architect <feature>: ratify …`), pre-flight will find that spec. Read it in full: its `## Owed decision`, `## Assumption built on`, and `## Code area` tell you what was decided provisionally and where the code lives. Then run the normal design conversation, anchored to what was actually built, and deliberate the decision properly. Two outcomes:
-
-- **The assumption holds.** Fill in the real decision content (Context, Options considered, Decision, Rationale, the design section, Consequences) so the spec becomes a genuine deliberated record, and clear `Assumed`: set the `**Status**:` line to the feature's lifecycle state (`In Progress` if the feature is built but not yet `done`, `Accepted` if it is already verified and tested). `/develop` then closes it to `Accepted` at `done` as usual. The decision is no longer ephemeral.
-- **The assumption was wrong.** Write a corrected spec (`create` or `supersede`) with the real decision, mark the assumed spec `Superseded by [NNNN](…)`, and tell the engineer the build rests on a wrong assumption and should be redone against the corrected spec.
-
-Either way, ratification is why an `Assumed` spec can leave that state: `/develop` records the assumption, `/architect` confirms or corrects it and supplies the reasoning. Do not leave a spec `Assumed` after a ratify run.
+Read it in full (`## Build decisions`, `## Code area`), then run the design conversation anchored to what was built. Choices hold → fill in the decision content and set `**Status**:` to `Decided`. A choice was wrong → write the corrected spec (`create` or `supersede`), mark the old one `Superseded by [NNNN](…)`, and say what must be rebuilt.
 
 ---
 

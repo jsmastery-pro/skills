@@ -123,25 +123,9 @@ For each path in DELETED_PATHS:
 - Fix any file pointer in any AGENTS.md that targets a deleted/moved path.
 - Record removals under `ORPHANS_CLEANED`. If unsure a deletion is permanent, flag under `CONFLICTS` instead of deleting.
 
-### 4. Reconcile linked specs' Status line (edit ONLY the `**Status**:` line, never spec content)
+### 4. Spec status lines: never edit
 
-A spec's status mirrors its feature's build lifecycle:
-- `Proposed`: not yet built (scope `planned`).
-- `In Progress`: being built (scope `in-progress`).
-- `Accepted`: built and verified (scope `done`); a spec is not `Accepted` until its feature ships.
-- `Superseded`: replaced by a later spec (never set this from scope status; flag under `STALE_SPECS` instead).
-
-For an **umbrella decision**, reconcile the linked `index.md` (child specs carry no status and are not reconciled).
-
-This applies **only to specs that link to a buildable scope feature.** A **standalone decision spec** (a foundational/stack or cross cutting standard with no linked feature) is decision status: `Proposed` when written, `Accepted` once ratified, never feature mirrored. Leave it as is; do not reconcile or flag it under `STALE_SPECS` (e.g. "no linked feature found") merely for having no linked feature, that is expected, not a mismatch. Only genuinely stale/superseded standalone specs (Step 5) get flagged.
-
-For each spec whose linked feature appears in the reconciled scope:
-1. Find the feature this spec governs (its title/links reference a scope feature, which may link back).
-2. Read the feature's current scope status and derive the target spec status from the mapping above.
-3. **Read the spec again just before writing** (a teammate or another session may have edited it). If the `**Status**:` line already equals the target, do nothing (idempotent). Otherwise make a single surgical edit to that one line only.
-4. Record the change under `SPEC_STATUS_RECONCILED`.
-
-**Do not guess.** If a feature linked spec is ambiguous (no confident link to exactly one feature, unclear mapping, status already `Superseded`, or a downgrade you can't explain), do not edit; flag the mismatch under `STALE_SPECS` and leave the line as is.
+A spec's `**Status**:` line records the decision (`Draft`, `Decided`, `Assumed`, `Superseded by …`), not build progress. Never edit it, and never flag an `Assumed` spec for that status alone.
 
 ### 5. Flag stale specs (do not edit their content)
 
@@ -168,7 +152,7 @@ Evidence per sub task type (tick `[ ]` → `[x]` when the evidence is clearly pr
 - **Sync (record conventions)** → the area's `AGENTS.md` exists and reflects the feature.
 - **Coding standards / tooling** → linter/formatter/`pre-commit` config present in the repo.
 
-Then update the feature's **status**, in the `At-a-glance` table AND beside its heading: keep it `in-progress` while a box the feature actually has (`Build it` + its milestones, plus `Verify it` / `Test it` when the tier includes them) is still unticked; set `done` once all of the feature's present boxes are ticked. Never downgrade a feature the engineer already marked `done` (a step they chose to skip is recorded as skipped, not a reason to reopen it).
+Then update the feature's **status**, in the `At-a-glance` table AND beside its heading: `planned` → `in-progress` when the diff shows the build started; nothing else. Never set `done` (the tier's closing skill asks the engineer) and never touch a `done` feature: no ticking, no reopening.
 
 - **Strictly status only.** Never add, remove, rename, or reorder features or checkboxes (that's /scope's). Skip `existing` and `dropped` features entirely. Never invent a feature for code that has no section; if shipped code clearly matches no feature, note "unmapped: <area>, run /scope to enroll this off plan work" under `SCOPE_RECONCILED`.
 - **Attribution across features and workspaces.** Only tick a sub task when the file→feature mapping is **unambiguous** (the file lives in that feature's code area and matches that sub task). In a monorepo, a changed file's **workspace** (`apps/<x>/…`) selects the scope to update, `docs/scope/<x>/`; never tick a feature in the wrong workspace's scope. If an area maps to more than one feature, do not guess; note `ambiguous: <area> → <featureA> / <featureB>` under `SCOPE_RECONCILED`.
@@ -195,11 +179,8 @@ ORPHANS_CLEANED:
 SCOPE_RECONCILED:
 - <feature>, <sub-tasks ticked / status advanced to match the diff; or "unmapped: <area>">
 
-SPEC_STATUS_RECONCILED:
-- <docs/specs/file>, <Status line: Proposed→In Progress→Accepted to match the feature's scope status>
-
 STALE_SPECS:
-- <docs/specs/file>, <why the change makes it stale, or a status mismatch you couldn't safely reconcile>
+- <docs/specs/file>, <why the change makes it stale>
 
 CONTEXT_GAPS:
 - <area>, <pre-existing undocumented area only sliced by this change; suggest /audit>

@@ -8,7 +8,7 @@ A skill file loads in full, on its path, every time it runs, so every line is a 
 - **Instruct, don't justify.** Skills say what to do. The reasoning, the alternatives, and the history belong in the commit message and the PR that made the change, not the skill body. Keep at most a short clause of reason in the skill, and only where it stops the agent doing the wrong thing.
 - **Name a concept instead of explaining it.** Standard on terms the model already knows (idempotent, invariant, race condition, YAGNI, tracer bullet) rather than spelling them out. Spell out only the terms this repo invented (`Assumed` spec, workflow tier), and only once, in one place.
 - **Steps are instructions, not narrative.** No connecting paragraphs. Each step is one to three lines and ends in a checkable condition (`if X → do Y`, or a `[ ]` gate), not a description of what comes next.
-- **State a rule once.** If the same rule shows up twice, cut one and point to the other. One exception: each `SKILL.md` must stand alone for distribution, so a shared block (the output style) is intentionally repeated across skills, not factored out.
+- **State a rule once.** If the same rule shows up twice, cut one and point to the other. One exception: each `SKILL.md` must stand alone for distribution, so shared blocks (the output style, the recommendation rule) are intentionally repeated across skills, not factored out.
 
 ## One house voice, defined once
 

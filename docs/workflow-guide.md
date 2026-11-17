@@ -34,19 +34,19 @@ Everything the workflow knows is written into files in your repo. This is the wh
 
 The key idea is that these files nest. There is one at the root of the project for rules that apply everywhere. There can be more inside folders for rules that apply only to that area. For example a project might have a root `AGENTS.md` and also a `src/payments/AGENTS.md` that records rules only the payments code follows. When a skill works on the payments code, it reads the nearest one, so it sees both the project wide rules and the local ones. `audit` creates these files. Every other skill reads them. `sync` keeps them current as the code changes. No skill guesses your conventions when a context file already states them.
 
-**The scope, in `docs/scope/`.** This is the coarse plan of what to build and in what order. `scope` creates it. `develop` advances it as features get built, marking a feature as in progress and ticking milestones, but never marking a feature fully done on its own, because built is not the same as verified. A plain run of `scope` with no argument, and `sync` at merge time, reconcile it back against what the code now shows.
+**The scope, in `docs/scope/`.** This is the coarse plan of what to build and in what order. `scope` creates it. `develop` advances it as features get built, marking a feature as in progress and ticking milestones. The feature status here is the only place build progress lives. `done` is asked once, by the skill that closes your tier, and after that nothing reopens it. `sync` at merge time ticks boxes from what the code now shows.
 
 **The specs, in `docs/specs/`.** A spec is the written record of one real decision, and it is the contract the build follows. This is the file type people ask about most, so here is its full life.
 
-- It is **created** by `architect` the moment a real decision is made, for example which login method to use or what the data looks like. It is born with the status `Proposed`, meaning decided but not yet built. A spec written to document something already shipped is born `Accepted` instead.
+- It is **created** by `architect` the moment a real decision is made, for example which login method to use or what the data looks like. It is born `Draft` and becomes `Decided` when you accept it in the review; after that it stays `Decided` while the feature is built. Build progress is never tracked on the spec.
 - It is **loaded** by `develop` when the build starts. `develop` reads only the parts it needs to build, the requirements and their acceptance criteria, the decision, the design, and the ordered build plan. It does not reread the long reasoning behind the decision, because that is history, not build input.
-- It is **changed** in a very narrow way. As the build runs, `develop` moves the status line from `Proposed` to `In Progress`, and later from `In Progress` to `Accepted` once the feature is built and verified. `develop` touches only that one status line. It never edits the decision itself.
+- It is **ticked** as the build runs: `develop` checks off the build plan tasks that landed. It never edits the decision itself or its status.
 - It is **replaced** by `architect` when a decision is genuinely overturned. `architect` writes a new spec and marks the old one `Superseded`, with a pointer to the one that replaced it, so the history stays readable.
 - It is **flagged** by `sync` if a later change quietly made a spec out of date, so a human can bring it in line.
 
-There is one more status, `Assumed`, for the case where you chose to build before a real decision was made. When `develop` hits a load bearing choice that has no spec and you tell it to build anyway, it does not just guess in silence. It writes a small spec marked `Assumed` that records the assumption it is building on, who authorized it, and the code it touches. This is the only spec `develop` is allowed to create, and it can only ever create it in this one state. An `Assumed` spec means "recorded but not thought through," so the feature it governs stays flagged as owing ratification, though that never blocks you from marking it done. To clear it you run `architect` again, which deliberates the decision properly against the code that was built, then either fills in the real reasoning and lifts the `Assumed` mark, or, if the assumption was wrong, writes a corrected spec and marks the old one `Superseded` so `develop` rebuilds. That step is called ratification, and it is what lets an override keep moving without the decision ever escaping into the chat.
+There is one more status, `Assumed`. When `develop` builds a feature that has no spec, it creates a small one marked `Assumed` and lists, under `## Build decisions`, every open choice it settled and why. Specs that do exist get the same `## Build decisions` lines appended. So nothing it decided lives only in the chat, and the report lists those choices under **Decided for you** so you can overrule any of them. An `Assumed` spec is a complete record, not a debt: nothing nags you about it. If you ever want the full design conversation on it, run `architect` and it revisits the spec.
 
-Two rules keep this clean. Only `architect` writes the content of a spec and only `architect` clears an `Assumed` mark. Only `develop` moves the status along the built lifecycle, and the one new spec it may create is the `Assumed` stub. That single ownership is why the files do not turn into mush over time.
+Two rules keep this clean. Only `architect` writes the decision content of a spec. `develop` only appends `## Build decisions` lines, ticks the build plan, and creates the `Assumed` spec when there is none. That single ownership is why the files do not turn into mush over time.
 
 **The design system, in `design.md`.** This holds the art direction for your user interface, the character and the rules for how pages are put together. The real values, the exact colors and sizes, live in your project's CSS, and `design.md` only points at them, so a value is never written in two places. `develop` creates this the first time you build a user interface, or extracts it from your existing screens.
 
@@ -58,7 +58,7 @@ The files stay trustworthy because ownership is fixed. Here is who creates each 
 |---|---|---|---|
 | `AGENTS.md` and its `CLAUDE.md` pointer | audit | every skill | sync |
 | Scope in `docs/scope/` | scope | architect, develop | develop advances it, scope and sync reconcile it |
-| Specs in `docs/specs/` | architect (plus the `Assumed` stub, which develop may create) | develop | develop moves the status line along the built lifecycle and may create a spec only in the `Assumed` state; architect owns all content, clears the `Assumed` mark by ratifying, and marks a replacement; sync flags a stale one and surfaces an unratified `Assumed` one |
+| Specs in `docs/specs/` | architect (plus the `Assumed` stub, which develop may create) | develop | develop appends build decisions, ticks build plan tasks, and may create a spec only in the `Assumed` state; architect owns the decision content and marks a replacement; sync flags a stale one |
 | `design.md` and the CSS values it points at | develop | develop, check | develop |
 
 ### The one thread that ties the stages together
@@ -85,11 +85,11 @@ Whatever you pick is recorded as the project default. Any single feature can ove
 Before it finishes, `scope` makes one more recommendation, how much workflow this project wants by default. Not every project needs the full loop, and a small app should not be pushed through review and a separate test suite for a styling tweak. So it proposes one of four depths, with a clear recommendation you can override, and explains what each one runs. The depth is only the suggested checking tail after `develop`, and the suggested point to call a feature done, never a track you are locked onto: you run or skip any stage and declare `done` when you decide it is. It does not turn off the gate, so at every depth a feature that needs a real decision still goes through `architect` first (or records an assumed spec).
 
 - **Prototype.** Just `develop`, nothing after it. You rely on `develop`'s own build time self check, it typechecks the code and renders the screen to look at it when it can, plus your own eye. No `check` verify, no test suite, no review. Because you have chosen to skip separate verification, `develop` marks the feature done itself once it is built and self checked. Good for throwaway prototypes, experiments, and personal projects.
-- **Alpha.** After `develop`, `check` in verify mode on the real running app, which marks the feature done when it passes. No separate test suite or second opinion unless a feature asks for it. Good for low risk features and internal tools you still want proven.
+- **Alpha.** After `develop`, `check` in verify mode on the real running app, which asks you once to mark the feature done when it passes. No separate test suite or second opinion unless a feature asks for it. Good for low risk features and internal tools you still want proven.
 - **Beta.** After `develop`, `check` in verify mode, then `test`, which closes the feature. No fresh model review by default. Good for most real products.
 - **GA.** After `develop`, `check` in verify mode, `test`, a `check` review on a different model, then a `document` step, and most features are treated as needing a spec. Good for high risk work, payments, sign in, compliance, or a team codebase.
 
-So a light tier does not mean skipping `architect`. It means low rigor features rarely need a decision in the first place, so you seldom reach it, and when one does need a decision the gate still routes you there. Every stage after `develop` is a suggestion you run or skip, and `done` is always yours to declare, never a status a skill withholds until boxes are ticked. The `Prototype` tier is simply the one where, having opted out of separate verification up front, `develop` will offer `done` the moment a build self checks. The one thing the workflow still asks at every tier: write a load bearing decision down. A feature built on an assumed decision owes ratification (`architect`), and stays flagged until it gets it, but that flag never blocks you from marking `done`.
+So a light tier does not mean skipping `architect`. It means low rigor features rarely need a decision in the first place, and when one does, `develop` still asks before anything hard to undo and records the rest. Every stage after `develop` is a suggestion you run or skip, and `done` is always yours to declare, never a status a skill withholds until boxes are ticked. The `Prototype` tier is simply the one where, having opted out of separate verification up front, `develop` will offer `done` the moment a build self checks. The one thing the workflow keeps at every tier: every decision gets written down in the spec.
 
 `scope` recommends the depth that fits what you described, a throwaway experiment lands on `Prototype`, a small to do app on `Alpha` or `Beta`, and records your pick as the project default. This is only a baseline. A single high risk feature still runs its heavier path, and later stages read this default so they never nag a `Prototype` or `Alpha` project to run the full chain. For the to do app we take `Beta`.
 
@@ -105,7 +105,7 @@ It sorts everything it needs into three kinds and treats each differently.
 
 One more question comes up here. If a decision could be helped by an outside connector or a ready made skill, the workflow asks first whether you want it to look, and only searches if you say yes. Nothing is fetched from the internet without your go ahead. Anything it does find and rely on gets written into the spec so a human can follow it later.
 
-When the conversation is done, `architect` writes the decision as a spec in `docs/specs/`, with the status `Proposed`. This spec now exists as a file. It is the contract the build will follow.
+When the conversation is done, `architect` writes the decision as a spec in `docs/specs/`, with the status `Draft`, and marks it `Decided` once you accept it. This spec now exists as a file. It is the contract the build will follow.
 
 #### Stage 3, scaffold and read the real project
 
@@ -119,17 +119,16 @@ You run `architect` again, this time for the sign in feature. Now it works in it
 
 Before writing, it checks whether a spec for this already exists. If a very close one is found, it asks whether to treat this as a brand new decision, an update to that existing spec, or a replacement of it. For a fresh feature it is a new spec. It also decides the shape of the spec, a single file for a simple decision, or a small folder when the decision is large or has parts inside it.
 
-It writes the feature spec as `Proposed` and links it to the matching row in the scope, so the plan and the decision point at each other.
+It writes the feature spec, marks it `Decided` once you accept it, and links it to the matching row in the scope, so the plan and the decision point at each other.
 
 #### Stage 5, build it
 
 You run `develop`. This is where the most branching happens, and it happens in a set order.
 
-**First, the gate.** Before building anything, `develop` asks itself one question. To build this, would it have to invent something you have not decided. For the sign in feature the decision already exists as a spec, so it passes the gate and builds. If a decision were missing, it would stop and offer three ways forward.
+**First, the gate.** Before building anything, `develop` lists every value the feature must produce and checks that the spec says where each one comes from. For the sign in feature the decision already exists as a spec, so it builds. When something is open, it sorts it:
 
-- **Decide it first.** Go make the decision in `architect` now, then come back. This is the recommended path, and it is what keeps the agent from guessing.
-- **No real decision here, build directly.** You have judged there is nothing to decide, so it builds.
-- **Build now, record it as an assumed spec.** You want to keep moving, but the decision is real. So `develop` writes the assumption down first, as a small spec marked `Assumed`, then builds against it. This is the important part: the decision lives in the repository, not in the chat. The feature stays flagged as owing ratification (`architect`) until you deliberate it, but that never blocks you from marking it done, which is what keeps the override honest without slowing you down.
+- **Reversible** (a business rule detail, where a value comes from, a layout choice): it picks the soundest option (correct, secure, reliable before simple), writes the choice into the spec under `## Build decisions`, builds, and lists it in the report under **Decided for you**. No question, no detour.
+- **Hard to undo** (the auth model, a payment provider, the main database, a data model other features rely on, where a stored value comes from), or anything it is unsure about: it asks you once, with its recommended pick. You go with it, name another, or choose to design it first in `architect`.
 
 **Next, what kind of work is this.** `develop` sorts the task into user interface work, backend work, or both. Sign in is both, the sign in and sign up screens plus the session logic behind them, so it runs each part.
 
@@ -159,7 +158,7 @@ Throughout, one standard governs the interface, that every screen must leave as 
 
 The delivery style you chose back in stage 1 decides how these parts come together. Thin thread first means the screen binds to the real backend in the same pass. Look first means the screen stands up on fake data now and gets wired later.
 
-**When the build lands,** `develop` moves the feature's spec from `Proposed` to `In Progress`, ticks the parts of the plan that truly landed, and updates the scope. It does not mark the feature fully done, because that waits for verification and tests. Finally it writes concrete steps to check the feature by hand, derived from the acceptance criteria, and asks whether to save them to a small `verify.md` beside the spec or just show them to you.
+**When the build lands,** `develop` ticks the parts of the plan that truly landed and updates the scope. Unless your tier is `Prototype`, it does not ask about done, it just names the next step. Finally it writes concrete steps to check the feature by hand, derived from the acceptance criteria, and asks whether to save them to a small `verify.md` beside the spec or just show them to you.
 
 #### Stage 6, prove it runs
 
@@ -167,7 +166,7 @@ You run `check` in its verify mode. It drives the real running app and proves th
 
 #### Stage 7, write the tests
 
-You run `test`. It writes a real test suite for the code you just changed, working out your test framework, and asking and remembering it the first time. It covers the normal path, the edge cases, the error states, and the accessibility of any interface. When verification has passed and the tests are in, the feature can finally be marked done, and its spec moves from `In Progress` to `Accepted`.
+You run `test`. It writes a real test suite for the code you just changed, working out your test framework, and asking and remembering it the first time. It covers the normal path, the edge cases, the error states, and the accessibility of any interface. When the tests pass, it asks you once whether to mark the feature done.
 
 #### Stage 8, get a second opinion
 
@@ -213,8 +212,8 @@ On a team, before it changes anything, `develop` checks a few things and warns y
 
 The limits matter as much as the features.
 
-- It will not quietly decide a feature is done, and it will not withhold `done` from you either. `done` is always yours to declare. The tier you chose in `scope` only sets the suggested point to call it: at `Prototype`, once a build self checks; at `Alpha`, once `check` verify passes; at `Beta` and up, once tests are in. Those are suggestions, not gates, you can mark `done` sooner or run more first, and a step you skip is recorded as skipped, never held against you. A feature built on an assumed decision stays flagged as owing ratification (`architect`) until you ratify it, but that flag no longer blocks `done`.
-- It works hard not to invent a decision you have not made and hide it, though this is a strong gate, not an absolute guarantee (no prompt can be). If building would mean guessing a provider, a data shape, or a design, `develop` stops and sends you to `architect`. You can override and build anyway, but then it writes the assumption down as an `Assumed` spec and flags the feature as owing ratification (`architect`), a flag that never blocks done. The gate is layered so a decision does not slip through silently: `architect` names the source of every value a feature must produce, `develop` checks that coverage again before it builds, and on higher tiers `architect` recommends running an independent model over the spec for decisions it never settled (it asks first, and any gap it finds comes back to you to decide, with a recommendation). What that catches is the vast majority; what it misses is caught later as wrong behavior by `check` in verify mode and by `test`.
+- It will not quietly decide a feature is done, and it will not withhold `done` from you either. `done` is always yours to declare. Exactly one skill asks, once, set by your tier: `develop` at `Prototype`, `check` verify at `Alpha`, `test` at `Beta` and up. You can also say "mark it done" in any skill. Once a feature is done, no skill reopens it, checks it again, or asks again. A feature built on an assumed decision stays flagged as owing ratification (`architect`) until you ratify it, but that flag no longer blocks `done`.
+- It never hides a decision. Hard to undo choices get one question with a recommendation; reversible ones are decided, written into the spec under `## Build decisions`, and listed in the report so you can overrule them. What the gate misses shows up later as wrong behavior in `check` verify mode and in `test`.
 - It will not reach the internet without your go ahead. It asks before searching for an outside connector or looking anything up, and it records what it used.
 - The review does not edit your code. It reads and reports, and you decide what to change.
 - No skill rewrites your prose or reaches into another skill's files. Ownership is fixed, which is what keeps the files trustworthy over time.
@@ -225,9 +224,9 @@ The limits matter as much as the features.
 
 **Do I have to run all nine?** No. You run only the ones a change needs. A tiny change can be just `develop` and then `check` in verify mode. A bug is just `debug`.
 
-**What if there is no spec yet?** If a real decision is missing, `develop` stops and offers to send you to `architect` to make it, or to build directly if you judge there is nothing to decide, or to build now and record the assumption as an `Assumed` spec. That last option keeps you moving while still writing the decision into the repository, and it flags the feature as owing ratification (`architect`) without ever blocking done.
+**What if there is no spec yet?** `develop` builds anyway. It creates a small `Assumed` spec holding the requirements, every choice it made, and the code it touched. It asks you only if one of those choices is hard to undo.
 
-**Is it fine to never ratify an `Assumed` spec?** It is allowed, but it is not free. Both a bare `scope` and `sync` keep surfacing the `Assumed` spec as an open decision that is owed. For a throwaway spike that is fine, leave it. For real work that standing flag is the nudge to go ratify it. The workflow does not block a merge, but the assumption and the fact that it is owed stay durable in the repository, which is the guarantee it actually makes.
+**Is it fine to leave an `Assumed` spec as it is?** Yes. It is a complete record of what was decided and why. Run `architect` on it only if you want the full design conversation.
 
 **Why clear the session between stages?** A long chat costs more and drifts. Because the work is saved in files, a fresh session reads the current state from disk and continues cleanly, so clearing loses nothing.
 
