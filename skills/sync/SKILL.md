@@ -104,7 +104,7 @@ Note the **paths** plus the changed file list and diff command; read the files a
 Run only when dependency manifests changed or the diff clearly adds a significant external tool. Skip ordinary utility libraries unless they define a durable workflow or integration.
 
 - Identify newly added significant packages/tools from the manifest diff, not the full lockfile: framework, router, styling/UI kit, database, ORM/query layer, auth/session, payments, email/notifications, storage/uploads, search, queue/background jobs, AI provider/vector DB, browser/runtime testing, observability, hosting/deploy. Include package names and common aliases from manifests. Do not stop after the first technology.
-- Filter out anything already covered by installed skills, connected MCPs, or `AGENTS.md` declined entries.
+- Filter out anything already covered by installed skills, connected MCPs, `AGENTS.md` declined entries, or a spec's `**Declined tools**:` line.
 - **Ask before you search.**
 
   <!-- TOOL-CONSENT:START (identical in /architect, /audit and /sync; edit all or none) -->

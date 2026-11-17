@@ -77,6 +77,7 @@ deciding? 2 to 4 paragraphs. Do not mention options here, only the problem space
 <One sentence stating the decision clearly.>
 
 **Implementation skills**: `<skill-name>` (`<owner>/<repo>`, `<skills-dir>/<skill-name>/`) · `<skill-name>` (`<owner>/<repo>`, `<skills-dir>/<skill-name>/`)
+**Declined tools**: <tool>, <tool>   <!-- skills or MCP servers the engineer declined during discovery; /audit and /sync never offer them again. Omit if none. -->
 <!-- Every installed community skill that informed this design; the engineer reads it during implementation. `<skills-dir>` is the project's real skills dir (`.claude/skills/`, `.agents/skills/`, or `skills/`), never hardcoded; `<owner>/<repo>` is the tool-agnostic identity. Omit the line if no community skills were used. -->
 
 ## Rationale

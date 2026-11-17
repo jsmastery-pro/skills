@@ -39,11 +39,11 @@ First step, before reading any mode file or touching the repo. Look at what foll
 
 - **Starts with `verify` (or `run`)** → read `modes/verify.md`, follow it fully. Pass remaining arguments (feature name, scope) through.
 - **Starts with `review`** → read `modes/review.md`, follow it fully. Pass the steering through unchanged (e.g. `/check review with opus`, `/check review uncommitted`).
-- **No mode word, or ambiguous** (bare `/check`, or a feature name with no mode like `/check auth`) → do NOT guess, do NOT default. Show the two options as a plain text panel and **stop and wait** for the engineer's choice.
+- **No mode word** (bare `/check`, or `/check auth`) → read the feature's scope row (the feature named, else the one `in-progress`): its first unticked box `Verify it` → verify, `Review it` → review. Say which mode and why in one line, then run it. No scope row, or no such box → show the panel below with the recommended mode marked (verify when the change was not run yet, else review) and **stop and wait**.
 
 **How to present the choice (plain text, works on every agent, no interactive modal):**
 
-Print exactly this, then stop and wait. Do not assume `verify` until they answer. Route on their typed word (`verify` / `review` / `both`).
+Print exactly this (mark the recommended line), then stop and wait. Do not assume a mode until they answer. Route on their typed word (`verify` / `review` / `both`). Route on their typed word (`verify` / `review` / `both`).
 
 ```
 Which check do you want to run? Type one:

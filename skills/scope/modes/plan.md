@@ -14,7 +14,7 @@ Do not read the other plan route files unless the classification changes. After 
 
 ### Step 2: Ask (generated question walk, as decision panels)
 
-Do not follow a fixed script or a set number of rounds. Enumerate the planning dimensions THIS product needs (generate them from the idea and `AGENTS.md`), then ask them one after another as batched decision panels (up to 4 per panel), as many panels as it takes. Infer and skip anything already stated; ask everything else. Never cap the questions to save time, and never end while a load bearing dimension is unasked.
+Do not follow a fixed script or a set number of rounds. Enumerate the planning dimensions THIS product needs (generate them from the idea and `AGENTS.md`) and sort each: INFER what is already stated; ASK what only the engineer can settle (the MVP boundary, audience, monetization, success metric, hard constraints, which capabilities are in this slice); RECOMMEND what product expertise settles, and list it in the report so it can be overruled. Unsure → ASK. Ask in batched panels (up to 4 per panel, mixing groups when independent). Coverage is the bar, not question count: never end while a load bearing dimension is unaccounted for.
 
 Cover at least these dimension groups (a checklist of what to reach, not an order to recite; add product specific dimensions freely):
 
@@ -26,7 +26,7 @@ Each "yes" becomes its own feature or folds into a relevant feature's acceptance
 
 ### Step 3: Choose the build approach (decision panel)
 
-Decides how every feature is sliced and sequenced. No fixed procedure; reason about this product (goal, the product & business constraints from Step 2, production build vs throwaway), then present a panel of the named approaches, each stated by its guiding principle (not steps), recommending exactly one:
+Decides how every feature is sliced and sequenced. No fixed procedure; reason about this product (goal, the product & business constraints from Step 2, production build vs throwaway), then present a panel of the named approaches, each stated by its guiding principle (not steps), recommending exactly one (ask it inside the last Step 2 round when the answers so far settle the recommendation, else in a round of its own):
 
 - **Tracer Bullet**: vertical slices; each feature built end to end through every layer, working.
 - **Skateboard**: MVP first; ship the thinnest usable whole first, then grow it.
@@ -56,7 +56,7 @@ From the answers, produce the feature list: foundations first (Step 4), then sli
 - **Intent (1 to 2 lines)**: what it is and why it matters.
 - **Done when line (acceptance criteria seeds)**: one compact `Done when:` line of observable outcomes (e.g. "user can filter the list and the URL reflects it; empty and error states render"). Seeds, not a spec; `/architect` grows them into the spec's full requirements and acceptance criteria. Load bearing outcomes only.
 - **Workflow tier** (only when it differs from the project default set in Step 5b): `Prototype` / `Alpha` / `Beta` / `GA`, from this feature's risk, scope, and compliance sensitivity. Most features inherit the project default; tag a feature (e.g. `· GA`) only when it warrants more or less rigor than the rest. Higher tier → more likely `Needs spec: yes`.
-- **Approach (optional per feature override)**: defaults to inherit. Only when genuinely best built differently, run a Build approach panel for THAT feature: `(recommended) inherit the project default` on top, plus the named approaches (Tracer Bullet · Skateboard · Facade (prototype grade) · Journey) as overrides; same panel and no hardcoded tool conventions as Step 3, tag and precedence rules per Step 3.
+- **Approach (optional per feature override)**: defaults to inherit. Only when genuinely best built differently, add a Build approach question for THAT feature to the Step 5b round (not a separate stop): `(recommended) inherit the project default` on top, plus the named approaches (Tracer Bullet · Skateboard · Facade (prototype grade) · Journey) as overrides; same panel and no hardcoded tool conventions as Step 3, tag and precedence rules per Step 3.
 - **Needs spec?**: the invent test: would building it require a decision the engineer hasn't made? Yes for a provider/library choice, a data model, a cross cutting pattern, the design system, a whole page/screen with no spec yet, or behavior that is not trivial (search, filtering, recommendations). No only for genuinely pure implementation an existing `design.md`/spec/convention covers. Unsure → yes; an unflagged decision is the expensive miss. `GA`/`Beta` tier → almost always yes.
 - One decision per spec: multiple distinct decisions in one feature → one `Needs spec: yes` item each, never one lumped "strategy" spec. Several sharing one broad decision that then splits → an umbrella that dependents reference; never mark a dependent `no` when it carries its own decision.
 
@@ -66,7 +66,7 @@ Analysis/inventory is not a scope row: cataloguing duplication, listing call sit
 
 ### Step 5b: Recommend the workflow depth (decision panel)
 
-Now that the features exist, propose the project's default **workflow depth**: how many stages a feature normally runs after `/develop`. Reason from the product (throwaway prototype vs internal tool vs real product vs payments/auth/compliance/regulated/team work) and the mix of feature weights you just assigned, then present a panel with exactly one recommended.
+Now that the features exist, propose the project's default **workflow depth**: how many stages a feature normally runs after `/develop`. Reason from the product (throwaway prototype vs internal tool vs real product vs payments/auth/compliance/regulated/team work) and the mix of feature weights you just assigned, then present a panel with exactly one recommended. Ask it in ONE round together with the Step 6b References question and any per feature approach overrides (up to 4 per call).
 
 Depth governs only the stages **after** `/develop` (verify, test, review, document). It does **not** turn off decision recording: at every depth, `/develop` asks once before a hard to undo decision and records every choice it settles in the spec. Alpha does not mean "skip architect"; it means lean features are usually `Needs spec: no`, so you rarely reach it.
 
@@ -96,7 +96,7 @@ Citations are gated by Step 6b: ask that panel first (or confirm the chosen leve
 
 ### Step 6b: References consent (one panel, covers sources AND links)
 
-Ask ONE consent question governing both the `(basis: …)` citations and any reference links (one clear ask, not two). Panel; record the outcome as the References level:
+Ask ONE consent question governing both the `(basis: …)` citations and any reference links (one clear ask, not two), in the Step 5b round. Panel; record the outcome as the References level:
 - question: "Add a References section to the scope (where the recommendations come from, and optionally links)? The intent and reasoning stay either way. The links option runs a subagent that web searches and fetches pages to confirm official docs and standards, which costs some extra tokens."
 - header: "References"
 - options:

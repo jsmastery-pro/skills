@@ -142,6 +142,7 @@ Lead with what the pass produced and the first step; the approach, tier, and ful
 **<N> features planned (<M> already on the scope, <K> deferred), build approach <name>, workflow <tier>.**
 Next: /clear, then <the first unticked box, usually `/architect <first feature>`, or `/audit` if a brownfield repo has no root AGENTS.md>
 Heads up: <a feature bumped to a higher tier, a `needs a decision` foundation, or a genuine risk>   (omit if none)
+Decided for you: <each RECOMMEND call the engineer did not dictate (a capability, a split, an order), one line with why>   (omit if none)
 Scope written to <docs/scope/scope.md>.
 ```
 

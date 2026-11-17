@@ -56,7 +56,7 @@ Written for any Agent Skills client on macOS, Linux, or Windows:
 ### 1. Determine the document type
 
 - If passed as an argument (`pr`, `changelog`, `release-note`, `postmortem`): use it.
-- Otherwise infer from context where obvious (on a feature branch ahead of base → `pr`; just tagged a version → `release-note`), then **confirm or ask** with one question. Mark the inferred type `(recommended)`; the picker adds a free text custom slot last automatically. Present these as your agent's interactive option picker (`AskUserQuestion` on Claude Code), or as plain text options with the same choices (custom option last) if it has none:
+- Otherwise infer from context. Obvious (on a feature branch ahead of base → `pr`; just tagged a version → `release-note`) → say which type you are writing and proceed, no question. Not obvious → ask with one question. Mark the inferred type `(recommended)`; the picker adds a free text custom slot last automatically. Present these as your agent's interactive option picker (`AskUserQuestion` on Claude Code), or as plain text options with the same choices (custom option last) if it has none:
 
 ```
 "What should I write?"

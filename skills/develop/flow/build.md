@@ -12,7 +12,7 @@ Guide paths below (`ui-guide.md`, `logical-guide.md`, `checklist.md`) are relati
 | "api", "endpoint", "service", "functionality", "logic", "data", "job", "webhook", "integration" | **Logical** → `logical-guide.md` |
 | Both present (e.g. "auth": pages + session logic) | **Both**: run each track for its part |
 
-If genuinely ambiguous, ask once: "Is this the UI, the logic behind it, or both?"
+If genuinely ambiguous, it is asked in the `SKILL.md` Step 0 round: "Is this the UI, the logic behind it, or both?"
 
 ### Step 2: Load the decision and conventions (both tracks)
 

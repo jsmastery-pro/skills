@@ -51,7 +51,7 @@ Route on what the spec recorded, using the *Design source* table above:
 - An existing design system, or "extract from existing UI" → **Step 0.1**.
 - A described direction, a brand or site URL, or nothing at all → `ui/generate.md` (B1 finds the direction, B2 derives and verifies the tokens into CSS and the character into `design.md`), then implement.
 
-No spec governs this UI, or the spec is silent on the design system → fall through to the detection in Steps 0.1 to 0.3. If detection settles nothing, ask *"How should I get the design for this?"* with options **From Figma (its MCP)** · **From a screenshot / images** · **From the existing `design.md` / current UI** · **No design, suggest a direction** (the picker adds Other), then proceed by their pick.
+No spec governs this UI, or the spec is silent on the design system → fall through to the detection in Steps 0.1 to 0.3. If detection settles nothing, ask (in the `SKILL.md` Step 0 round) *"How should I get the design for this?"* with options **From Figma (its MCP)** · **From a screenshot / images** · **From the existing `design.md` / current UI** · **No design, suggest a direction** (the picker adds Other), then proceed by their pick.
 
 ## Step 0.1: Check for existing design.md
 
@@ -68,7 +68,7 @@ Before generating a fresh design system, check for an existing visual language t
 - Styling, token, or theme files: wherever this platform keeps them (a CSS/token/theme file on web, the theme or style module on mobile or desktop).
 - Component directories: the existing component or screen tree.
 
-Found (brownfield): ask before proceeding, via your agent's interactive option picker (`AskUserQuestion` on Claude Code) or plain text options with the same choices:
+Found (brownfield): ask in the `SKILL.md` Step 0 round, via your agent's interactive option picker (`AskUserQuestion` on Claude Code) or plain text options with the same choices:
 - **question**: "There's no `design.md`, but this project already has UI. How should I get the design system?"
 - **header**: "Design system"
 - **options**:
@@ -94,7 +94,7 @@ Determines prop API design, routing integration, file placement.
 | "component", "button", "card", "input", "modal", "badge", "dropdown", "toggle", "chip" | **Component** |
 | Ambiguous | Ask |
 
-If ambiguous, ask (as above):
+If ambiguous, ask in the `SKILL.md` Step 0 round:
 ```
 "Is this a reusable component or a full page?"
   - Reusable component: isolated, takes props, no routing

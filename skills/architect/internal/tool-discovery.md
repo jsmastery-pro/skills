@@ -51,7 +51,7 @@ Skill: `npx skills add <owner>/<repo> -y` (into the project's agent). MCP: conne
 
 ## Step 5: Record
 
-Skills installed → carry into the spec's `## Decision` **Implementation skills** field when you write it, and flag for the `## Agent skills` section of `AGENTS.md` (one bullet per skill, with its location, so only the needed skills load). Servers connected → flag for that section's compact `MCP servers:` line. Anything declined or skipped → flag for its compact `Declined:` line so a later stage does not offer it again (root for project wide tech, the nested area doc for area specific tech). `/audit` and `/sync` own writing `AGENTS.md`.
+Skills installed → carry into the spec's `## Decision` **Implementation skills** field when you write it, and flag for the `## Agent skills` section of `AGENTS.md` (one bullet per skill, with its location, so only the needed skills load). Servers connected → flag for that section's compact `MCP servers:` line. Anything declined or skipped → write it in the spec's `## Decision` as a `**Declined tools**:` line (durable even before any `AGENTS.md` exists) and flag for its compact `Declined:` line so a later stage does not offer it again (root for project wide tech, the nested area doc for area specific tech). `/audit` and `/sync` own writing `AGENTS.md`.
 
 ## Step 6: When nothing can be searched, installed, or connected
 

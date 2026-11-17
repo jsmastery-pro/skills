@@ -29,7 +29,7 @@ The builder: turns a spec plus project conventions into working code. Tracks: **
 
 ## Asks vs acts
 
-Builds, then reports. At most one question per run, and only for a hard to undo decision (Step 0). Everything else open (local details, reversible choices, a visual direction with no reference) it decides from the spec, `AGENTS.md`, and the codebase, records, and reports under **Decided for you**.
+Builds, then reports. At most one question round per run, in Step 0 before any code: a hard to undo decision, plus the questions only the engineer can answer for this build (track, design source, assets). Never a question once the build has started. Everything else open (local details, reversible choices, a visual direction with no reference) it decides from the spec, `AGENTS.md`, and the codebase, records, and reports under **Decided for you**.
 
 ## Artifact ownership
 
@@ -83,14 +83,16 @@ Read only what this feature needs, never the whole `docs/` tree: its one scope f
 
 **False negatives are the failure mode.** Unsure whether a choice is a decision → treat it as one (record it). Unsure whether it is reversible → treat it as hard to undo (ask). Wrongly calling something local or reversible is how a real decision slips through.
 
-**Sort each open decision, then act. At most one question per run.**
+**Sort each open decision, then act. One question round per run (below).**
 - **Reversible** (the default): a value's source, a business rule or behavior detail, a UI composition or visual direction, a library behind one module; anything a later change can redo without a data migration and that touches no money, auth, or security boundary. Don't stop, don't ask: pick by *How to pick the recommended option* (never the easier but weaker choice), record it (below), build, and list it under **Decided for you** in the report so the engineer can overrule it.
 - **Hard to undo**: the auth or session model, a payment or billing provider, the primary datastore, a data model other features will build on, a destructive migration, the source of a value that gets stored (a wrong source means repairing saved data), a security or compliance boundary. Ask once, all of them in one panel (single select; `AskUserQuestion` on Claude Code):
   - **question**: "Building `<feature>` needs a decision that is hard to undo: `<choice>`. I'd pick `<option>` (<one line why>). Go with it?"
   - **header**: "decision"
   - **options**: `Go with your pick (recommended)` → record it, build · `Design it first` → end with `/architect <feature>: <the decision>`, no build. The picker's Other lets the engineer name a different choice → record that, build.
 
-No open decision → no question, build.
+No open decision → no decision question.
+
+**One round for everything open, before any code.** Run the cheap detection that tells which other questions this build needs: the track (`flow/build.md` Step 1), and for a UI track the design source and component or page checks (`ui-guide.md` Steps 0 to 0.5) and the asset check (`ui/implementation.md` *Asset resolution* Steps 1 and 2), detection only. Put every question they leave open in the same round as the hard to undo decision, each exactly as its file defines it (up to 4 per call; a second call only if more remain). Then build without stopping. If something unforeseen turns up mid build, settle it by the rules above: reversible → decide, record, report; hard to undo → stop at a safe point and ask, the one exception.
 
 **Record every decision before building on it** (never only in chat):
 - Governing spec exists → append to its `## Build decisions` section (create it at the end if absent), one line each: `- <decision>: <choice> (<why, one clause>) · <decided by: /develop, or the engineer when picked in the Step 0 question> · <date>`.

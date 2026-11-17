@@ -29,7 +29,7 @@ Turns an idea into an ordered, coarse, living plan and keeps it honest as the pr
 
 Scope shape, coarse and small: a slim At a glance table (`# · Feature · Phase · Status`) + feature sections grouped by phase (see `scope-template.md`). Each section: heading `### N. Name` with short tags only when they matter (`needs a decision`, an approach override, a workflow tier override like `· GA`), a 1 to 2 line intent, one `Done when:` line (acceptance criteria seeds, the WHAT), checkbox steps.
 
-Feature shape lifecycle: not yet designed → one box, its entry command. On spec capture, `/architect` fills the built ready shape: `Design it (spec)` ticked, spec linked, `Build it: /develop <feature>` with 2 to 5 milestone sub items rolled up from the spec's `## Build plan`, then `Verify it: /check verify <feature>` and `Test it: /test <feature>`. Atomic build tasks stay in the spec's `## Build plan`, never here; every box is a command or tracked milestone. Status: in the table and beside the heading; spec and code pointers once they exist.
+Feature shape lifecycle (one box until designed, then the built ready shape `/architect` fills; atomic tasks stay in the spec's `## Build plan`; status in the table and beside the heading): the lifecycle table in `scope-template.md` is the single definition.
 
 One command, inferred intent (`/scope [what]`, never a subcommand):
 - **plan** (default): no scope yet + a product sized idea, or asking for the next slice. Full pass: ask → decompose into coarse feature sections → order + phase → write.
@@ -53,7 +53,7 @@ Every choice is an options panel, never a neutral menu: 2 to 4 concrete options 
 File shape:
 - Small product: one file, `docs/scope/scope.md` (At a glance table + phase grouped sections + legend).
 - Large product: epic split: `docs/scope/index.md` (At a glance table across epics + one line status rollup per epic, each linking its epic file) + one file per epic named by area (`docs/scope/auth.md`, …).
-- Promote on demand: start single file; when `scope.md` outgrows a comfortable scan (roughly a dozen plus features across clearly distinct areas), rename to `index.md` (keep table + per epic rollup), move each area's sections into its own `<epic>.md`. Never split it early. Names semantic (`scope.md` / `index.md` / `<epic>.md`), never numbered.
+- Promote on demand to the epic split, never early, names semantic: exactly as `scope-template.md` *Large product: epic split* defines.
 - Keep every file coarse and small; a long epic file needs finer features and tighter intent, not a build task dump.
 
 Status lifecycle (`/scope` sets initial status; the pipeline advances it):
@@ -63,9 +63,8 @@ Status lifecycle (`/scope` sets initial status; the pipeline advances it):
 - `replan` may set a feature dropped from scope to `dropped`, never deletes rows; `dropped` keeps history, excluded from active counts and work; `/develop` and `/sync` skip it.
 
 Workflow tier (one rigor dial per feature, `Prototype` · `Alpha` · `Beta` · `GA`): how much process a feature warrants. ONE project default (recommended once, plan Step 5b, recorded on the scope header `**Workflow:**` line) and a per feature override (a tag beside the heading, e.g. `· GA`, only when a feature differs from the default; no tag = inherit). What the tier drives:
-- **Design time**: higher tier → more likely `Needs spec: yes`, and the spec's cross model decision critic runs (auto at `GA`/`Beta`). `Prototype`/`Alpha` features are often `Needs spec: no`.
-- **After `/develop`** (the verification tail): `Prototype` = nothing (rely on `/develop`'s own build time self check); `Alpha` = `/check verify`; `Beta` = `/check verify` + `/test`; `GA` = adds a fresh model `/check review` + `/document`.
-- **Closing skill** (the one that asks `done`): `Prototype` → `/develop`; `Alpha` → `/check verify`; `Beta`/`GA` → `/test`.
+- **Design time**: higher tier → more likely `Needs spec: yes`, and `/architect` recommends its cross model spec check more strongly (always asked, never run on its own). `Prototype`/`Alpha` features are often `Needs spec: no`.
+- **After `/develop`**: the verification tail and the closing skill, as the `scope-template.md` legend defines them.
 
 `/scope` recommends the project default from the risk and size of the feature mix (Step 5b), the same signals `/architect` and `/develop` read; `/develop` reads the effective tier (feature override, else project default, else inferred) to scale the next steps it recommends, so a `Prototype` project is not told to run verify and a `Alpha` project is not told to run a full review chain.
 

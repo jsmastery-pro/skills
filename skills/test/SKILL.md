@@ -104,7 +104,7 @@ Monorepo resolution: find each scoped file's nearest enclosing `package.json` (w
 #### 2. Load preferences
 
 Read `test-preferences.json` at the project root (file tool; "not found" = no prefs). Branch on whether it names a `tool`, not on whether the file exists:
-- **`tool` is set** (the common write path): load `tool`, `additionalTools`, `e2eTool`, `testDir`, `filePattern`, `packageManager`; skip to Step 5.
+- **`tool` is set** (the common write path): load `tool`, `additionalTools`, `e2eTool`, `testDir`, `filePattern`, `packageManager`, `runAfterWrite` (missing → `true`); skip to Step 5.
 - **`tool` is `null` and `gate` is set** (`GATE_ONLY`): this project gates without a test runner, by an earlier deliberate choice. Do not write a suite, do not install a runner, do not ask again, and do not read `modes/setup.md`. Run the project's typecheck/lint gate, then stop and report: "This project gates on `<gate>`, not a test suite. Ran the typecheck gate; use `/check verify` to confirm behavior."
 - **No file** (`NO_PREFS`, first run): read `modes/setup.md` and do its Step 4 (stack detection and framework questions), then return here for Step 5 (installation check), then do its Step 6 (save preferences), then continue at Step 7. Do not read `modes/setup.md` on a write run.
 - **Malformed** (a file with neither `tool` nor `gate`, or unparseable JSON): say so, then treat it as `NO_PREFS` and run setup again, which overwrites it.
@@ -171,15 +171,9 @@ With file tools:
 
 ---
 
-#### 7.5 Ask whether to run the suite (always)
+#### 7.5 Run the suite after writing (no question)
 
-```
-Ask: "Tests will be written for <N> changed files. Run the suite after writing?"  (header: "Run tests?")
-- "Yes, run and fix to green": "Execute the suite; I'll fix any test mistakes and flag real bugs the tests catch"
-- "Skip, just write them": "Write the tests and give me manual run-and-verify instructions instead"
-```
-
-Set `RUN_AFTER = yes | no` and apply it at write time.
+`RUN_AFTER = yes`: tests never run prove nothing. Only `runAfterWrite: false` in `test-preferences.json` (chosen once at setup), or `INSTALL=deferred` (the tools are not installed yet), sets `no`. Apply it at write time.
 
 #### 8. Write the suite (main thread)
 
