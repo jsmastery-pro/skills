@@ -29,11 +29,11 @@ Resolve where hero images, avatars, product/gallery photos, logos, illustrations
 
 **Step 2: Look for matching project assets** (your file tools): search (ignoring `node_modules`, `.git`) for directories named `assets`, `images`, `img`, `media`, or `public`; scan them for filenames plausibly matching what the UI needs (hero, avatar, logo, product, …). Also check `design.md`/the design reference for named or pictured assets.
 
-**Step 3: If no matching assets are found, ask** (as above; never silently invent paths, emoji, or blank boxes):
+**Step 3: If no matching assets are found, ask in the `SKILL.md` Step 0 round** (never silently invent paths, emoji, or blank boxes):
 - **question**: "This UI needs <list what, e.g. a hero image + 3 product photos> but I found no matching assets in the project. How should I source them?"
 - **header**: "Assets"
 - **options**:
-  1. `I'll add the assets`: "Stop and let me drop real files in. Tell me the exact paths/filenames to reference and I'll wire them when they're added." → list the precise paths you'll expect (e.g. `public/hero.jpg`, `public/products/{1,2,3}.jpg`), then pause for the engineer.
+  1. `I'll add the assets`: "I'll drop real files in. Tell me the exact paths/filenames; build with placeholders there until the files exist." → wire the precise paths you'll expect (e.g. `public/hero.jpg`, `public/products/{1,2,3}.jpg`) with local placeholders at the right aspect ratio until the files exist, keep building, and list the paths to fill in the report. No pause.
   2. `Use placeholder service`: "Wire dynamic placeholders from a stock/placeholder service so the layout is real now; swap later." → use a reputable service (below), correct dimensions, descriptive `alt`.
   3. `Local solid/gradient placeholders`: "No external requests, use CSS gradient/blocks at the right aspect ratios as stand-ins." → design tokens, never raw hex.
 

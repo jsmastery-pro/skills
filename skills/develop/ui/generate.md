@@ -10,7 +10,7 @@ There are no bundled brand templates. You do not copy a design system, you deriv
 
 ### B1: Find the direction (a reference if one exists, else a mood)
 
-Ask for a reference first; a real one beats anything you invent, and engineers often have one in mind without offering it. Use the agent's picker (`AskUserQuestion` on Claude Code), else plain text with the same options (the picker adds its own free text option; add one yourself in the fallback).
+Ask for a reference first (in the `SKILL.md` Step 0 round, with the other open questions); a real one beats anything you invent, and engineers often have one in mind without offering it. Use the agent's picker (`AskUserQuestion` on Claude Code), else plain text with the same options (the picker adds its own free text option; add one yourself in the fallback).
 
 ```
 "Anything to steer the design?"   (header: "Direction")
@@ -24,10 +24,10 @@ Ask for a reference first; a real one beats anything you invent, and engineers o
 - **A site or brand URL** → fetch it (no web capability on the main thread: spawn the read only `researcher` subagent on the cheapest model). Read its CSS custom properties and computed styles, not a screenshot of it. Take the accent, the neutral ladder, the fonts, the radius. Then run the B2 checks on what you took: real sites often fail contrast, and you fix it rather than copy the failure.
 - **A design.md URL** → fetch, validate it has colors and typography, adopt it, then run the B2 checks.
 - **Describe a style** → their words plus the aesthetic guide below, into B2.
-- **Nothing** → ask the mood, then derive.
+- **Nothing** → the engineer delegated the direction: pick the mood below that fits the product (by *How to pick the recommended option*), record it in `design.md`, list it under **Decided for you**, then derive. No second question.
 
 ```
-"What mood should this UI have?"   (header: "Mood")
+Moods to pick from (a choice you make, not a question):
   - Dark & focused        "near black canvas, precise, technical, low chrome"
   - Light & professional  "white or off white canvas, calm, trustworthy"
   - Bold & editorial      "strong personality, high contrast, large type"

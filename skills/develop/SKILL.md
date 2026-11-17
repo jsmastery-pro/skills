@@ -1,7 +1,7 @@
 ---
 name: develop
 allowed-tools: Bash, Read, Grep, Glob, Write, Edit, Agent, AskUserQuestion
-description: "Run /develop to build a feature, UI or backend, from an approved design, a page, component, API, service, or data slice. If something load bearing is undecided and no spec records it, it stops and routes you to /architect; otherwise it reads the spec plus AGENTS.md, builds, and advances the scope."
+description: "Run /develop to build a feature, UI or backend, from an approved design, a page, component, API, service, or data slice. It reads the spec plus AGENTS.md, builds, and advances the scope. Open choices it settles and records in the spec; only a hard to undo decision gets one question."
 ---
 
 ## Output style (plain words, no dashes, no hyphens)
@@ -10,20 +10,33 @@ description: "Run /develop to build a feature, UI or backend, from an approved d
 Write everything this skill produces, files and messages alike, in plain simple language. Talk to the reader as `you`, warm and direct like a colleague, and present every step as a recommendation they may run or skip, never an order. Keep technical terms that carry real meaning; explain each in plain words. Never use a dash or a hyphen as punctuation: no em dash, no en dash, and no hyphenated compounds. Write `read only`, not `read-only`. Say it in simple words, or reword the sentence. Code, file paths, command flags, and values other skills match on keep their hyphens. Use short sentences, commas, or parentheses. Clear beats clever.
 <!-- OUTPUT-STYLE:END -->
 
+## How to pick the recommended option
+
+<!-- RECOMMEND:START -->
+A recommendation is the best option for this project, not the easiest one to build. Rank options in this order and recommend the first one that passes all of the top three:
+1. **Correct**: meets every acceptance criterion and handles the failures that will really happen (bad input, network errors, retries, concurrent writes, partial failure) without losing data.
+2. **Secure**: opens no hole in auth, access control, secrets, input validation, or personal data.
+3. **Reliable**: proven and maintained, with known failure modes and a way to recover; still sound as the project grows on its current path.
+4. **Fits the project**: its stack, its `AGENTS.md` conventions, and the people who will run it.
+5. **Simple and fast**: only breaks ties between options that pass 1 to 3.
+
+Never recommend a shortcut that fails 1 to 3 because it is quicker: a workaround, a swallowed error, a disabled check, a hardcoded value, skipped validation, or a library you cannot vouch for. If the easiest option has a known flaw, name the flaw and recommend the sound option, with its extra cost in one line. Not sure an option is sound? Say so plainly instead of recommending it.
+<!-- RECOMMEND:END -->
+
 ## What this skill does
 
-The builder: turns a spec plus project conventions into working code. Tracks: **UI** (components, pages, layouts; `ui-guide.md`), **Logical** (APIs, services, data layers, business logic, integrations; `logical-guide.md`), or both (e.g. "auth" = sign in pages plus session logic → run both). Step 0 gates on the spec so load bearing choices (an auth approach, a payment provider) are decided in `/architect`, not silently invented partway through the build.
+The builder: turns a spec plus project conventions into working code. Tracks: **UI** (components, pages, layouts; `ui-guide.md`), **Logical** (APIs, services, data layers, business logic, integrations; `logical-guide.md`), or both (e.g. "auth" = sign in pages plus session logic → run both). Step 0 makes sure no decision is invented silently: a hard to undo choice (an auth approach, a payment provider) gets one question; a reversible open choice gets decided, recorded in the spec, and reported.
 
 ## Asks vs acts
 
-Gates, then acts: no upfront question rounds like `/architect`. Read the decision, build, ask only what the design left open (the visual direction when no reference was given; a business rule the spec didn't settle). Infer from the spec, `AGENTS.md`, and codebase; recommend local implementation choices.
+Builds, then reports. At most one question round per run, in Step 0 before any code: a hard to undo decision, plus the questions only the engineer can answer for this build (track, design source, assets). Never a question once the build has started. Everything else open (local details, reversible choices, a visual direction with no reference) it decides from the spec, `AGENTS.md`, and the codebase, records, and reports under **Decided for you**.
 
 ## Artifact ownership
 
 - Writes app code (plus CSS/tokens for UI).
-- Scope (`docs/scope/`): only the Step 4 touches (feature status → `in-progress`, milestone sub boxes, `Build it` box, code pointer). Marks a feature `done` only at the `Prototype` workflow tier (build plus its own self check; the engineer opted out of separate verification); an `Assumed` spec does not block this, it stays flagged as owing ratification. At `Alpha`/`Beta`/`GA` it leaves the feature `in-progress` for `/check verify` and `/test` to close, and never ticks `Verify it` or `Test it`. Never creates files in `docs/scope/` (scopes only; analysis/research is `/architect`'s, in the spec's `rationale.md`).
-- Never writes spec content or deliberates a decision (flags the need, defers to `/architect`); never restructures root `AGENTS.md` (that's `/audit`); new area conventions go via `/sync` afterwards. **One narrow exception:** on `Build now, record it as an assumed spec` (Step 0), `/develop` may *create* a spec, but only in `Status: Assumed`, and only the assumption record fields (owed decision, assumption built on, authorized by, code area, requirements seeds). It never writes rationale and never advances an `Assumed` spec past that state; `/architect` owns clearing it. This is the only spec `/develop` creates.
-- One spec touch on an existing spec: the `**Status**:` line (umbrella decision → the `index.md`'s, never a child's), plus filling the feature's spec pointer line. Build start: `Proposed` → `In Progress`; build lands (feature → `done`): `In Progress` → `Accepted` (a spec is not `Accepted` until its feature ships). Never edit spec content, only that line, surgically: read it again right before writing; unexpected state (already `Accepted`, `Superseded`) → flag, don't clobber. **Never move a spec out of `Assumed`** (that is ratification, `/architect`'s job): an `Assumed` spec stays `Assumed` through the build even while the feature is `in-progress`, so it can never reach `Accepted` until `/architect` ratifies it. The feature itself can still be marked `done` (the engineer's call); the `Assumed` spec stays flagged as owing ratification, it does not block `done`.
+- Scope (`docs/scope/`): only the Step 4 touches (feature status → `in-progress`, milestone sub boxes, `Build it` box, code pointer). Asks to close `done` only at `Prototype` (it is the closing skill there); at `Alpha`/`Beta`/`GA` it never asks, never ticks `Verify it` or `Test it`, and just names the next step. Never creates files in `docs/scope/` (scopes only; analysis/research is `/architect`'s, in the spec's `rationale.md`).
+- Never deliberates a decision in depth (that is `/architect`); never restructures root `AGENTS.md` (that's `/audit`); new area conventions go via `/sync` afterwards.
+- Spec writes, only these: append `## Build decisions` lines, tick `## Build plan` tasks, and create an `Assumed` spec when the feature has none (Step 0). Never other spec content, never the `**Status**:` line of an existing spec.
 - Artifact base: `docs/` by default, `.workflow/` if `docs/` is a published docs site. Read from whichever exists (paths here assume `docs/`).
 - Shared scope: read it again right before ticking, edit only the specific checkbox, status, or pointer line (never rewrite the file); feature not as expected (already `done`, reworked) → flag, don't overwrite.
 
@@ -59,79 +72,53 @@ Warnings, not hard blocks, but surface them.
 
 ### Step 0: The spec gate (always first)
 
-Is a decision owed and unrecorded? Do NOT judge this by introspection ("do I feel like I'm inventing something?"), the build model rationalizes a real decision as "just wiring" and waves it through. Use a positive **input coverage** test, which is mechanical and harder to talk yourself out of:
-
-> **Enumerate every value this build must produce, compute, or display (from the acceptance criteria and the spec's design). For each, does the spec name where it comes from (an input, a DB column, a derivation from a named value, a prior decision)? Any required value with no named source is an owed decision.**
-
-If any source is unnamed, stop and route to the gate (`/architect`, or record an `Assumed` spec; `/develop` implements decisions, it doesn't make them). A decision is also owed when you'd have to invent:
-
-- **A provider, library, integration, data model, or cross cutting pattern** (e.g. auth provider, DB/ORM, caching strategy).
-- **A whole UI page or screen**: its design system (`design.md` there? if not, which direction?), sections/composition, component inventory, asset strategy (no screenshot, no repo images → e.g. an online source). Owed unless a `design.md` AND a page level spec pin these down.
-- **A feature's behavior** (search, a wizard: "what exactly should it do?" is open; `/architect` asks those questions). Owed unless a spec defines it.
-
-**What "local implementation detail" actually means (the narrow exception):** ONLY a choice among options the spec's named sources already permit, a loop style, a variable name, which helper to call. The moment a choice **determines a value's source, or a behavior an acceptance criterion constrains**, it is load bearing by definition, however small it looks. Deriving "the user's today from the timezone on their last read row" is not a local detail: it picks the source of a value an AC constrains, so it is owed. NOT owed for genuine pure implementation: a small bug fix, a component matching an existing `design.md`, wiring pieces whose sources the spec already names, a copy tweak, anything an existing spec/`design.md`/`AGENTS.md` fully governs.
-
-Don't hardcode to page names or to any one example (timezone is an illustration of the pattern, not a rule); apply the input coverage test to whatever was asked. False negatives are the failure mode, building a real decision without noticing: when a required value's source is unnamed, or you are unsure, treat as owed and ask (panel below).
-
 Read only what this feature needs, never the whole `docs/` tree: its one scope file and its one governing spec (single file, or umbrella `index.md` plus the one child speccing this sub task). No other features' rows, scope files, workspaces, or unrelated specs.
 
-**Check, in order:**
-1. **Locate this feature's scope file (only that one).** Monorepo → `docs/scope/<workspace>/` for the task's package. Pick the file (`scope.md`, or the matching `<epic>.md` in a split) from the At a glance table alone; read just this feature's section. `needs a decision` with no spec pointer yet → decision owed and missing. Malformed → flag and ask, don't guess.
-2. **Open the governing spec via the feature's `spec` pointer**, reading only its build spec sections as defined in the build flow (`flow/build.md`), Step 2 item 1. Found → it's the spec; proceed. No pointer and no linked spec → targeted look in `docs/specs/<workspace>/` for one matching this feature's scope, never a blanket read.
-3. The **nearest** `AGENTS.md` (workspace/area) may already capture the decision, synced from an earlier feature (e.g. "the auth provider is already chosen") → proceed without a new spec.
+**Locate, in order:**
+1. **This feature's scope file (only that one).** Monorepo → `docs/scope/<workspace>/` for the task's package. Pick the file (`scope.md`, or the matching `<epic>.md` in a split) from the At a glance table alone; read just this feature's section. Tagged `needs a decision` with no spec pointer → a hard to undo open decision (the scope already judged it owed). Malformed → flag and ask, don't guess.
+2. **The governing spec via the feature's `spec` pointer**, build spec sections only (`flow/build.md`, Step 2 item 1), plus its `## Build decisions`. No pointer → targeted look in `docs/specs/<workspace>/` for one matching this feature, never a blanket read.
+3. The **nearest** `AGENTS.md` (workspace/area): it may already capture a decision synced from an earlier feature.
 
-Decision owed and unrecorded → don't guess, don't silently stop. Ask (single select; `AskUserQuestion` on Claude Code):
+**Find open decisions with the input coverage test** (mechanical, not introspection; a build model rationalizes a real decision as "just wiring"): enumerate every value this build must produce, compute, or display (from the acceptance criteria and the spec's design). For each, does the spec, `design.md`, or the nearest `AGENTS.md` name its source (an input, a DB column, a derivation, a prior decision)? An unnamed source is an open decision. So is anything you would have to invent: a provider, library, integration, data model, or cross cutting pattern; a whole page's design system, composition, or asset strategy (unless `design.md` and a page spec pin them); a feature's behavior. A **local detail** is ONLY a choice among options the named sources already permit (loop style, a name, which helper): just build it. The moment a choice determines a value's source, or a behavior an acceptance criterion constrains, it is a decision however small it looks.
 
-- **question**: "This looks like it needs an architecture decision first: `<name the specific load-bearing choice, e.g. 'which auth provider + session model'>`. How do you want to handle it?"
-- **header**: "spec first?"
-- **options**:
-  1. `Architect it first`: "Recommended. Capture the decision in a spec before building, so the build has a spec." → **end here** with the handoff below. Do not build.
-  2. `No, not needed`: "I've judged there's no real decision here; build directly." → proceed to the build flow (`flow/build.md`).
-  3. `Build now, record it as an assumed spec`: "Build it, but write the assumption down first so the decision lives in the repo, not just this chat. The `Assumed` spec stays flagged as owing ratification (`/architect`), but that never blocks marking the feature `done`." → write an `Assumed` spec (below), then proceed to the build flow (`flow/build.md`), leaving the feature `in-progress` with an `assumed decision (spec NNNN)` note in the scope (`docs/scope/`).
+**False negatives are the failure mode.** Unsure whether a choice is a decision → treat it as one (record it). Unsure whether it is reversible → treat it as hard to undo (ask). Wrongly calling something local or reversible is how a real decision slips through.
 
-The tool appends "Other" as a free text option automatically.
+**Sort each open decision, then act. One question round per run (below).**
+- **Reversible** (the default): a value's source, a business rule or behavior detail, a UI composition or visual direction, a library behind one module; anything a later change can redo without a data migration and that touches no money, auth, or security boundary. Don't stop, don't ask: pick by *How to pick the recommended option* (never the easier but weaker choice), record it (below), build, and list it under **Decided for you** in the report so the engineer can overrule it.
+- **Hard to undo**: the auth or session model, a payment or billing provider, the primary datastore, a data model other features will build on, a destructive migration, the source of a value that gets stored (a wrong source means repairing saved data), a security or compliance boundary. Ask once, all of them in one panel (single select; `AskUserQuestion` on Claude Code):
+  - **question**: "Building `<feature>` needs a decision that is hard to undo: `<choice>`. I'd pick `<option>` (<one line why>). Go with it?"
+  - **header**: "decision"
+  - **options**: `Go with your pick (recommended)` → record it, build · `Design it first` → end with `/architect <feature>: <the decision>`, no build. The picker's Other lets the engineer name a different choice → record that, build.
 
-On `Build now, record it as an assumed spec`, write a minimal `Assumed` spec **before** building (this is the one narrow spec write `/develop` owns; see Artifact ownership). Resolve `$SPEC_DIR` the way `/architect` does (single repo → `docs/specs/`; monorepo workspace → `docs/specs/<workspace>/`), take the next free `NNNN`, and write `$SPEC_DIR/NNNN-<slug>.md`:
+No open decision → no decision question.
+
+**One round for everything open, before any code.** Run the cheap detection that tells which other questions this build needs: the track (`flow/build.md` Step 1), and for a UI track the design source and component or page checks (`ui-guide.md` Steps 0 to 0.5) and the asset check (`ui/implementation.md` *Asset resolution* Steps 1 and 2), detection only. Put every question they leave open in the same round as the hard to undo decision, each exactly as its file defines it (up to 4 per call; a second call only if more remain). Then build without stopping. If something unforeseen turns up mid build, settle it by the rules above: reversible → decide, record, report; hard to undo → stop at a safe point and ask, the one exception.
+
+**Record every decision before building on it** (never only in chat):
+- Governing spec exists → append to its `## Build decisions` section (create it at the end if absent), one line each: `- <decision>: <choice> (<why, one clause>) · <decided by: /develop, or the engineer when picked in the Step 0 question> · <date>`.
+- No spec → create `$SPEC_DIR/NNNN-<slug>.md` (`docs/specs/`, or `docs/specs/<workspace>/` in a monorepo; next free `NNNN`) and point the feature's scope `spec` line at it:
 
 ```markdown
 # NNNN · <feature>
 
 **Status**: Assumed
 **Date**: <today>
-**Authorized by**: <engineer>, during /develop
-
-## Owed decision
-<the specific load bearing choice that was not made>
-
-## Assumption built on
-<the concrete assumption this build will use>
-
-## Code area
-<the paths this build will touch>
 
 ## Requirements
-<acceptance criteria seeds carried from the scope Done when, if any>
+<acceptance criteria seeds from the scope Done when, if any>
 
-## Ratify
-This decision was recorded by /develop, not deliberated. Run `/architect <feature>`
-to deliberate and ratify it. Until then it stays flagged as an owed decision; it does not block marking the feature `done`.
+## Build decisions
+- <decision>: <choice> (<why, one clause>) · <decided by: /develop, or the engineer when picked in the Step 0 question> · <date>
+
+## Code area
+<the paths this build touches>
 ```
 
-Point the feature's scope `spec` line at this file. The assumption is now durable: it survives `/clear`, teammates read it, and a later `/develop` builds against it instead of guessing again. The `Assumed` spec stays flagged as owing ratification; it does not block marking the feature `done` (see `flow/build.md`, Step 4).
-
-On `Architect it first`, end with:
-
-> Run this next, then come back to `/develop`:
-> ```
-> /architect <feature>: <the specific decision to settle>
-> ```
-> Once the spec exists, run `/develop <task>` again and I'll build to it.
-
-No decision owed (pure implementation) → skip the question, proceed.
+`Assumed` means decided during the build, without a design conversation. It is a complete record, not debt: no skill nags about it and it never blocks `done`. `/architect` revisits it only when the engineer asks.
 
 ### Build flow (Steps 1-4)
 
-Once the gate clears (no decision owed, or the engineer chose `No, not needed` / `Build now, record it as an assumed spec`), read `flow/build.md` and follow its Steps 1-4: classify the track, load the decision and conventions, explore, optional doc check, build, then update the scope and report. Do not read `flow/build.md` when the gate ends the run (`Architect it first`, no build).
+Once the gate clears (nothing open, or every open decision recorded), read `flow/build.md` and follow its Steps 1-4: classify the track, load the decision and conventions, explore, optional doc check, build, then update the scope and report. Do not read `flow/build.md` when the gate ends the run (`Design it first`).
 
 ---
 

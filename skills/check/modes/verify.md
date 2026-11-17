@@ -139,11 +139,11 @@ Overall verdict PASS requires every behavior verified with cited evidence, and (
 
 Update the scope: if this feature is on the scope (`docs/scope/`) and the verdict is PASS, tick its `Verify it` box. **Also tick, in this feature's `verify.md`, each step you actually ran and that passed** (`- [ ]` → `- [x]`); leave a step unticked if it failed or you could not run it. This is per feature: only the feature you verified gets ticked, other features' `verify.md` files stay unchecked until you verify them (expected, not a miss). What happens next depends on the workflow tier (the effective tier: the feature's own tier tag if set, else the scope header `**Workflow:**` default):
 
-- **On PASS, offer `done`, don't gate it.** If `Verify it` is the feature's last box (`Alpha` tier), suggest marking it `done`: "Verified and passing, mark it `done`, or keep going, your call." On the engineer's go, set `done` and mirror the spec's `**Status**:` line `In Progress` → `Accepted` (surgically; not `In Progress` → flag). If there are later boxes (`Test it` at `Beta`/`GA`), suggest `/test <feature>` as the next step, but the engineer may mark `done` and skip it. An `Assumed` spec does not block `done`; flag it ("owes ratification, `/architect` when you can") and let them decide.
+- **On PASS, ask `done` only if you close this feature** (`Alpha`: `Verify it` is the last box): ask once "Verified and passing, mark it `done`?" and on yes set `done` (At a glance table and heading) and mark each still unticked box of the feature `(skipped)`, so the record stays honest. At `Beta`/`GA`, don't ask; name `/test <feature>` as next. Never touch the spec's `**Status**:` line. Already `done` → tick `Verify it`, nothing else.
 
 On FAIL or BLOCKED, tick nothing and report the gaps. Advise `/clear` before moving to a new feature (the spec and `verify.md` hold the state, so a fresh session loses nothing and stays cheap).
 
-**Confirm the update as a closing gate** (don't skip it): state in the report exactly what you ticked in each file, e.g. "Scope: ticked `Verify it`. Spec: status → `Accepted`." No matching scope row → say so ("no scope row matched `<feature>`"), don't finish silently.
+**Confirm the update as a closing gate** (don't skip it): state in the report exactly what you ticked in each file, e.g. "Scope: ticked `Verify it`, status → `done`." No matching scope row → say so ("no scope row matched `<feature>`"), don't finish silently.
 
 ```
 Lead with the verdict; list only what failed or is owed; point to verify.md for the rest (per `docs/conventions.md`). Template:

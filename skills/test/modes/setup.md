@@ -55,6 +55,8 @@ Skip Q3 entirely if scope is logic/api/cli only.
 
 ## Step 6: Save preferences
 
+`runAfterWrite` is `true` unless the engineer said, during setup, that they run tests themselves; ask nothing extra for it.
+
 Write `test-preferences.json` at the project root. It has two shapes, and which one you write depends on what the engineer chose at Q0.
 
 **Framework shape** (a runner is set up):
@@ -67,7 +69,8 @@ Write `test-preferences.json` at the project root. It has two shapes, and which 
   "e2eTool": "<playwright|cypress|none>",
   "testDir": "<conventional dir for the tool>",
   "filePattern": "<*.test.ts>",
-  "packageManager": "<npm|pnpm|yarn|bun>"
+  "packageManager": "<npm|pnpm|yarn|bun>",
+  "runAfterWrite": true
 }
 ```
 

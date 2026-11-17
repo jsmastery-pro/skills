@@ -10,6 +10,19 @@ description: "Run /architect when choosing between approaches, designing a featu
 Write everything this skill produces, files and messages alike, in plain simple language. Talk to the reader as `you`, warm and direct like a colleague, and present every step as a recommendation they may run or skip, never an order. Keep technical terms that carry real meaning; explain each in plain words. Never use a dash or a hyphen as punctuation: no em dash, no en dash, and no hyphenated compounds. Write `read only`, not `read-only`. Say it in simple words, or reword the sentence. Code, file paths, command flags, and values other skills match on keep their hyphens. Use short sentences, commas, or parentheses. Clear beats clever.
 <!-- OUTPUT-STYLE:END -->
 
+## How to pick the recommended option
+
+<!-- RECOMMEND:START -->
+A recommendation is the best option for this project, not the easiest one to build. Rank options in this order and recommend the first one that passes all of the top three:
+1. **Correct**: meets every acceptance criterion and handles the failures that will really happen (bad input, network errors, retries, concurrent writes, partial failure) without losing data.
+2. **Secure**: opens no hole in auth, access control, secrets, input validation, or personal data.
+3. **Reliable**: proven and maintained, with known failure modes and a way to recover; still sound as the project grows on its current path.
+4. **Fits the project**: its stack, its `AGENTS.md` conventions, and the people who will run it.
+5. **Simple and fast**: only breaks ties between options that pass 1 to 3.
+
+Never recommend a shortcut that fails 1 to 3 because it is quicker: a workaround, a swallowed error, a disabled check, a hardcoded value, skipped validation, or a library you cannot vouch for. If the easiest option has a known flaw, name the flaw and recommend the sound option, with its extra cost in one line. Not sure an option is sound? Say so plainly instead of recommending it.
+<!-- RECOMMEND:END -->
+
 ## What this skill does
 
 Runs structured discovery, weighs options, and writes or updates a build spec in `docs/specs/`. The main thread writes; it offloads only reading the codebase or fetching the web to a cheap subagent (see *Subagents*). Four modes:
@@ -21,19 +34,14 @@ Runs structured discovery, weighs options, and writes or updates a build spec in
 | `ENHANCEMENT` | Improving, replacing, or scaling something that already exists | Read existing code + specs, focused option comparison |
 | `CROSS-CUTTING` | Standardising a pattern across the whole codebase (error handling, logging, auth, naming) | Sample current state, define the standard precisely, recommend enforcement |
 
-- **Create**: new decision → new spec with status `Proposed`
+- **Create**: new decision → new spec with status `Draft`, set to `Decided` when the engineer accepts it
 - **Update**: evolving an existing decision → edit existing spec in place
 - **Supersede**: replacing a past decision → new spec + update old spec's status line
-- **Ratify**: deliberating an `Assumed` spec that `/develop` recorded when the engineer chose to build before deciding → see *Ratify an assumed decision* below
+- **Revisit**: an `Assumed` spec, only when the engineer asks → see *Revisit an assumed spec* below
 
-Spec status behaves one of two ways, decided by whether a buildable scope feature links the spec (a `docs/scope/` row whose `spec` cell points to it):
+Spec status records the decision, never build progress: `Draft` until the engineer accepts the spec, then `Decided` (also for already shipped work), `Assumed` (below), or `Superseded by …`. No skill moves it as the feature is built; build progress lives only in the scope. Legacy `Proposed`/`In Progress`/`Accepted` read as `Decided`; leave them.
 
-- **Feature linked spec** (typical FEATURE/ENHANCEMENT, or an ARCHITECTURE foundation that has a scope row): status mirrors the feature lifecycle. /architect creates it as `Proposed` and owns its content but never advances the status; /develop advances it to `In Progress` when the feature goes in-progress, then `Accepted` when built and verified (scope `done`). Engineer confirmation ratifies content only; `Accepted` means shipped.
-- **Standalone decision spec** (foundational/stack or cross cutting standard, no scope row links it): decision status. `Proposed` when written, `Accepted` once the engineer ratifies it on confirmation (the decision is then in force). /develop does not advance it.
-
-A spec documenting already shipped work (the "already built" path, or a linked feature already `existing`) is born `Accepted`.
-
-**The `Assumed` status.** `/develop` may create a spec in status `Assumed` when the engineer chooses to build before a load bearing decision is deliberated. It records the assumption the build used, not a deliberated decision. The feature can still be marked `done`; the `Assumed` spec stays flagged as owing ratification and does not block it. Only `/architect` clears the `Assumed` status, by ratifying (below). `/architect` never creates an `Assumed` spec; it only deliberates one that already exists.
+**The `Assumed` status.** `/develop` creates it when it builds a feature that has no spec: its `## Build decisions` list is a complete record, not debt. Nothing nags about it and it never blocks `done`. `/architect` never creates one, and revisits one only when asked. On any update, keep a spec's `## Build decisions` lines (fold the ones you adopt into `## Decision`).
 
 Writes no code. Never updates `AGENTS.md`/`CLAUDE.md` (/sync owns that).
 
@@ -52,8 +60,10 @@ Web fetching happens once, when a decision needs it (the Stage (c) landscape and
 Ask targeted questions before you write the spec (and before spawning any read/fetch helper); spend the budget on substance. Sort every question:
 
 - **INFER**: anything the prompt or codebase reveals (feature vs architecture, the stack, UI in scope, an already chosen provider). Derive, never ask.
-- **ASK**: only what the engineer alone knows (requirements, preferences, business rules, compliance scope).
-- **RECOMMEND**: anything expertise settles (which provider/library/pattern fits). State the pick, a one line why, and the runner up; they may override. Never a neutral menu, never a silent decision.
+- **ASK**: what the engineer alone knows (requirements, preferences, business rules, compliance scope), and every hard to undo choice whose tradeoff depends on their context (a stack layer, a provider, the data model's entities, the auth model), each with a recommended pick.
+- **RECOMMEND**: the details expertise settles (field types, status codes, retries, error states, most edge cases). State the pick, a one line why, and the runner up in the spec, and list each under **Decided for you** in the review so they may override. Never a neutral menu, never a silent decision.
+
+Unsure whether a choice is ASK or RECOMMEND → ASK. Coverage is the bar, not question count: batch independent questions (up to 4 per round) so the interview takes few rounds.
 
 Never bundle a complete data model, full stack, or ready made acceptance criteria set into one accept or change panel, and never silently decide a tool, provider, or setup choice for them.
 
@@ -119,8 +129,8 @@ From the spec list (paths relative to `$SPEC_DIR`):
   - Umbrella (splits into ≥2 related sub decisions) → directory `$SPEC_DIR/NNNN-kebab-title/` with `index.md` (the umbrella decision listing its children), `rationale.md` (the reasoning + any inventories/audits), and child specs `NNNN-child.md` inside it. Decide from the topic's breadth before you write, and hold the shape in mind as you write.
 - **Related specs**: go in two passes so this stays cheap as specs accumulate. First read only the title line of each existing spec (cheap even at dozens of them); then read the first 20 lines (title, status, opening of Context) of just the few whose title plausibly overlaps this topic, to confirm. Flag matches.
 - **Child of umbrella detection**: if the topic is a sub decision of an existing umbrella (`$SPEC_DIR/NNNN-<umbrella>/`), e.g. one that surfaced while building under it, place the new spec inside that directory as the next child (`NNNN-child.md`) and add it to the umbrella's `index.md` list, not a new top level spec. Same path when `/develop` hits a decision partway through a build. Tell the engineer where it's going.
-- **Update/supersede detection**: if an existing spec clearly overlaps the topic (same domain, system, decision), before the staged conversation present a decision panel (plain text options where the agent has no picker; the picker adds Other automatically): "I found an existing spec that may overlap: `[path]`, [title]. How should I treat this?", options: **New decision (create a new spec)** · **Update the existing spec in place** · **Supersede it (a new spec replaces it)**. Default to the "(recommended)" option by overlap strength (nearly identical → Update or Supersede; adjacent → New). On update/supersede: set OPERATION, read the existing spec in full, and skip the staged conversation for in place updates.
-  - **Assumed spec found**: if the overlapping spec's `**Status**:` is `Assumed`, this is a ratify, not the panel above. Follow *Ratify an assumed decision* (run the design conversation, then either fill in the real content and clear `Assumed`, or supersede if the assumption was wrong).
+- **Update/supersede detection**: if an existing spec clearly overlaps the topic (same domain, system, decision), before the design conversation present a decision panel (plain text options where the agent has no picker; the picker adds Other automatically): "I found an existing spec that may overlap: `[path]`, [title]. How should I treat this?", options: **New decision (create a new spec)** · **Update the existing spec in place** · **Supersede it (a new spec replaces it)**. Default to the "(recommended)" option by overlap strength (nearly identical → Update or Supersede; adjacent → New). On update/supersede: set OPERATION, read the existing spec in full, and skip the staged conversation for in place updates.
+  - **Assumed spec found**: if the overlapping spec's `**Status**:` is `Assumed`, follow *Revisit an assumed spec* instead of the panel above.
 
 **Community skills** come from the project's `AGENTS.md`, never a hardcoded name table (names and stacks change). Project wide skills/conventions live in root `AGENTS.md`, area specific ones in the nested `<area>/AGENTS.md` (maintained by `/audit` and `/sync`):
 
@@ -133,13 +143,13 @@ From the spec list (paths relative to `$SPEC_DIR`):
 
 ---
 
-### Scope validation, framing, and staged design conversation
+### Scope validation, framing, and design conversation
 
 For create or supersede operations, this is a hard gate: **read `internal/design-conversation.md` in full before you ask the engineer a single design question, and follow it.** It holds Scope validation (including the already built documentation path), Framing, and the staged design conversation. *Asks vs acts* above is only the intent, not the protocol; do not open the interview, generate questions, or write the spec until you have read that file. (Skip only for in place spec updates.)
 
 ### Write the spec (main thread)
 
-After the staged conversation, you write the spec yourself. Do not spawn anyone to draft, research, or critique it. Resolve this skill's folder to an absolute path (you already resolve these relative paths, so you know the folder) and Read three files now (only now, so they don't sit in context through the interview): `agent-prompt.md`, `spec-template.md`, and the one mode file matching the inferred MODE:
+After the design conversation, you write the spec yourself. Do not spawn anyone to draft, research, or critique it. Resolve this skill's folder to an absolute path (you already resolve these relative paths, so you know the folder) and Read three files now (only now, so they don't sit in context through the interview): `agent-prompt.md`, `spec-template.md`, and the one mode file matching the inferred MODE:
 - `FEATURE` → `agent-modes/feature.md`
 - `ARCHITECTURE` → `agent-modes/architecture.md`
 - `ENHANCEMENT` → `agent-modes/enhancement.md`
@@ -157,7 +167,7 @@ The inputs to apply (you already have them from the design conversation and pre-
 1. Design topic (from the user's original message)
 2. The inferred framing: MODE, platform (web/mobile/API), stack & conventions (from `AGENTS.md`), and any constraints/compliance inferred or confirmed
 2a. The feature's build approach (pre-flight precedence: scope row `Approach` override, else the project default from `AGENTS.md`/scope header, else the noted default) → `BUILD_APPROACH`; order and slice `## Build plan` by what the approach implies for this feature
-3. All staged conversation answers, stage by stage: the confirmed acceptance criteria (already IDed AC-1…, to seed `## Requirements`), the confirmed data model (entities/fields/relationships, the target that seeds the `## Build plan` migration, sized to the feature), the confirmed stack/tool picks, API surface, authz model, and edge cases. On the documentation path (staged conversation skipped) treat it as `"Staged design skipped, documenting an already-made decision"`, not an error
+3. All design conversation answers, stage by stage: the confirmed acceptance criteria (already IDed AC-1…, to seed `## Requirements`), the confirmed data model (entities/fields/relationships, the target that seeds the `## Build plan` migration, sized to the feature), the confirmed stack/tool picks, API surface, authz model, and edge cases. On the documentation path (design conversation skipped) treat it as `"Design conversation skipped, documenting an already-made decision"`, not an error
 3a. The RECOMMEND items → `RECOMMEND_ITEMS_OR_NONE`: the specific decisions you must make and justify (tool/provider aligned to the stack, session model, etc.); make each call, don't echo it back as an open question. If none, treat as `"none"`
 3b. The References level → `REFERENCES_LEVEL` (`none` | `sources` | `sources+links`, per the rule above). If Stage (c) never ran and you have not asked, default to `none`
 4. Context file contents: `AGENTS.md` (root + the feature area's nested), or `CLAUDE.md` as fallback, or "MISSING"
@@ -180,18 +190,13 @@ Once the spec file exists, read `internal/after-subagent.md` and follow it for c
 
 If the task is to update or supersede an existing spec:
 - Pre-flight: read the existing spec in full
-- Skip the staged conversation if operation is in place update
+- Skip the design conversation if operation is in place update
 - Set the operation: `update` or `supersede`
 - If supersede: write the new spec AND update the old spec's status to `Superseded by [NNNN](NNNN-title.md)`
 
-### Ratify an assumed decision
+### Revisit an assumed spec (only when asked)
 
-When the topic resolves to an existing `Assumed` spec (the engineer built first via `/develop`'s escape hatch and is now ratifying, often phrased `/architect <feature>: ratify …`), pre-flight will find that spec. Read it in full: its `## Owed decision`, `## Assumption built on`, and `## Code area` tell you what was decided provisionally and where the code lives. Then run the normal design conversation, anchored to what was actually built, and deliberate the decision properly. Two outcomes:
-
-- **The assumption holds.** Fill in the real decision content (Context, Options considered, Decision, Rationale, the design section, Consequences) so the spec becomes a genuine deliberated record, and clear `Assumed`: set the `**Status**:` line to the feature's lifecycle state (`In Progress` if the feature is built but not yet `done`, `Accepted` if it is already verified and tested). `/develop` then closes it to `Accepted` at `done` as usual. The decision is no longer ephemeral.
-- **The assumption was wrong.** Write a corrected spec (`create` or `supersede`) with the real decision, mark the assumed spec `Superseded by [NNNN](…)`, and tell the engineer the build rests on a wrong assumption and should be redone against the corrected spec.
-
-Either way, ratification is why an `Assumed` spec can leave that state: `/develop` records the assumption, `/architect` confirms or corrects it and supplies the reasoning. Do not leave a spec `Assumed` after a ratify run.
+Read it in full (`## Build decisions`, `## Code area`), then run the design conversation anchored to what was built. Choices hold → fill in the decision content and set `**Status**:` to `Decided`. A choice was wrong → write the corrected spec (`create` or `supersede`), mark the old one `Superseded by [NNNN](…)`, and say what must be rebuilt.
 
 ---
 
@@ -203,4 +208,4 @@ Either way, ratification is why an `Assumed` spec can leave that state: `/develo
 - Main thread design conversation: `internal/design-conversation.md` (read only for create/supersede)
 - Agent Skill & MCP offer: `internal/tool-discovery.md` (read only when the stack walk settles a new tool; it asks before it searches, and the registry fetch then runs in a `researcher` subagent)
 - Main thread completion flow: `internal/after-subagent.md` (read only after the spec is written)
-- The staged design conversation is generated per feature (see *Staged design conversation*, stages a to f), not stored; there are no canned question lists. If a topic is too vague to generate from, narrow it first (scope validation, or one clarifying question), never fall back to generic MCQs
+- The design conversation is generated per feature (see *Design conversation*, stages a to f), not stored; there are no canned question lists. If a topic is too vague to generate from, narrow it first (scope validation, or one clarifying question), never fall back to generic MCQs

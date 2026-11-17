@@ -8,7 +8,7 @@ File path: `docs/specs/NNNN-kebab-case-title.md`
 # NNNN. Title (concise, noun-phrase form, e.g. "Adopt a relational database for primary storage")
 
 **Date**: YYYY-MM-DD
-**Status**: Proposed
+**Status**: Draft
 
 ## Summary
 
@@ -77,6 +77,7 @@ deciding? 2 to 4 paragraphs. Do not mention options here, only the problem space
 <One sentence stating the decision clearly.>
 
 **Implementation skills**: `<skill-name>` (`<owner>/<repo>`, `<skills-dir>/<skill-name>/`) · `<skill-name>` (`<owner>/<repo>`, `<skills-dir>/<skill-name>/`)
+**Declined tools**: <tool>, <tool>   <!-- skills or MCP servers the engineer declined during discovery; /audit and /sync never offer them again. Omit if none. -->
 <!-- Every installed community skill that informed this design; the engineer reads it during implementation. `<skills-dir>` is the project's real skills dir (`.claude/skills/`, `.agents/skills/`, or `skills/`), never hardcoded; `<owner>/<repo>` is the tool-agnostic identity. Omit the line if no community skills were used. -->
 
 ## Rationale
@@ -170,6 +171,11 @@ N. <Build task>, satisfies **AC-N**
 - [ ] <Action item or open question>
 <!-- Omit section if there are no follow-up actions. -->
 
+## Build decisions
+
+- <decision>: <choice> (<why, one clause>) · <decided by: /develop, or the engineer when picked in the Step 0 question> · <date>
+<!-- Appended by /develop for open choices it settled while building. Omit until the first one. /architect keeps these lines on update. -->
+
 ## References
 
 <!-- INCLUDED ONLY WHEN THE ENGINEER OPTED IN (REFERENCES_LEVEL is `sources` or `sources+links`).
@@ -234,22 +240,18 @@ N. <Build task>, satisfies **AC-N**
 
 ## Status values
 
-The spec's status mirrors its feature's build lifecycle (scope: planned→`Proposed`, in-progress→`In Progress`, done→`Accepted`), with one exception: an `Assumed` spec stays `Assumed` until `/architect` ratifies it, even after the feature is `done`:
+A spec's status records the decision, never build progress (that lives only in the scope's feature status):
 
 | Status | Meaning |
 |---|---|
-| `Proposed` | spec written, decision agreed, feature NOT yet built. Set by /architect at creation. |
-| `In Progress` | The feature governed by this spec is being built. Set by /develop when the feature goes in-progress. |
-| `Accepted` | The feature is built and verified (scope `done`), the "done and dusted" state. A spec is NOT `Accepted` until its feature ships. Set by /develop on completion or reconciled by /sync. |
-| `Superseded by [NNNN](NNNN-title.md)` | Replaced by a newer spec |
-| `Assumed` | Built on a decision that was never deliberated, via `/develop`'s build now override. Records the assumption, not a deliberated decision. Stays `Assumed`, and never blocks the feature's `done`, until `/architect` ratifies it (which sets `Accepted`) or supersedes it. Only `/develop` creates it; only `/architect` clears it. |
+| `Draft` | Written by /architect, not yet accepted by the engineer in the spec review. Not in force: /develop does not build on it without asking. |
+| `Decided` | Accepted by the engineer, in force. Set by /architect on Accept (also for already shipped work). Never changes as the feature is built. |
+| `Assumed` | Created by `/develop` for a feature built with no spec; its `## Build decisions` list is the record. Complete as is and never blocks `done`; `/architect` revisits it only when asked (→ `Decided`, or supersede). |
+| `Superseded by [NNNN](NNNN-title.md)` | Replaced by a newer spec. |
 
-**Which status behavior applies depends on whether a buildable scope feature links this spec:**
-- **Feature linked spec** (a `docs/scope/` row's `spec` cell points to it) → **feature mirrored**: `Proposed` → `In Progress` → `Accepted`, tracking the feature's build lifecycle (table above). Confirmation ratifies content but does not set `Accepted`; /develop advances it. Exception: an `Assumed` feature linked spec is not mirrored, it stays `Assumed` (even when the feature is `done`) until `/architect` ratifies it.
-- **Standalone decision spec** (a foundational/stack or cross cutting standard with **no linked buildable feature**) → **decision status**: `Proposed` when written, then **`Accepted` once the engineer ratifies it** (on confirmation). There's no build phase to gate on, so it is not feature mirrored.
-- **spec documenting already shipped work** (the "already built" path, or a feature already `existing`) → **born `Accepted`**, it describes reality that already exists.
+Legacy `Proposed`, `In Progress`, and `Accepted` lines read as `Decided`; leave them as they are, never rewrite them to track a build. A legacy `Assumed` spec's `## Assumption built on` reads as its build decisions, and its `## Ratify` note is no longer a debt.
 
-**Umbrella child specs carry no lifecycle status.** In an umbrella directory (`NNNN-<x>/`), only the `index.md` has a `**Status**:` line, it mirrors the feature. The **child specs are spec content**, so **omit the `**Status**:` line on children** (they're governed by the umbrella). `/develop` and `/sync` advance the umbrella `index.md`'s status only, never a child's.
+**Umbrella child specs carry no status.** In an umbrella directory (`NNNN-<x>/`), only the `index.md` has a `**Status**:` line. Omit it on children (they're governed by the umbrella).
 
 **A directory spec splits build spec from reasoning.** A directory spec (`NNNN-<x>/`) always contains exactly two core files, plus optional extras:
 - **`index.md`**: the build spec `/develop` reads: `## Summary`, `## Requirements`, `## Decision`, the design/spec section, `## Build plan`, `## Consequences`, `## Follow-up`, and a one line `## Rationale` pointer to `rationale.md`. For an umbrella, `index.md` also opens with a **`## Structure`** section listing and linking every child spec (one line each: what it is + which decision it supports) and holds any **cross child contract**.

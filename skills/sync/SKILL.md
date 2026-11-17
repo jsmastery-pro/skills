@@ -10,9 +10,22 @@ description: "Run /sync as the last step after a change is complete, around merg
 Write everything this skill produces, files and messages alike, in plain simple language. Talk to the reader as `you`, warm and direct like a colleague, and present every step as a recommendation they may run or skip, never an order. Keep technical terms that carry real meaning; explain each in plain words. Never use a dash or a hyphen as punctuation: no em dash, no en dash, and no hyphenated compounds. Write `read only`, not `read-only`. Say it in simple words, or reword the sentence. Code, file paths, command flags, and values other skills match on keep their hyphens. Use short sentences, commas, or parentheses. Clear beats clever.
 <!-- OUTPUT-STYLE:END -->
 
+## How to pick the recommended option
+
+<!-- RECOMMEND:START -->
+A recommendation is the best option for this project, not the easiest one to build. Rank options in this order and recommend the first one that passes all of the top three:
+1. **Correct**: meets every acceptance criterion and handles the failures that will really happen (bad input, network errors, retries, concurrent writes, partial failure) without losing data.
+2. **Secure**: opens no hole in auth, access control, secrets, input validation, or personal data.
+3. **Reliable**: proven and maintained, with known failure modes and a way to recover; still sound as the project grows on its current path.
+4. **Fits the project**: its stack, its `AGENTS.md` conventions, and the people who will run it.
+5. **Simple and fast**: only breaks ties between options that pass 1 to 3.
+
+Never recommend a shortcut that fails 1 to 3 because it is quicker: a workaround, a swallowed error, a disabled check, a hardcoded value, skipped validation, or a library you cannot vouch for. If the easiest option has a known flaw, name the flaw and recommend the sound option, with its extra cost in one line. Not sure an option is sound? Say so plainly instead of recommending it.
+<!-- RECOMMEND:END -->
+
 ## What this skill does
 
-Closes the loop on a completed change: syncs AGENTS.md files, the scope, and linked spec `**Status**:` lines to what the repo now shows, and flags what it must not edit (stale specs, curated prose). The Boundaries table below is the exact contract.
+Closes the loop on a completed change: syncs AGENTS.md files and the scope to what the repo now shows, and flags what it must not edit (stale specs, curated prose). The Boundaries table below is the exact contract.
 
 **`agent-prompt.md`** is the single source of truth for the maintenance rules; SKILL.md covers only orchestration. The main thread reads it and does the maintenance itself (see Step 3).
 
@@ -28,10 +41,10 @@ Closes the loop on a completed change: syncs AGENTS.md files, the scope, and lin
 | Create nested `<area>/AGENTS.md` for an area **net new in this change** | ✅ creates (diff = full area context) + adds root pointer | /sync |
 | Create nested doc for an **already existing** undocumented area (only sliced by the diff) | ❌ flags "run /audit" | /audit |
 | Create or restructure the **root** AGENTS.md | ❌ flags "run /audit" | /audit |
-| Reconcile a spec's `**Status**:` line to its feature's scope status (`planned`→`Proposed`, `in-progress`→`In Progress`, `done`→`Accepted`; an `Assumed` spec is the exception: leave it `Assumed` and surface it, never reconcile it to `Accepted`) | ✅ Status line only | /sync |
-| Clear an `Assumed` spec (move it out of `Assumed`) | ❌ flags as decision debt "run /architect to ratify" (never reconciled to the feature status; only ratification clears it) | /architect |
+| Edit a spec's `**Status**:` line (it records the decision, not build progress) | ❌ never | /architect |
+| Clear an `Assumed` spec | ❌ leaves it (a complete record, not debt) | /architect, only when asked |
 | Edit a spec's **content** / supersede it | ❌ flags as stale | /architect |
-| Reconcile the scope, for the **relevant workspace's** scope file only (not all of `docs/scope/`), tick **any** completed sub task from repo **evidence** (code, tests, AGENTS.md), advance status | ✅ corrects | /sync |
+| Reconcile the scope, for the **relevant workspace's** scope file only (not all of `docs/scope/`), tick **any** completed sub task from repo **evidence** (code, tests, AGENTS.md), advance `planned` → `in-progress`; never sets, reopens, or asks about `done` | ✅ corrects | /sync |
 | Add / reorder features or sub tasks in the scope | ❌ leaves alone | /scope |
 | Overwrite or rewrite curated AGENTS.md prose | ❌ flags conflict instead | human |
 
@@ -91,7 +104,7 @@ Note the **paths** plus the changed file list and diff command; read the files a
 Run only when dependency manifests changed or the diff clearly adds a significant external tool. Skip ordinary utility libraries unless they define a durable workflow or integration.
 
 - Identify newly added significant packages/tools from the manifest diff, not the full lockfile: framework, router, styling/UI kit, database, ORM/query layer, auth/session, payments, email/notifications, storage/uploads, search, queue/background jobs, AI provider/vector DB, browser/runtime testing, observability, hosting/deploy. Include package names and common aliases from manifests. Do not stop after the first technology.
-- Filter out anything already covered by installed skills, connected MCPs, or `AGENTS.md` declined entries.
+- Filter out anything already covered by installed skills, connected MCPs, `AGENTS.md` declined entries, or a spec's `**Declined tools**:` line.
 - **Ask before you search.**
 
   <!-- TOOL-CONSENT:START (identical in /architect, /audit and /sync; edit all or none) -->
@@ -109,15 +122,15 @@ Run only when dependency manifests changed or the diff clearly adds a significan
 
 ### 3. Do the maintenance (main thread)
 
-The main thread does the maintenance itself; it never hands the `AGENTS.md` / scope / spec status edits to a subagent. Read `agent-prompt.md` now (only now, at write time) and follow it exactly; it is authoritative for the maintenance rules. The diff reading is the one thing you may offload, and only for a large change set, to a read only `scout` subagent on the cheapest model (Claude Code: `haiku`) that returns a compact map. Stay within the same boundaries the old tool grant expressed: `Edit` existing docs, scope, and spec `**Status**:` lines; `Write` strictly for a **net new area** nested AGENTS.md; no root creation, no spec *content* edits (Status line only), no shallow nested docs for established areas (these are rules in `agent-prompt.md`).
+The main thread does the maintenance itself; it never hands the `AGENTS.md` / scope edits to a subagent. Read `agent-prompt.md` now (only now, at write time) and follow it exactly; it is authoritative for the maintenance rules. The diff reading is the one thing you may offload, and only for a large change set, to a read only `scout` subagent on the cheapest model (Claude Code: `haiku`) that returns a compact map. Stay within the same boundaries the old tool grant expressed: `Edit` existing docs and the scope; `Write` strictly for a **net new area** nested AGENTS.md; no root creation, no spec edits at all, no shallow nested docs for established areas (these are rules in `agent-prompt.md`).
 
 The inputs to apply:
   1. `MODE`, `BASE`, `MERGE_BASE`, `CHANGED_FILES` (name status changed source list), `DIFF_COMMAND` (exact `git diff` command)
   2. `DELETED_PATHS` (deleted paths, for orphan cleanup)
   3. `ROOT_AGENTS_MD` (root AGENTS.md contents), `NESTED_PATHS` (nested AGENTS.md paths)
-  4. `SPEC_PATHS` (all spec paths, for Status line reconciliation and staleness flagging)
+  4. `SPEC_PATHS` (all spec paths, for staleness flagging)
   5. `FILE_TO_CONTEXT_MAP` (changed file → nearest context file)
-  6. `SCOPE_PATH_OR_NONE` (relevant workspace scope path(s), not all of `docs/scope/`; also the source of each linked feature's status for spec Status line reconciliation)
+  6. `SCOPE_PATH_OR_NONE` (relevant workspace scope path(s), not all of `docs/scope/`)
   7. `INSTALLED_SKILLS_OR_NONE`, `MCP_SERVERS_OR_NONE`, `DECLINED_TOOLS_OR_NONE` from Step 2.5
 
 ### 4. Relay the result
@@ -129,15 +142,14 @@ Lead with what it reconciled in one line; then list only what needs the engineer
 ```
 ## /sync complete Â· reconciled <N> changed files
 
-**Updated <AGENTS.md files · scope features · spec statuses> to match the diff.**   (or "everything already current, nothing to sync")
+**Updated <AGENTS.md files · scope features> to match the diff.**   (or "everything already current, nothing to sync")
 Heads up (need you):
-- Stale spec → /architect: `<file>` (<why, or a status mismatch /sync couldn't safely resolve>)
-- Assumed, not ratified → /architect: `<file>` (<feature>; owes ratification, doesn't block `done`)
+- Stale spec → /architect: `<file>` (<why>)
 - Context gap → /audit: `<area>` (established area /sync can't document from the diff alone)
 - Conflict, decide manually: `<path>` (<curated content that would need rewriting>)
 ```
 
-Drop any Heads up bullet with no items, and drop the whole Heads up block if there are none. What `/sync` did (AGENTS.md lines, scope ticks, orphan cleanup, status reconciliation) is in the files; don't list it. `/sync` does not run `/architect` or `/audit` for you; it points, you decide.
+Drop any Heads up bullet with no items, and drop the whole Heads up block if there are none. What `/sync` did (AGENTS.md lines, scope ticks, orphan cleanup) is in the files; don't list it. `/sync` does not run `/architect` or `/audit` for you; it points, you decide.
 
 ---
 

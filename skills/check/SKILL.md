@@ -11,6 +11,19 @@ description: "Confirm a change before merge. `/check verify` drives the real app
 Write everything this skill produces, files and messages alike, in plain simple language. Talk to the reader as `you`, warm and direct like a colleague, and present every step as a recommendation they may run or skip, never an order. Keep technical terms that carry real meaning; explain each in plain words. Never use a dash or a hyphen as punctuation: no em dash, no en dash, and no hyphenated compounds. Write `read only`, not `read-only`. Say it in simple words, or reword the sentence. Code, file paths, command flags, and values other skills match on keep their hyphens. Use short sentences, commas, or parentheses. Clear beats clever.
 <!-- OUTPUT-STYLE:END -->
 
+## How to pick the recommended option
+
+<!-- RECOMMEND:START -->
+A recommendation is the best option for this project, not the easiest one to build. Rank options in this order and recommend the first one that passes all of the top three:
+1. **Correct**: meets every acceptance criterion and handles the failures that will really happen (bad input, network errors, retries, concurrent writes, partial failure) without losing data.
+2. **Secure**: opens no hole in auth, access control, secrets, input validation, or personal data.
+3. **Reliable**: proven and maintained, with known failure modes and a way to recover; still sound as the project grows on its current path.
+4. **Fits the project**: its stack, its `AGENTS.md` conventions, and the people who will run it.
+5. **Simple and fast**: only breaks ties between options that pass 1 to 3.
+
+Never recommend a shortcut that fails 1 to 3 because it is quicker: a workaround, a swallowed error, a disabled check, a hardcoded value, skipped validation, or a library you cannot vouch for. If the easiest option has a known flaw, name the flaw and recommend the sound option, with its extra cost in one line. Not sure an option is sound? Say so plainly instead of recommending it.
+<!-- RECOMMEND:END -->
+
 ## What this skill does
 
 `/check` is the gate before merge. Two modes, separate jobs, usually both, verify first:
@@ -26,11 +39,11 @@ First step, before reading any mode file or touching the repo. Look at what foll
 
 - **Starts with `verify` (or `run`)** → read `modes/verify.md`, follow it fully. Pass remaining arguments (feature name, scope) through.
 - **Starts with `review`** → read `modes/review.md`, follow it fully. Pass the steering through unchanged (e.g. `/check review with opus`, `/check review uncommitted`).
-- **No mode word, or ambiguous** (bare `/check`, or a feature name with no mode like `/check auth`) → do NOT guess, do NOT default. Show the two options as a plain text panel and **stop and wait** for the engineer's choice.
+- **No mode word** (bare `/check`, or `/check auth`) → read the feature's scope row (the feature named, else the one `in-progress`): its first unticked box `Verify it` → verify, `Review it` → review. Say which mode and why in one line, then run it. No scope row, or no such box → show the panel below with the recommended mode marked (verify when the change was not run yet, else review) and **stop and wait**.
 
 **How to present the choice (plain text, works on every agent, no interactive modal):**
 
-Print exactly this, then stop and wait. Do not assume `verify` until they answer. Route on their typed word (`verify` / `review` / `both`).
+Print exactly this (mark the recommended line), then stop and wait. Do not assume a mode until they answer. Route on their typed word (`verify` / `review` / `both`). Route on their typed word (`verify` / `review` / `both`).
 
 ```
 Which check do you want to run? Type one:

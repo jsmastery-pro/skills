@@ -10,6 +10,19 @@ description: "Run /test to write a test suite for code you just built or changed
 Write everything this skill produces, files and messages alike, in plain simple language. Talk to the reader as `you`, warm and direct like a colleague, and present every step as a recommendation they may run or skip, never an order. Keep technical terms that carry real meaning; explain each in plain words. Never use a dash or a hyphen as punctuation: no em dash, no en dash, and no hyphenated compounds. Write `read only`, not `read-only`. Say it in simple words, or reword the sentence. Code, file paths, command flags, and values other skills match on keep their hyphens. Use short sentences, commas, or parentheses. Clear beats clever.
 <!-- OUTPUT-STYLE:END -->
 
+## How to pick the recommended option
+
+<!-- RECOMMEND:START -->
+A recommendation is the best option for this project, not the easiest one to build. Rank options in this order and recommend the first one that passes all of the top three:
+1. **Correct**: meets every acceptance criterion and handles the failures that will really happen (bad input, network errors, retries, concurrent writes, partial failure) without losing data.
+2. **Secure**: opens no hole in auth, access control, secrets, input validation, or personal data.
+3. **Reliable**: proven and maintained, with known failure modes and a way to recover; still sound as the project grows on its current path.
+4. **Fits the project**: its stack, its `AGENTS.md` conventions, and the people who will run it.
+5. **Simple and fast**: only breaks ties between options that pass 1 to 3.
+
+Never recommend a shortcut that fails 1 to 3 because it is quicker: a workaround, a swallowed error, a disabled check, a hardcoded value, skipped validation, or a library you cannot vouch for. If the easiest option has a known flaw, name the flaw and recommend the sound option, with its extra cost in one line. Not sure an option is sound? Say so plainly instead of recommending it.
+<!-- RECOMMEND:END -->
+
 ## What this skill does
 
 Role: a senior test engineer writing the suite the code deserves. Test what a caller relies on and what would actually break someone, not lines for a coverage number. Pick a strategy per file by reading what it is. Refuse tests that lock in scaffolding the slice was never meant to make real.
@@ -91,7 +104,7 @@ Monorepo resolution: find each scoped file's nearest enclosing `package.json` (w
 #### 2. Load preferences
 
 Read `test-preferences.json` at the project root (file tool; "not found" = no prefs). Branch on whether it names a `tool`, not on whether the file exists:
-- **`tool` is set** (the common write path): load `tool`, `additionalTools`, `e2eTool`, `testDir`, `filePattern`, `packageManager`; skip to Step 5.
+- **`tool` is set** (the common write path): load `tool`, `additionalTools`, `e2eTool`, `testDir`, `filePattern`, `packageManager`, `runAfterWrite` (missing → `true`); skip to Step 5.
 - **`tool` is `null` and `gate` is set** (`GATE_ONLY`): this project gates without a test runner, by an earlier deliberate choice. Do not write a suite, do not install a runner, do not ask again, and do not read `modes/setup.md`. Run the project's typecheck/lint gate, then stop and report: "This project gates on `<gate>`, not a test suite. Ran the typecheck gate; use `/check verify` to confirm behavior."
 - **No file** (`NO_PREFS`, first run): read `modes/setup.md` and do its Step 4 (stack detection and framework questions), then return here for Step 5 (installation check), then do its Step 6 (save preferences), then continue at Step 7. Do not read `modes/setup.md` on a write run.
 - **Malformed** (a file with neither `tool` nor `gate`, or unparseable JSON): say so, then treat it as `NO_PREFS` and run setup again, which overwrites it.
@@ -158,15 +171,9 @@ With file tools:
 
 ---
 
-#### 7.5 Ask whether to run the suite (always)
+#### 7.5 Run the suite after writing (no question)
 
-```
-Ask: "Tests will be written for <N> changed files. Run the suite after writing?"  (header: "Run tests?")
-- "Yes, run and fix to green": "Execute the suite; I'll fix any test mistakes and flag real bugs the tests catch"
-- "Skip, just write them": "Write the tests and give me manual run-and-verify instructions instead"
-```
-
-Set `RUN_AFTER = yes | no` and apply it at write time.
+`RUN_AFTER = yes`: tests never run prove nothing. Only `runAfterWrite: false` in `test-preferences.json` (chosen once at setup), or `INSTALL=deferred` (the tools are not installed yet), sets `no`. Apply it at write time.
 
 #### 8. Write the suite (main thread)
 
@@ -184,7 +191,7 @@ Monorepo (multiple package roots from Step 1b): write each root's suite in turn,
 
 If the write failed or produced no report: say so and do it again; never report a passing or failing suite you didn't actually produce. Otherwise relay the format matching `RUN_AFTER`.
 
-Update the scope: if this feature is on the scope (`docs/scope/`) and the suite passes, tick its `Test it` box, then **offer `done`, don't gate it**: "Tests are in and passing, mark it `done`?" On the engineer's go, set the status `done` (At a glance table and heading) and mirror the spec `**Status**:` → `Accepted`. An `Assumed` spec does not block `done`; flag it ("owes ratification, `/architect` when you can") and let them decide. If tests fail or coverage is partial, leave `Test it` unticked and report. **Confirm the update as a closing gate** (don't skip it): report exactly what you ticked in each file, e.g. "Scope: ticked `Test it`, status → `done`. Spec: status → `Accepted`." No matching scope row → say so, don't finish silently. On `done`, advise `/clear` before the next feature: the scope and spec hold everything, a fresh session keeps the next build cheap. **Git:** if the nearest `AGENTS.md` `## Git` says `integration: on` and `commit` is not `manual`, offer to commit the suite with a one line subject (`test(<scope>): …`) plus the `Co-Authored-By` trailer; never push. (Effective tier = the feature's own tier tag if set, else the project `**Workflow:**` default. `/test` is the closer at `Beta`/`GA`; `Prototype` closes at `/develop`, `Alpha` at `/check verify`, so on those tiers this feature is already `done` or does not use `/test`. Honor an override tag; never default to a fixed chain.)
+Update the scope: if this feature is on the scope (`docs/scope/`) and the suite passes, tick its `Test it` box. At `Beta`/`GA` you close the feature: unless it is already `done`, ask once "Tests are in and passing, mark it `done`?" and on yes set `done` (At a glance table and heading) and mark each still unticked box of the feature `(skipped)`, so the record stays honest. Never touch the spec's `**Status**:` line. If tests fail or coverage is partial, leave `Test it` unticked and report. **Confirm the update as a closing gate** (don't skip it): report exactly what you ticked in each file, e.g. "Scope: ticked `Test it`, status → `done`." No matching scope row → say so, don't finish silently. On `done`, advise `/clear` before the next feature: the scope and spec hold everything, a fresh session keeps the next build cheap. **Git:** if the nearest `AGENTS.md` `## Git` says `integration: on` and `commit` is not `manual`, offer to commit the suite with a one line subject (`test(<scope>): …`) plus the `Co-Authored-By` trailer; never push. (Effective tier = the feature's own tier tag if set, else the project `**Workflow:**` default. `/test` is the closer at `Beta`/`GA`; `Prototype` closes at `/develop`, `Alpha` at `/check verify`, so on those tiers this feature is already `done` or does not use `/test`. Honor an override tag; never default to a fixed chain.)
 
 Lead with the result; the per file list and AC traceability are in the test files (per `docs/conventions.md`). Template:
 
