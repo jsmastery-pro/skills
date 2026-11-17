@@ -95,6 +95,11 @@ A good suite for a changed feature has more than the happy path.
 - Test mobile (375px) and desktop (1280px) when the page is responsive
 - Forms: fill → submit → assert success or error state
 
+### Native (iOS or Android)
+- Component and logic tests: Jest with React Native Testing Library, or the framework's own runner (Flutter `flutter test`, Swift `XCTest`, Kotlin `JUnit`). Query by role and label, the same way as the web guide.
+- End to end: Maestro or Detox for React Native, `flutter integration_test` for Flutter, `XCUITest` or `Espresso` for native. Drive a real simulator or device, not the web build.
+- 375px is a web width, not a device. Test the widths and OS versions the spec's `## Target devices` line names.
+
 ### Cypress (E2E)
 - `cy.findByRole()` (with @testing library/cypress) or `cy.get()` with data attributes
 - Assert with `.should(...)`; let Cypress retry, no fixed `cy.wait(ms)`

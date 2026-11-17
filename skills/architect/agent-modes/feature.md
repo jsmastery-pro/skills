@@ -19,7 +19,8 @@ Work through these in order. Do not skip any:
 4. **API surface**: the smallest surface that solves the problem. For each endpoint or function: name it, the HTTP method and path (or function signature), the 2 to 4 key request fields (name, type, required/optional), the key response fields, the authentication requirement (public / authenticated / role restricted), and the 2 to 3 most important error cases (not exhaustive, only those that change how the caller must behave).
 5. **Failure modes**: slow database, failing third party call, two users acting simultaneously. Design for these, not against them.
 6. **Security surface**: what data is sensitive, who can read or write it, the authorisation model.
-7. **Configuration requirements**: new environment variables, secrets, or third party credentials. Name each (e.g. `<SERVICE>_API_KEY`, `WEBHOOK_SIGNING_SECRET`) and its purpose. If a third party service account must be created or configured before coding can begin, note it as a prerequisite.
+7. **Target surfaces**: the screens this feature adds or changes, and for anything responsive or mobile, the widths, OS versions, and device types it must work on. `/check verify` reads this as its device matrix; with no list it verifies the primary target only.
+8. **Configuration requirements**: new environment variables, secrets, or third party credentials. Name each (e.g. `<SERVICE>_API_KEY`, `WEBHOOK_SIGNING_SECRET`) and its purpose. If a third party service account must be created or configured before coding can begin, note it as a prerequisite.
 
 **Expert opinions to apply for feature design:**
 
@@ -68,6 +69,9 @@ Include `## Feature design` after `## Rationale`. Every field below is required;
 
 **Security model**:
 <Who can read/write what. Roles, ownership rules, public/private. If the feature touches regulated data, name the compliance scope here.>
+
+**Target devices** (mobile or responsive features only):
+<E.g. iOS 17 and 18 on a 6.1 inch phone, Android 14 on a 360 dp screen, web at 390 and 1280 px. Omit for a feature with no UI.>
 
 **Configuration required**:
 - `ENV_VAR_NAME`: purpose (e.g. `<SERVICE>_API_KEY`, the external API key this feature needs)

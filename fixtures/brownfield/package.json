@@ -1,0 +1,8 @@
+{
+  "name": "brownfield-notes",
+  "private": true,
+  "scripts": {
+    "test": "node --test",
+    "start": "node src/server.js"
+  }
+}

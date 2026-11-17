@@ -22,7 +22,8 @@
 //  6. Frontmatter `description` stays under 400 characters — every installed
 //     skill's description loads into every session.
 //  7. Every skill ships its OpenAI Codex adapter (`agents/openai.yaml`)
-//     with the `interface:` fields present.
+//     with the `interface:` fields present, and a `display_name` that matches
+//     the skill it fronts.
 //  8. `allowed-tools` names the subagent tool `Agent`, not the legacy `Task`.
 //  9. A marked contract block duplicated across skills stays byte-identical.
 // 10. No em or en dash in any instruction file or `description` (the skills teach
@@ -30,6 +31,8 @@
 // 11. No hyphen in prose. Compounds become simple words (read only, not read-only).
 //     Code, paths, flags, ALL CAPS keywords, and the parsed artifact literals
 //     (in-progress, gap-fill, whole-repo, Follow-up, pre-flight) keep theirs.
+// 12. A skill's frontmatter `name:` matches its directory, so the folder a client
+//     installs and the name it registers can never disagree.
 //
 // Budgets (rule 5) are also reported as utilization on every run, and anything
 // above WARN_AT is called out while it is still passing. See BUDGET POLICY below.
@@ -41,6 +44,7 @@
 
 import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { proseOnly, isExemptTerm } from './lib/prose.mjs';
 
 const SKILLS_DIR = new URL('../skills/', import.meta.url).pathname;
 const violations = [];
@@ -176,33 +180,6 @@ function frontmatter(text) {
   return m ? m[1] : '';
 }
 
-// Rule 11 helpers. Prose carries no hyphens; code does. Mask every exempt region
-// with spaces (never delete, so byte offsets still map to line numbers), then any
-// hyphenated word left standing is prose and must be rewritten into simple words.
-const MASK = (s) => ' '.repeat(s.length);
-function proseOnly(text) {
-  return text
-    .replace(/```[\s\S]*?```/g, MASK)      // fenced code blocks
-    .replace(/`[^`\n]+`/g, MASK)           // inline code spans
-    .replace(/<!--[\s\S]*?-->/g, MASK)     // html comments (contract markers)
-    .replace(/\]\([^)]*\)/g, MASK)         // markdown link targets
-    .replace(/https?:\/\/\S+/g, MASK)      // bare urls
-    // Frontmatter keys are defined by the Agent Skills spec (`allowed-tools`), so
-    // only the description value is prose. Mask the keys, keep the description.
-    .replace(/^---\n[\s\S]*?\n---/m, (fm) =>
-      fm.split('\n').map((l) => (/^description:/.test(l) ? l : MASK(l))).join('\n')
-    );
-}
-// Named things the skills MATCH ON: values they write into artifacts, phase names,
-// and section headings. Renaming one is a migration across skills, not a copy edit,
-// so these keep their hyphens everywhere, backticked or not.
-//   in-progress, gap-fill, whole-repo  values and phase names other skills read
-//   Follow-up                          a spec section heading
-//   pre-flight                         the named phase every skill runs before it acts
-const PARSED_LITERALS = new Set([
-  'in-progress', 'gap-fill', 'whole-repo', 'Follow-up', 'follow-up', 'pre-flight', 'Pre-flight',
-]);
-const isExemptTerm = (w) => /^[A-Z0-9-]+$/.test(w) || PARSED_LITERALS.has(w);
 
 function check(path) {
   const rel = path.slice(SKILLS_DIR.length);
@@ -230,6 +207,14 @@ function check(path) {
 
   if (isSkillMd) {
     const skill = rel.split('/')[0];
+
+    // Rule 12 — the registered name matches the installed directory.
+    const nameLine = frontmatter(text).match(/^name:\s*(.+)$/m);
+    if (!nameLine) {
+      violations.push(`${rel}: missing \`name\` in frontmatter`);
+    } else if (nameLine[1].trim().replace(/^["']|["']$/g, '') !== skill) {
+      violations.push(`${rel}: frontmatter name "${nameLine[1].trim()}" does not match its directory "${skill}"`);
+    }
 
     // Rule 5 — SKILL.md byte budget
     const budget = SKILL_BYTE_OVERRIDES[skill] ?? SKILL_BYTE_BUDGET;
@@ -377,6 +362,10 @@ for (const entry of readdirSync(SKILLS_DIR)) {
     const y = readFileSync(adapter, 'utf8');
     for (const field of ['interface:', 'display_name:', 'short_description:', 'default_prompt:']) {
       if (!y.includes(field)) violations.push(`${entry}/agents/openai.yaml: missing \`${field.replace(':', '')}\` field`);
+    }
+    const display = y.match(/display_name:\s*"([^"]*)"/);
+    if (display && display[1].toLowerCase() !== entry.toLowerCase()) {
+      violations.push(`${entry}/agents/openai.yaml: display_name "${display[1]}" does not match the skill "${entry}"`);
     }
   }
 }

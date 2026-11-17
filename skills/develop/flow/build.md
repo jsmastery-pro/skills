@@ -101,7 +101,11 @@ Tracks:
   - [ ] `<command>` → <expected>     → AC-N
   ## Acceptance-criteria coverage
   - AC-1 … covered by step … · AC-2 … · …
+  ## Evidence
+  <!-- /check verify fills this: one line per behavior, the capture or command, the device, the date. -->
   ```
+
+  Leave the `## Evidence` heading empty: `/check verify` appends to it.
 - Relay the track's report (the `## /develop complete` block from `ui-guide.md` and/or `logical-guide.md`). If you recorded any decision this run, add a **Decided for you** list: one line each, the choice and where it is recorded.
 - **Suggest the next step from the scope; make clear it is optional.** One line, e.g. "Suggested next: `/check verify <feature>`." The suggestion is this feature's **first unticked box**; all boxes ticked → point to the next feature. A feature with no `Verify it`/`Test it` box has none to suggest, just move on. Never present a stage as required, and never suggest a stage whose box is not on the feature.
   - **No scope at all** (a one off `/develop`) → there are no boxes to read, so infer the tail from the effective tier (feature tier tag, else project `**Workflow:**` default, else the risk of the change): stop after the build for a throwaway change, else point to `/check verify`, and to `/test` and a fresh model `/check review` as the risk rises.

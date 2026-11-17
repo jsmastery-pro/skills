@@ -14,7 +14,7 @@ Acts: scopes from git, works out the launch, runs, observes, reports. Asks only 
 
 ## Artifact ownership
 
-Owns no durable files. Chat output only (plus screenshots/logs saved to the scratch area). Does not write code (`/develop`), tests (`/test`), or context files.
+Writes no new files. It appends one section to the feature's `verify.md`, the `## Evidence` ledger, and saves captures under the artifact base, `docs/reviews/<feature>/verify/` or `.workflow/reviews/<feature>/verify/` (create it if absent). It changes no code (`/develop`), tests (`/test`), or context files. A capture path recorded without the file on disk is not evidence.
 
 ---
 
@@ -57,6 +57,7 @@ The spec carries the contract: `## Requirements` with IDed acceptance criteria (
    - AC-1 … · AC-2 … · …
    ```
 2. Else fall back to the spec's `## Requirements` directly, and turn each `AC-N` into an observable check yourself.
+3. The spec's `## Target devices` line, when present, sets the device matrix for this run: which OS versions, which screen sizes, a simulator or a real device. No line on a web feature: use the project's primary viewport plus one narrow width. No line on a mobile feature: use the primary device the project targets, and say so in the report.
 
 You now hold the `AC-N` list to confirm and the specced surface list to confirm exists. Carry both into Steps 1 to 4; the per AC verdict comes in Step 4b, reported in Step 5. Spec conformance decides what to check and what "met" means; the feature/refactor modes are how you drive the app to check it.
 
@@ -82,6 +83,7 @@ In order:
 1. A project run skill / documented command: a project specific "run/start" skill, then `AGENTS.md`, then `package.json` scripts (`dev`, `start`), `Makefile`, `Procfile`, `docker-compose`. Prefer what the project already uses.
 2. Built in patterns by project type if nothing is documented:
    - Web app → start the dev server, then drive the route: prefer a connected browser automation MCP (real navigation, clicks, form submits, screenshots); else your agent's own browser tool; else, headless, request the route over HTTP and check the returned HTML plus a boot check (server starts, health route responds).
+   - Mobile app (iOS or Android) → start it the project's way: a project run skill, then `AGENTS.md`, then the project's own command (`npx expo start`, a dev build, `flutter run`, or the native build). Use a real device when the behavior touches camera, notifications, biometrics, permissions, gestures, or performance; use a simulator otherwise. The device must reach the dev server: the same Wi Fi network, `adb reverse tcp:8081 tcp:8081` over USB, or a tunnel. Record the device model, its OS version, and how the app was launched in the ledger.
    - API / backend → start the server, hit the endpoint (curl/HTTP client).
    - CLI → run the command with representative arguments.
    - Library → exercise the public API via a tiny scratch script or the REPL.
@@ -96,13 +98,14 @@ Launch the app (prefer a background process so you can interact with it). Use a 
 - API → send the request, capture status + body; verify the shape and key fields.
 - CLI / job → run it, capture stdout/stderr and any output artifact.
 
-Watch server/console logs for errors or warnings even when the UI "looks" fine.
+Watch server/console logs for errors or warnings even when the UI "looks" fine. On a device, also watch the app log (`adb logcat`, `xcrun simctl spawn booted log stream`, or the Expo terminal) and the permission prompts: accept a permission once and deny it once when the behavior depends on it, because the denied path breaks more often than the happy one.
 
 **Keep an evidence ledger as you go.** For every behavior you exercise, write down, at the moment you observe it, the artifact that proves you exercised it:
 
 | Behavior kind | The evidence to record |
 |---|---|
 | UI | the URL you loaded, the screenshot path you saved, and what you saw rendered |
+| Mobile | the device model, its OS version, the build or commit, the screenshot path, and what you saw rendered |
 | API | the exact request line, the HTTP status, and the key fields of the body |
 | CLI / job | the exact command, its exit code, and the stdout/stderr excerpt |
 | Data layer | the query you ran against the live schema, and its result |
@@ -132,6 +135,7 @@ This skill exists to prove the change works by running it. Reading the code, see
 2. **Never started, never PASS.** If you did not actually launch and exercise the app in this run (no dev server, no request sent, no command run), you may not emit PASS or ✅ for anything. Report `blocked` for every behavior, say plainly that nothing was exercised and why, and stop.
 3. **A tool you could not use is a block, not a pass.** No browser MCP, no database MCP, missing credentials, a build that will not start: each makes the behaviors that needed it `blocked`. Degrading to "looks right in the code" is the exact failure this skill is built to prevent.
 4. **Say what you did not check.** If some behaviors were exercised and others were not, the report must list the unexercised ones under Blocked. A partial run reported as a full pass is worse than no run.
+5. **A device run is a real run.** A screenshot from a browser during a mobile check proves the web build, not the app. If you verified on a simulator while the device matrix names a real device, say which one you used, and mark the behavior `blocked` when the difference matters (camera, notifications, biometrics, performance).
 
 Overall verdict PASS requires every behavior verified with cited evidence, and (when a spec contract was loaded) every `AC-N` met and every specced surface present. Anything else is FAIL or BLOCKED.
 
@@ -140,6 +144,8 @@ Overall verdict PASS requires every behavior verified with cited evidence, and (
 Update the scope: if this feature is on the scope (`docs/scope/`) and the verdict is PASS, tick its `Verify it` box. **Also tick, in this feature's `verify.md`, each step you actually ran and that passed** (`- [ ]` → `- [x]`); leave a step unticked if it failed or you could not run it. This is per feature: only the feature you verified gets ticked, other features' `verify.md` files stay unchecked until you verify them (expected, not a miss). What happens next depends on the workflow tier (the effective tier: the feature's own tier tag if set, else the scope header `**Workflow:**` default):
 
 - **On PASS, ask `done` only if you close this feature** (`Alpha`: `Verify it` is the last box): ask once "Verified and passing, mark it `done`?" and on yes set `done` (At a glance table and heading) and mark each still unticked box of the feature `(skipped)`, so the record stays honest. At `Beta`/`GA`, don't ask; name `/test <feature>` as next. Never touch the spec's `**Status**:` line. Already `done` → tick `Verify it`, nothing else.
+
+**Persist the evidence, not just the ticks.** Append or update `## Evidence` in `verify.md` with the ledger rows you cited (no `verify.md`, because the change had no spec: keep the ledger in the report): one line per behavior, the evidence (URL, capture path, or command and result), the device when there was one, and the date. The ticks say what passed; this section says why, for `/check review`, for `/test`, and for a human reviewer. A tick with no evidence line under it is a claim, and the next run should treat it as one.
 
 On FAIL or BLOCKED, tick nothing and report the gaps. Advise `/clear` before moving to a new feature (the spec and `verify.md` hold the state, so a fresh session loses nothing and stays cheap).
 
@@ -168,6 +174,6 @@ The passing behaviors and their evidence are the record, not the summary; do not
 
 Drop the Spec conformance / Missed surfaces / Not applied sections when there was no governing spec. Keep them but write "none" when a contract was loaded and every item is met.
 
-Clean up any process you started. `/check verify` confirms reality, never fixes or asserts: `/debug` for failures, `/develop` to build a surface that is missing or not applied, `/test` to make passing behaviors permanent. A FAIL conformance verdict means the feature is not done, even if every test is green.
+Clean up any process you started: the dev server, the simulator, `adb reverse`, and any tunnel. A stale port or a reversed socket makes the next verification lie. `/check verify` confirms reality, never fixes or asserts: `/debug` for failures, `/develop` to build a surface that is missing or not applied, `/test` to make passing behaviors permanent. A FAIL conformance verdict means the feature is not done, even if every test is green.
 
 A BLOCKED verdict is honest and useful: it names what would make the change exercisable. A fabricated PASS is the one output this skill must never produce; every later step trusts it.

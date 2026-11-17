@@ -16,6 +16,6 @@ jobs:
         with:
           node-version: 20
 
-      # No dependencies to install: the checker is zero-dependency, stdlib only.
-      - name: Run the portability and budget check
-        run: npm run check
+      # No dependencies to install: the checker and the fixtures are zero-dependency, stdlib only.
+      - name: Run the convention check and the fixture checks
+        run: npm test

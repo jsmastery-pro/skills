@@ -164,7 +164,7 @@ The delivery style you chose back in stage 1 decides how these parts come togeth
 
 #### Stage 6, prove it runs
 
-You run `check` in its verify mode. It drives the real running app and proves the feature actually works against its spec, every promised behavior and every promised screen, not just that a test file passed. For the to do app that means it can really sign up, sign in, and see its own list.
+You run `check` in its verify mode. It drives the real running app and proves the feature actually works against its spec, every promised behavior and every promised screen, not just that a test file passed. For the to do app that means it can really sign up, sign in, and see its own list. It runs on the device the spec names when it names one, and it writes its evidence beside the spec, so a later review can check the proof rather than trust the claim.
 
 #### Stage 7, write the tests
 

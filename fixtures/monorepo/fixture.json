@@ -1,0 +1,12 @@
+{
+  "name": "monorepo",
+  "description": "Two workspaces with their own scope and specs, and one missing verify.md.",
+  "expectedFindings": ["D032"],
+  "scenarios": [
+    {
+      "id": "develop",
+      "prompt": "/develop notes search in the api workspace",
+      "expect": ["specs_linked", "contract_present"]
+    }
+  ]
+}

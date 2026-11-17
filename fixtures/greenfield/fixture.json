@@ -1,0 +1,12 @@
+{
+  "name": "greenfield",
+  "description": "An empty project with only AGENTS.md, before any scope exists.",
+  "expectedFindings": ["D000"],
+  "scenarios": [
+    {
+      "id": "scope",
+      "prompt": "/scope a small notes app, one list and a search field",
+      "expect": ["scope_file", "specs_linked"]
+    }
+  ]
+}

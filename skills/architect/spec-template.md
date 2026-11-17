@@ -113,6 +113,9 @@ Do not repeat the pros/cons list, explain the reasoning. 1 to 3 paragraphs.>
 **Security model**:
 <Who can read/write what. Roles, ownership, public/private. Name compliance scope if applicable.>
 
+**Target devices** (mobile or responsive features only):
+<E.g. iOS 17 and 18 on a 6.1 inch phone, Android 14 on a 360 dp screen, web at 390 and 1280 px. Omit for a feature with no UI. `/check verify` reads this as its device matrix.>
+
 **Configuration required**:
 - `ENV_VAR_NAME`: purpose (omit section if no new env vars or credentials are needed)
 

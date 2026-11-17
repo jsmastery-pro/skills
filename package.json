@@ -1,6 +1,6 @@
 {
   "name": "@eldeepfull/skills",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "A phase based engineering workflow as Agent Skills. Takes a change from a vague idea to shipped, verified, documented code, for any AI coding agent.",
   "keywords": [
     "claude-code",
@@ -23,7 +23,11 @@
   },
   "scripts": {
     "check": "node scripts/check-portability.mjs",
-    "test": "npm run check",
+    "fixtures": "node scripts/fixtures.mjs",
+    "doctor": "node scripts/doctor.mjs",
+    "eval": "node scripts/eval.mjs",
+    "test:unit": "node scripts/run-tests.mjs",
+    "test": "npm run check && npm run fixtures && npm run test:unit",
     "tokens": "node scripts/analyze-token-usage.mjs"
   }
 }

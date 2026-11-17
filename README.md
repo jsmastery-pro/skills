@@ -52,6 +52,18 @@ Works on any Agent Skills client (Claude Code, Cursor, Codex, Gemini CLI, and [m
 
 Each skill's instructions live in its `SKILL.md`, which is what every client reads. The `agents/openai.yaml` beside it is interface metadata only (the name, blurb, and opening prompt Codex shows in its agent picker); it carries no logic of its own.
 
+## Where it runs
+
+The skills follow the Agent Skills format, so any client that reads `SKILL.md` can load them. What is tested is smaller than that claim, and this table says which is which.
+
+| Client | Status | What is actually checked |
+|---|---|---|
+| Claude Code | Primary | The install path and the nine skills are used daily; CI checks the conventions and the fixtures, not a model run |
+| Codex | Adapter shipped | The `agents/openai.yaml` fields, and its `display_name` matching the skill, on every `npm run check` |
+| Cursor, Gemini CLI, other Agent Skills clients | Expected to work | The format only, not a run |
+
+Tell us which client you use when you report a problem.
+
 ### Migrating a project from `jsmastery-pro/skills`
 
 Already using the original workflow in a project? Switch on a branch, with your current work committed:
@@ -90,7 +102,7 @@ The gate is layered, not magic: `/architect` names the source of every value a f
 | Specs | `docs/specs/` | architect |
 | Context files | AGENTS.md (plus a thin CLAUDE.md pointer) | audit, kept current by sync |
 | Design system | `design.md` (art direction; token values live in CSS) | develop |
-| Review findings | `docs/reviews/` | check |
+| Review findings and verification evidence | `docs/reviews/` | check |
 | Tests | your test dirs | test |
 | App code | your source tree | develop |
 | Human docs | PR body, CHANGELOG.md, `docs/releases/`, `docs/postmortems/` | document |
@@ -127,6 +139,19 @@ When: the last step around merge. Monorepo: reconciles the right workspace.
 
 **debug**: Runs a disciplined root cause loop and hands a regression test to `/test`.
 When: anytime something is failing, throwing, or behaving wrong. Not tied to project type.
+
+## Checks in this repo
+
+- `npm test`: the convention check, the fixtures, and the unit tests, in one command.
+- `npm run check`: the conventions and budgets every skill must meet.
+- `npm run fixtures`: the artifact doctor against three small projects, compared with the defects each one declares.
+- `npm run test:unit`: 30 unit tests for the doctor, the artifact invariants, the prose rules, and the eval CLI.
+- `npm run doctor <project>`: the same doctor on a project that uses the workflow. Report only, it edits nothing.
+- `npm run eval -- --fixture brownfield --scenario verify --cmd "<your agent command>"`: copies the fixture, runs the prompt, and scores the artifacts produced. No model is bundled, so it is only as reproducible as the command you name.
+
+## Versions
+
+`package.json` carries the version, and each release is tagged. `npx skills` records the source in `skills-lock.json`: after an install or an update, check that the nine skills point at `ElDeepFull/skills`, and pin your team to a tag when you need a known state.
 
 ## Learn more
 
