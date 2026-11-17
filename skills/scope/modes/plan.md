@@ -80,11 +80,11 @@ Record the pick as the project default on the scope header `**Workflow:**` line;
 
 ### Step 6: Write the scope (single file or epic split)
 
-List the scope location again immediately before writing (a teammate may have changed it), then write per `scope-template.md`:
+Read the scope again (Concurrency), then write per `scope-template.md`:
 
 - Small product → single file `docs/scope/scope.md` (monorepo: `docs/scope/<workspace>/scope.md`): At a glance table (including brownfield enrolled features) + phase grouped feature sections + legend.
-- Large product → epic split per Artifact ownership (`docs/scope/index.md` + `docs/scope/<epic>.md`); promote only when `scope.md` has outgrown a comfortable scan, else stay single file.
-- Run again (living update): edit in place, never a dated file: append new rows with the next free `#`, sharpen existing rows' intent/seeds, leave existing statuses untouched; set a now out of scope row to `dropped` (never delete). Brownfield: append enrolled `existing`/`in-progress` rows above the `planned` ones.
+- Large product → epic split per Artifact ownership (`docs/scope/index.md` + `docs/scope/<epic>.md`) (promote on demand, never early).
+- Run again (living update): append new rows with the next free `#`, sharpen existing rows' intent/seeds, leave existing statuses untouched; set a now out of scope row to `dropped` (never delete). Brownfield: append enrolled `existing`/`in-progress` rows above the `planned` ones.
 
 Citations are gated by Step 6b: ask that panel first (or confirm the chosen level) before adding any `(basis: …)` or `## References` content, and honor its level.
 

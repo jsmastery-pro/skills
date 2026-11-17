@@ -44,7 +44,7 @@ Never pick tools: no provider, library, ORM, host, or BaaS chosen or named; that
 
 ## Decision panels (every user facing choice)
 
-Every choice is an options panel, never a neutral menu: 2 to 4 concrete options real to this product; exactly one marked `(recommended)` with a one line why (make the call, let them override). Never add your own Other option, the picker appends a free text Other automatically; offer free text yourself only in a plain text fallback with no picker. Capability first: use the agent's picker (`AskUserQuestion` on Claude Code), else the same options as plain text; batched rounds same rule, up to 4 per round.
+Every choice is an options panel, never a neutral menu: 2 to 4 concrete options real to this product; exactly one marked `(recommended)` with a one line why (make the call, let them override). Never add your own Other option, the picker appends a free text Other automatically; offer free text yourself only in a plain text fallback with no picker. Capability first: use the agent's picker (`AskUserQuestion` on Claude Code), else the same options as plain text; batched rounds same rule, up to 4 per round. No picker, or a session that seems unable to answer, is never a reason to settle an ASK item yourself: ask it as plain text and end your turn to wait. Only RECOMMEND items are decided without asking.
 
 ## Artifact ownership
 
