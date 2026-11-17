@@ -137,6 +137,56 @@ test('a Verify it box with no verify.md reports D032', (t) => {
   assert.ok(codes(root).includes('D032'));
 });
 
+test('rationale.md beside a spec index is not read as a spec', (t) => {
+  const root = run(t, {
+    'AGENTS.md': AGENTS,
+    'docs/specs/0001-auth/index.md': spec(),
+    'docs/specs/0001-auth/rationale.md': '# Rationale\n\n## Context\n\nWhy.\n',
+  });
+  assert.deepEqual(codes(root), ['D001']);
+});
+
+test('a criterion referenced from tests and the build plan is not a repeat', (t) => {
+  const body = '- **AC-1**: A person signs in.\n\n## Testing\n\n- Happy path, verifies **AC-1**\n\n## Build plan\n\n1. Form, satisfies **AC-1**\n';
+  const root = run(t, {
+    'AGENTS.md': AGENTS,
+    'docs/specs/0001-auth.md': spec('Decided', body),
+  });
+  assert.deepEqual(codes(root), ['D001']);
+});
+
+test('a criterion named only outside Requirements reports D010', (t) => {
+  const root = run(t, {
+    'AGENTS.md': AGENTS,
+    'docs/specs/0001-auth.md': spec('Decided', 'Nothing yet.\n\n## Build plan\n\n1. Form, satisfies **AC-1**\n'),
+  });
+  assert.ok(codes(root).includes('D010'));
+});
+
+test('a Verify it box is read against its own feature only', (t) => {
+  const root = run(t, {
+    'AGENTS.md': AGENTS,
+    'docs/scope/scope.md':
+      '# Scope\n\n### 1. Auth\n\n- [x] Design it (spec): `docs/specs/0001-auth/index.md`\n- [ ] Verify it: /check verify auth\n\n' +
+      '### 2. Notes `Prototype`\n\n- [x] Design it (spec): `docs/specs/0002-notes.md`\n',
+    'docs/specs/0001-auth/index.md': spec(),
+    'docs/specs/0001-auth/verify.md': verify('- AC-1 → docs/reviews/auth/verify/after.png'),
+    'docs/specs/0002-notes.md': spec(),
+  });
+  assert.deepEqual(codes(root), []);
+});
+
+test('a single file spec with a Verify it box names the spec, not docs/specs/verify.md', (t) => {
+  const root = run(t, {
+    'AGENTS.md': AGENTS,
+    'docs/scope/scope.md': scope('docs/specs/0001-auth.md', true),
+    'docs/specs/0001-auth.md': spec(),
+  });
+  const d032 = diagnose(root).findings.filter((f) => f.code === 'D032');
+  assert.equal(d032.length, 1);
+  assert.match(d032[0].message, /0001-auth\.md is a single file spec/);
+});
+
 test('the doctor never changes a file', (t) => {
   const root = run(t, {
     'AGENTS.md': AGENTS,

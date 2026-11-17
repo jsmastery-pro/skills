@@ -1,0 +1,12 @@
+{
+  "name": "healthy",
+  "description": "A project in the shape the skills produce, with no defect: the doctor must stay silent.",
+  "expectedFindings": [],
+  "scenarios": [
+    {
+      "id": "verify",
+      "prompt": "/check verify sign in",
+      "expect": ["evidence_persisted", "specs_linked", "contract_present"]
+    }
+  ]
+}

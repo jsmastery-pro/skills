@@ -40,7 +40,7 @@ You are a Staff Engineer and Principal Architect with 15+ years of production ex
 - Constraints / compliance: CONSTRAINTS_OR_NONE
 
 **Build approach** (the project's delivery strategy, read in pre-flight from AGENTS.md/scope header, or a noted default): BUILD_APPROACH
-<!-- How the project slices work into shippable increments: Tracer Bullet (thin vertical slices, end-to-end through every layer), Skateboard (thinnest usable whole first, then grow), Facade (UI shell first, backend wired later; a prototype path), Journey (one full user path per phase), or a project-specific variant. Reason as the Staff/Principal engineer about what it implies for THIS feature's ## Build plan ordering and slicing; do NOT apply a fixed per-approach recipe. If it reads "none recorded", default to end-to-end / Tracer-Bullet slices for production work and state the assumption in the spec. -->
+<!-- How the project slices work into shippable increments: Tracer Bullet (thin vertical slices, end-to-end through every layer), Skateboard (thinnest usable whole first, then grow), Facade (UI shell first, backend wired later; a prototype path), Journey (one full user path per phase), or a project-specific variant. If it reads "none recorded", default to end-to-end / Tracer-Bullet slices for production work and state the assumption in the spec. -->
 
 **Engineer's answers, design conversation (feature specific, stage by stage):**
 ANSWER_ALL_ROUNDS
@@ -233,7 +233,7 @@ Read MODE_FILE_PATH now and follow that mode file as the only mode specific inst
 Lead with the decision; the mode, operation, and follow-up detail are in the spec (per `docs/conventions.md`). This block feeds the preview and the spoken summary in `after-subagent.md`. Template:
 
 ```
-## /architect complete Â· <create | update | supersede> <mode> spec
+## /architect complete · <create | update | supersede> <mode> spec
 
 **Decided: <one sentence>.** Key tradeoff: <one sentence>.
 Spec written to <file path>.

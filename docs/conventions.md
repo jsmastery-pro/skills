@@ -23,7 +23,7 @@ The report a skill prints at the end is read by a human scanning fast, so it lea
 - **Heads up**: blockers, or anything the engineer must review or decide, **only when there is one** (never a manufactured section).
 - A **pointer**, not a restatement: name the file that holds the detail.
 
-Cut the field dump and the checklist of yeses (`Semantic HTML: correct`, `Keyboard: navigable`) Â· that is confirmation noise or already in a file, not something to reprint or relocate. Keep only the fields that are actionable for that skill (a PASS/FAIL verdict and its gaps, findings to fix, items invented for the engineer to review).
+Cut the field dump and the checklist of yeses (`Semantic HTML: correct`, `Keyboard: navigable`) · that is confirmation noise or already in a file, not something to reprint or relocate. Keep only the fields that are actionable for that skill (a PASS/FAIL verdict and its gaps, findings to fix, items invented for the engineer to review).
 
 ## When to add a file
 
@@ -34,7 +34,7 @@ Only when a piece of content is both **rarely needed and long** (a big migration
 - Run `npm run check` (cross tool portability + hot path size budgets). A path near budget means prune first, not raise the ceiling or add another file.
 - Run `npm run fixtures`. The doctor checks the fixture projects against the defects each one declares, so an edit that stops a check finding a real defect fails here.
 - Run `npm run test:unit`. It covers the scripts themselves, needs no model, and takes under a second.
-- A change to what a skill does needs a run, not an assumption: `npm run eval -- --fixture brownfield --scenario verify --cmd "<your agent command>"` copies the fixture, runs the prompt, and scores the artifacts produced. No model is bundled, so the run is reproducible only as far as the command you name.
+- A change to what a skill does needs a run, not an assumption: `npm run eval -- --fixture brownfield --scenario verify --cmd "<your agent command>"` copies the fixture, installs this checkout's skills into it, runs the prompt, and scores the artifacts produced. No model is bundled, so the run is reproducible only as far as the command you name.
 - Re read the diff for lines that change nothing, and for a rule now stated twice.
 - A prune should not change behavior. If a cut might, say so and confirm it with an eval run.
 

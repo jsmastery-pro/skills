@@ -2,7 +2,7 @@
 
 ## Replan (the living rhythm, run after a feature or phase ships)
 
-The default cadence, not rare: run each time a feature or phase lands, keeping the scope matching reality and queueing the next slice. Reconciles in place, never spawns a new file; coarse and surgical (reconcile cells, append rows, don't rewrite the file).
+The default cadence, not rare: run each time a feature or phase lands, keeping the scope matching reality and queueing the next slice. Reconciles in place, surgically, never a new file.
 
 1. Read the whole scope again (single file, or `index.md` + epics; the workspace's in a monorepo) and the code/specs for what just shipped.
 2. Never change a feature's `done` status, either way: don't check `done` rows again, don't mark rows `done` (that is the closing skill's one question). Only enroll drift and `dropped` rows; tick nothing unconfirmed.

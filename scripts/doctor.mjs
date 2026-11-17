@@ -11,11 +11,11 @@
 //   D003  a spec status is not a known value
 //   D010  a spec has no acceptance criteria (AC-N)
 //   D011  a spec has no ## Requirements section
-//   D012  a spec repeats an acceptance criterion id
+//   D012  a spec defines the same acceptance criterion id twice
 //   D020  a scope file links a spec path that does not exist
 //   D030  verify.md has ticked steps but no ## Evidence section
 //   D031  verify.md has a ## Evidence section with no entries
-//   D032  a scope feature has a Verify it box but no verify.md beside its spec
+//   D032  a scope feature has a Verify it box but its spec has no verify.md yet
 //   D040  no AGENTS.md at the project root
 //   D050  legacy spec status (Proposed / In Progress / Accepted)
 //   D099  a file could not be read
@@ -67,6 +67,33 @@ function baseDir(root) {
   return null;
 }
 
+// A spec is a flat `NNNN-name.md` or the `index.md` of a spec directory. The
+// other files /develop puts in that directory (rationale.md, verify.md) are not.
+const NOT_SPEC = new Set(['verify.md', 'rationale.md']);
+function isSpec(path) {
+  const name = path.split(/[\\/]/).pop();
+  if (NOT_SPEC.has(name)) return false;
+  return name === 'index.md' || !existsSync(join(dirname(path), 'index.md'));
+}
+
+// An acceptance criterion is defined in ## Requirements, as a heading (`### AC-1`)
+// or a list item (`- **AC-1**:`). Mentions elsewhere (test scenarios, build plan
+// tasks) reference it and are expected to repeat.
+function definedCriteria(text) {
+  const start = text.search(/^##\s+Requirements\b.*$/m);
+  if (start === -1) return [];
+  const rest = text.slice(start).replace(/^.*\n?/, '');
+  const end = rest.search(/^##\s/m);
+  const section = end === -1 ? rest : rest.slice(0, end);
+  return [...section.matchAll(/^\s*(?:#{2,6}\s+|[-*]\s+\*\*)AC-(\d+)\b/gm)].map((m) => m[1]);
+}
+
+// A scope file is a list of features, each under its own heading. Split it so a
+// Verify it box is read against the spec of its own feature only.
+function featureBlocks(text) {
+  return text.split(/^(?=#{1,6}\s)/m);
+}
+
 function scopeLinks(scopeFile, text) {
   const targets = new Set();
   for (const m of text.matchAll(/`([^`\n]*\/[^`\n]*\.md)`/g)) targets.add(m[1]);
@@ -97,7 +124,7 @@ export function diagnose(rootInput = process.cwd()) {
   }
 
   const scopeFiles = walk(join(base, 'scope'));
-  const specFiles = walk(join(base, 'specs')).filter((p) => !p.endsWith('verify.md'));
+  const specFiles = walk(join(base, 'specs')).filter(isSpec);
 
   if (specFiles.length > 0 && scopeFiles.length === 0) {
     add('D001', relative(root, join(base, 'scope')), 'specs exist but there is no scope file to point at them');
@@ -123,17 +150,16 @@ export function diagnose(rootInput = process.cwd()) {
       }
     }
     // A feature that promises Verify it needs the checklist verify reads.
-    if (/Verify it/i.test(text)) {
-      for (const target of scopeLinks(scopeFile, text)) {
+    for (const block of featureBlocks(text)) {
+      if (!/^\s*-\s*\[[ x]\]\s*Verify it/im.test(block)) continue;
+      for (const target of scopeLinks(scopeFile, block)) {
         const resolved = resolveTarget(root, scopeFile, target);
         if (!existsSync(resolved)) continue;
-        let specDir = resolved;
-        try {
-          if (statSync(resolved).isFile()) specDir = dirname(resolved);
-        } catch {
-          continue;
-        }
-        if (!existsSync(join(specDir, 'verify.md'))) {
+        const isDir = statSync(resolved).isDirectory();
+        const specDir = isDir ? resolved : dirname(resolved);
+        if (!isDir && !resolved.endsWith('index.md')) {
+          add('D032', relative(root, scopeFile), `has a Verify it box but ${target} is a single file spec with no verify.md yet; /develop adds one when it saves the verify steps`);
+        } else if (!existsSync(join(specDir, 'verify.md'))) {
           add('D032', relative(root, scopeFile), `has a Verify it box but ${relative(root, join(specDir, 'verify.md'))} does not exist`);
         }
       }
@@ -161,9 +187,9 @@ export function diagnose(rootInput = process.cwd()) {
     if (!/^##\s+Requirements/m.test(text)) {
       add('D011', rel, 'no ## Requirements section, so there are no acceptance criteria to verify against');
     }
-    const ids = [...text.matchAll(/\bAC-(\d+)\b/g)].map((m) => m[1]);
+    const ids = definedCriteria(text);
     if (ids.length === 0) {
-      add('D010', rel, 'no AC-N acceptance criterion; /check verify has no contract to check');
+      add('D010', rel, 'no AC-N acceptance criterion defined under ## Requirements; /check verify has no contract to check');
     } else {
       const seen = new Set();
       const dupes = new Set();
@@ -172,7 +198,7 @@ export function diagnose(rootInput = process.cwd()) {
         seen.add(id);
       }
       if (dupes.size > 0) {
-        add('D012', rel, `repeats acceptance criterion ${[...dupes].map((d) => `AC-${d}`).join(', ')}`);
+        add('D012', rel, `defines acceptance criterion ${[...dupes].map((d) => `AC-${d}`).join(', ')} more than once`);
       }
     }
   }

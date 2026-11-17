@@ -6,7 +6,7 @@ Reference shapes for writing the scope and the completion report. Rules live in 
 - **Clean headings.** A heading is `### <N>. <Feature name>` plus a short status word and short tags **only when they carry real information** (`needs a decision`, a per feature approach override, a workflow tier override like `· GA`). Never a pipe delimited metadata row like `Title | P0 | inherit | …`.
 - **Each fact appears once.** Intent, the definition of done, tasks, and pointers live in the section; the At a glance table is the quick index. Status is shown in the table and beside the heading, and nowhere else.
 - **Only what is set.** No `n/a`, no `inherit`, no empty fields. A pointer line (`spec <n> · code in <path>`) appears **only once those exist**: the spec link added by `/architect` at capture, the code path by `/develop`.
-- **A feature grows a defined shape.** It has a one or two line **intent**, a single **Done when:** line (the acceptance criteria seeds), and **checkbox steps**. A **not yet designed** feature has **one box** (its entry command: `/architect` when it `needs a decision`, else `/develop`, or `/audit` for standards & tooling). **When its spec is captured, `/architect` fills in the built ready shape:** `Design it` (ticked) → `Build it: /develop <feature>` with **2 to 5 milestone sub items rolled up from the spec** → `Verify it: /check verify <feature>` → `Test it: /test <feature>`. **The atomic build tasks stay in the spec's `## Build plan`, never here**. The scope carries only the milestone rollup. The next step is always the first unticked box.
+- **A feature grows a defined shape**: a one or two line **intent**, a single **Done when:** line (the acceptance criteria seeds), and **checkbox steps**. Not yet designed: **one box**, its entry command. Once its spec is captured, `/architect` fills the built ready shape (the Legend's lifecycle table). The atomic build tasks stay in the spec's `## Build plan`; the next step is always the first unticked box.
 
 ## Single file scope
 
@@ -137,7 +137,7 @@ When `scope.md` outgrows a comfortable scan (roughly a dozen plus features acros
 Lead with what the pass produced and the first step; the approach, tier, and full list are in the scope file itself (per `docs/conventions.md`). Template:
 
 ```
-## /scope <plan | replan | add> Â· <product, one line>
+## /scope <plan | replan | add> · <product, one line>
 
 **<N> features planned (<M> already on the scope, <K> deferred), build approach <name>, workflow <tier>.**
 Next: /clear, then <the first unticked box, usually `/architect <first feature>`, or `/audit` if a brownfield repo has no root AGENTS.md>

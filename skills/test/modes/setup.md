@@ -18,7 +18,7 @@ Skip Q1 unless the engineer chose "set up a framework".
 
 **Q1: Framework for unit/integration** (first run, engineer opted to set up tests)
 
-Filter by detected language. List an already installed tool first with `(already installed)` appended and treat it as recommended. The `(recommended)` tags below mark today's common default per language, not a mandate: prefer whatever the project or team already uses, and the picker's Other slot takes any choice.
+Filter by detected language. List an already installed tool first with `(already installed)` appended and treat it as recommended. The `(recommended)` tags below mark today's common default per language, not a mandate: prefer whatever the project or team already uses.
 
 | Language | Options (max 4) |
 |---|---|
@@ -27,7 +27,7 @@ Filter by detected language. List an already installed tool first with `(already
 | Go | `testing` + testify (recommended), `testing` stdlib only |
 | Rust | `cargo test` (built in), no question needed, skip |
 
-Unlisted language: ask with whatever tools you detect; the picker's automatic Other covers free text, so add no own Other option.
+Unlisted language: ask with whatever tools you detect.
 
 ```
 Ask: "Which framework for unit & integration tests?"  (header: "Framework")

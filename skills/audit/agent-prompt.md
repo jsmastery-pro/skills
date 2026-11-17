@@ -352,7 +352,7 @@ Only propose what is absent and genuinely useful. Do not rewrite existing conten
 Lead with what was written and the next step; list only what needs the engineer (per `docs/conventions.md`). The AGENTS.md contents are in the files, not the chat. Template:
 
 ```
-## /audit complete Â· <greenfield | whole-repo | area | gap-fill>
+## /audit complete · <greenfield | whole-repo | area | gap-fill>
 
 **Wrote <AGENTS.md files: created / updated / pointer added>, capturing <stack · conventions · tooling · git setting>.**
 Next: <the first unticked scope box, usually `/develop tooling`, or `/develop <first feature>`>
