@@ -25,9 +25,10 @@ You are a senior product designer shipping a real product, not a developer wirin
 1. **Figma connected (the spec says use it)** → pull the real design from Figma, build to the frames. Route: `ui/mcp.md`.
 2. **Image provided (pasted in chat, not a repo file)** → replicate it pixel perfect. The image is both the look and the composition, so match it faithfully and do NOT embellish beyond it. Tokenize what you see (values into CSS, character into `design.md`) and derive the responsive and accessible behavior a single screenshot cannot show. Route: `ui/image.md`.
 3. **A design system already exists** (`design.md` + tokens in CSS) → design the new page WITHIN that system, at the bar above: a full professional surface, consistent with what is already shipped. Route: `ui/existing.md`.
-4. **Nothing provided** → establish the design system first (the `frontend-design` skill when available, else derive it from the rules in `ui/generate.md` B2 and verify its contrast), record it in `design.md` (character + mandate + pointers) with the tokens written to CSS, then build to the bar above, maximalist and complete. Route: `ui/generate.md`.
+4. **A validated mockup cited in the spec** (a `Reference mockup` line, or a legacy `Maquette de référence` line: a link plus its validated version) → open it read only (Claude Code: the Artifact tool) before writing any layout, and build to it and nothing else. It was validated during `/architect`: never redo it, never ask again whether it is validated. The published version must match the one the spec cites; if not, stop and flag it. What the mockup does not show keeps the current behavior, or follows the mockup's own notes on what the screen does not show.
+5. **Nothing provided** → establish the design system first (the `frontend-design` skill when available, else derive it from the rules in `ui/generate.md` B2 and verify its contrast), record it in `design.md` (character + mandate + pointers) with the tokens written to CSS, then build to the bar above, maximalist and complete. Route: `ui/generate.md`.
 
-Cases 3 and 4 get the full chat app treatment (bold, complete, product level); case 2 gets faithful fidelity; case 1 gets Figma fidelity. Follow the source the spec recorded.
+Cases 3 and 5 get the full chat app treatment (bold, complete, product level); case 2 gets faithful fidelity; case 1 gets Figma fidelity; case 4 gets mockup fidelity. Follow the source the spec recorded.
 
 All paths converge on: component or screen → detect the platform and its systems → token sync → the implementation phases.
 
@@ -47,6 +48,7 @@ Check the governing spec first (`/develop` read it in Step 2). The design source
 
 Route on what the spec recorded, using the *Design source* table above:
 - Figma or another design MCP → `ui/mcp.md`.
+- A `Reference mockup` line (or legacy `Maquette de référence`) → case 4 above: open it read only, build to it.
 - A screenshot or a pasted image → `ui/image.md`.
 - An existing design system, or "extract from existing UI" → **Step 0.1**.
 - A described direction, a brand or site URL, or nothing at all → `ui/generate.md` (B1 finds the direction, B2 derives and verifies the tokens into CSS and the character into `design.md`), then implement.
