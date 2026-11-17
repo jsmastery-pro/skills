@@ -100,8 +100,10 @@ You run `architect`. Because this is a new project with no stack yet, it works i
 It sorts everything it needs into three kinds and treats each differently.
 
 - Things it can **work out for itself** from your idea or your code, it never asks. It just uses them.
-- Things **only you know**, like a rule your business must follow or a preference you hold, it asks, and only these.
-- Things **expertise settles**, like which database or which login library fits, it recommends, with a short reason and a runner up, so you can override. It never dumps a plain list of options on you and never picks a tool silently behind your back.
+- Things **only you know**, like a rule your business must follow or a preference you hold, and choices that are **hard to undo**, like the database, a provider, or the shape of your data, it asks, each with its recommended pick.
+- Details **expertise settles**, like field types, error codes, or retry rules, it decides itself, with a short reason and a runner up. It never picks one silently: the review lists every one under **Decided for you**, so you can override any of them before you accept.
+
+It asks in a few batched rounds (up to four questions at a time) rather than one question per message. What counts is that every dimension of the feature is covered, not how many questions it took.
 
 One more question comes up here. If a decision could be helped by an outside connector or a ready made skill, the workflow asks first whether you want it to look, and only searches if you say yes. Nothing is fetched from the internet without your go ahead. Anything it does find and rely on gets written into the spec so a human can follow it later.
 

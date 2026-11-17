@@ -60,8 +60,10 @@ Web fetching happens once, when a decision needs it (the Stage (c) landscape and
 Ask targeted questions before you write the spec (and before spawning any read/fetch helper); spend the budget on substance. Sort every question:
 
 - **INFER**: anything the prompt or codebase reveals (feature vs architecture, the stack, UI in scope, an already chosen provider). Derive, never ask.
-- **ASK**: only what the engineer alone knows (requirements, preferences, business rules, compliance scope).
-- **RECOMMEND**: anything expertise settles (which provider/library/pattern fits). State the pick, a one line why, and the runner up; they may override. Never a neutral menu, never a silent decision.
+- **ASK**: what the engineer alone knows (requirements, preferences, business rules, compliance scope), and every hard to undo choice whose tradeoff depends on their context (a stack layer, a provider, the data model's entities, the auth model), each with a recommended pick.
+- **RECOMMEND**: the details expertise settles (field types, status codes, retries, error states, most edge cases). State the pick, a one line why, and the runner up in the spec, and list each under **Decided for you** in the review so they may override. Never a neutral menu, never a silent decision.
+
+Unsure whether a choice is ASK or RECOMMEND → ASK. Coverage is the bar, not question count: batch independent questions (up to 4 per round) so the interview takes few rounds.
 
 Never bundle a complete data model, full stack, or ready made acceptance criteria set into one accept or change panel, and never silently decide a tool, provider, or setup choice for them.
 
@@ -127,7 +129,7 @@ From the spec list (paths relative to `$SPEC_DIR`):
   - Umbrella (splits into ≥2 related sub decisions) → directory `$SPEC_DIR/NNNN-kebab-title/` with `index.md` (the umbrella decision listing its children), `rationale.md` (the reasoning + any inventories/audits), and child specs `NNNN-child.md` inside it. Decide from the topic's breadth before you write, and hold the shape in mind as you write.
 - **Related specs**: go in two passes so this stays cheap as specs accumulate. First read only the title line of each existing spec (cheap even at dozens of them); then read the first 20 lines (title, status, opening of Context) of just the few whose title plausibly overlaps this topic, to confirm. Flag matches.
 - **Child of umbrella detection**: if the topic is a sub decision of an existing umbrella (`$SPEC_DIR/NNNN-<umbrella>/`), e.g. one that surfaced while building under it, place the new spec inside that directory as the next child (`NNNN-child.md`) and add it to the umbrella's `index.md` list, not a new top level spec. Same path when `/develop` hits a decision partway through a build. Tell the engineer where it's going.
-- **Update/supersede detection**: if an existing spec clearly overlaps the topic (same domain, system, decision), before the staged conversation present a decision panel (plain text options where the agent has no picker; the picker adds Other automatically): "I found an existing spec that may overlap: `[path]`, [title]. How should I treat this?", options: **New decision (create a new spec)** · **Update the existing spec in place** · **Supersede it (a new spec replaces it)**. Default to the "(recommended)" option by overlap strength (nearly identical → Update or Supersede; adjacent → New). On update/supersede: set OPERATION, read the existing spec in full, and skip the staged conversation for in place updates.
+- **Update/supersede detection**: if an existing spec clearly overlaps the topic (same domain, system, decision), before the design conversation present a decision panel (plain text options where the agent has no picker; the picker adds Other automatically): "I found an existing spec that may overlap: `[path]`, [title]. How should I treat this?", options: **New decision (create a new spec)** · **Update the existing spec in place** · **Supersede it (a new spec replaces it)**. Default to the "(recommended)" option by overlap strength (nearly identical → Update or Supersede; adjacent → New). On update/supersede: set OPERATION, read the existing spec in full, and skip the staged conversation for in place updates.
   - **Assumed spec found**: if the overlapping spec's `**Status**:` is `Assumed`, follow *Revisit an assumed spec* instead of the panel above.
 
 **Community skills** come from the project's `AGENTS.md`, never a hardcoded name table (names and stacks change). Project wide skills/conventions live in root `AGENTS.md`, area specific ones in the nested `<area>/AGENTS.md` (maintained by `/audit` and `/sync`):
@@ -141,13 +143,13 @@ From the spec list (paths relative to `$SPEC_DIR`):
 
 ---
 
-### Scope validation, framing, and staged design conversation
+### Scope validation, framing, and design conversation
 
 For create or supersede operations, this is a hard gate: **read `internal/design-conversation.md` in full before you ask the engineer a single design question, and follow it.** It holds Scope validation (including the already built documentation path), Framing, and the staged design conversation. *Asks vs acts* above is only the intent, not the protocol; do not open the interview, generate questions, or write the spec until you have read that file. (Skip only for in place spec updates.)
 
 ### Write the spec (main thread)
 
-After the staged conversation, you write the spec yourself. Do not spawn anyone to draft, research, or critique it. Resolve this skill's folder to an absolute path (you already resolve these relative paths, so you know the folder) and Read three files now (only now, so they don't sit in context through the interview): `agent-prompt.md`, `spec-template.md`, and the one mode file matching the inferred MODE:
+After the design conversation, you write the spec yourself. Do not spawn anyone to draft, research, or critique it. Resolve this skill's folder to an absolute path (you already resolve these relative paths, so you know the folder) and Read three files now (only now, so they don't sit in context through the interview): `agent-prompt.md`, `spec-template.md`, and the one mode file matching the inferred MODE:
 - `FEATURE` → `agent-modes/feature.md`
 - `ARCHITECTURE` → `agent-modes/architecture.md`
 - `ENHANCEMENT` → `agent-modes/enhancement.md`
@@ -165,7 +167,7 @@ The inputs to apply (you already have them from the design conversation and pre-
 1. Design topic (from the user's original message)
 2. The inferred framing: MODE, platform (web/mobile/API), stack & conventions (from `AGENTS.md`), and any constraints/compliance inferred or confirmed
 2a. The feature's build approach (pre-flight precedence: scope row `Approach` override, else the project default from `AGENTS.md`/scope header, else the noted default) → `BUILD_APPROACH`; order and slice `## Build plan` by what the approach implies for this feature
-3. All staged conversation answers, stage by stage: the confirmed acceptance criteria (already IDed AC-1…, to seed `## Requirements`), the confirmed data model (entities/fields/relationships, the target that seeds the `## Build plan` migration, sized to the feature), the confirmed stack/tool picks, API surface, authz model, and edge cases. On the documentation path (staged conversation skipped) treat it as `"Staged design skipped, documenting an already-made decision"`, not an error
+3. All design conversation answers, stage by stage: the confirmed acceptance criteria (already IDed AC-1…, to seed `## Requirements`), the confirmed data model (entities/fields/relationships, the target that seeds the `## Build plan` migration, sized to the feature), the confirmed stack/tool picks, API surface, authz model, and edge cases. On the documentation path (design conversation skipped) treat it as `"Design conversation skipped, documenting an already-made decision"`, not an error
 3a. The RECOMMEND items → `RECOMMEND_ITEMS_OR_NONE`: the specific decisions you must make and justify (tool/provider aligned to the stack, session model, etc.); make each call, don't echo it back as an open question. If none, treat as `"none"`
 3b. The References level → `REFERENCES_LEVEL` (`none` | `sources` | `sources+links`, per the rule above). If Stage (c) never ran and you have not asked, default to `none`
 4. Context file contents: `AGENTS.md` (root + the feature area's nested), or `CLAUDE.md` as fallback, or "MISSING"
@@ -188,7 +190,7 @@ Once the spec file exists, read `internal/after-subagent.md` and follow it for c
 
 If the task is to update or supersede an existing spec:
 - Pre-flight: read the existing spec in full
-- Skip the staged conversation if operation is in place update
+- Skip the design conversation if operation is in place update
 - Set the operation: `update` or `supersede`
 - If supersede: write the new spec AND update the old spec's status to `Superseded by [NNNN](NNNN-title.md)`
 
@@ -206,4 +208,4 @@ Read it in full (`## Build decisions`, `## Code area`), then run the design conv
 - Main thread design conversation: `internal/design-conversation.md` (read only for create/supersede)
 - Agent Skill & MCP offer: `internal/tool-discovery.md` (read only when the stack walk settles a new tool; it asks before it searches, and the registry fetch then runs in a `researcher` subagent)
 - Main thread completion flow: `internal/after-subagent.md` (read only after the spec is written)
-- The staged design conversation is generated per feature (see *Staged design conversation*, stages a to f), not stored; there are no canned question lists. If a topic is too vague to generate from, narrow it first (scope validation, or one clarifying question), never fall back to generic MCQs
+- The design conversation is generated per feature (see *Design conversation*, stages a to f), not stored; there are no canned question lists. If a topic is too vague to generate from, narrow it first (scope validation, or one clarifying question), never fall back to generic MCQs
