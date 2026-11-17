@@ -10,6 +10,14 @@ idea → /scope → /audit → /architect → /develop → /check verify → /te
 
 Run `/debug` anytime something breaks. Run a bare `/scope` anytime to see where things stand.
 
+> **This is a fork** of [jsmastery-pro/skills](https://github.com/jsmastery-pro/skills) (MIT). It keeps the same nine skills and the same rigor, and removes the loops that made the original tiring to use:
+> - **One owner for `done`**: only the skill that closes your workflow depth asks, once, and nothing reopens it.
+> - **Fewer, batched questions**: only what you alone can answer, or what is hard to undo, is asked. `/develop` asks everything in one round before it writes code; `/architect` and `/scope` ask in a few batched rounds. The rest is decided, recorded, and listed under **Decided for you** so you can overrule it.
+> - **Sound recommendations**: every recommended option is correct, then secure, then reliable, then simple; never an easier but weaker shortcut.
+> - **Decisions are always written down**: specs go `Draft` → `Decided` when you accept them, and choices made while building land in the spec's `## Build decisions`.
+>
+> Full list of changes: [PR #1](https://github.com/ElDeepFull/skills/pull/1).
+
 > 📖 **Want the full picture?** Read the **[Workflow Guide](docs/workflow-guide.md)** — a plain-language walkthrough of every skill, the files that carry the work, who owns what, and one idea followed all the way from scope to shipped.
 
 ## The skills
@@ -19,7 +27,7 @@ Run `/debug` anytime something breaks. Run a bare `/scope` anytime to see where 
 | `scope` | Turns a product idea into a living, coarse scope and keeps it current as you ship. |
 | `audit` | Writes the AGENTS.md context files every other skill reads. |
 | `architect` | Makes a load bearing decision and writes it as a build spec in `docs/specs/`. |
-| `develop` | Builds a feature, UI or backend, from its spec. Gates to `/architect` if a decision is owed. |
+| `develop` | Builds a feature, UI or backend, from its spec. Asks once, before building, only for a hard to undo decision; settles and records the rest. |
 | `check` | Confirms a change before merge. `/check verify` runs the real app; `/check review` reads the code on a second model. |
 | `test` | Writes a test suite for the code you just changed. |
 | `document` | Writes the PR text, changelog, release note, or postmortem from the real diff. |
@@ -34,15 +42,23 @@ Uses [npx skills](https://github.com/vercel-labs/skills). Pick your agent:
 
 ```bash
 # Claude Code (installs into .claude/skills, then restart Claude Code)
-npx skills@latest add jsmastery-pro/skills -a claude-code
+npx skills@latest add ElDeepFull/skills -a claude-code
 
 # Generic .agents/skills, read by Codex and other agents
-npx skills@latest add jsmastery-pro/skills
+npx skills@latest add ElDeepFull/skills
 ```
 
 Works on any Agent Skills client (Claude Code, Cursor, Codex, Gemini CLI, and [more](https://agentskills.io/clients)). Commit the installed skills folder to share the workflow with your team.
 
 Each skill's instructions live in its `SKILL.md`, which is what every client reads. The `agents/openai.yaml` beside it is interface metadata only (the name, blurb, and opening prompt Codex shows in its agent picker); it carries no logic of its own.
+
+### Migrating a project from `jsmastery-pro/skills`
+
+Already using the original workflow in a project? Switch on a branch, with your current work committed:
+
+1. Run the install line above in the project (both lines if it has both `.claude/skills/` and `.agents/skills/`), and accept replacing the nine workflow skills. Then check `skills-lock.json`: each of the nine must list `ElDeepFull/skills` as its source, and a copy left in either folder must match this fork. Skills from other sources are not part of this change.
+2. Keep your files as they are. The scope and specs need no migration: legacy spec statuses (`Proposed`, `In Progress`, `Accepted`) read as `Decided`, and an old `Assumed` spec's `## Assumption built on` reads as its build decisions. Nothing rewrites them.
+3. Never run `npx skills update` against the old source again: it would bring the original workflow back. Update from this fork instead.
 
 ## Where to start
 
@@ -79,7 +95,7 @@ The gate is layered, not magic: `/architect` names the source of every value a f
 | App code | your source tree | develop |
 | Human docs | PR body, CHANGELOG.md, `docs/releases/`, `docs/postmortems/` | document |
 
-If `docs/` is a published docs site, these move to `.workflow/` so they do not ship with your site. Because state lives in files, each skill suggests `/clear` at handoffs, so a fresh session reads from disk again and long chats do not pile up cost.
+If `docs/` is a published docs site, these move to `.workflow/` so they do not ship with your site. Because state lives in files, the skills suggest `/clear` between features and after `/architect`'s long design conversation, so a fresh session reads from disk again and long chats do not pile up cost.
 
 ## Skill reference
 
@@ -95,7 +111,7 @@ When: brownfield, run it first. Greenfield, run it after the stack is chosen and
 When: a load bearing choice is unmade (a stack, a data model, a provider, a page design), or `/develop` says a decision is owed. Greenfield: it decides the stack first. Monorepo: reads the target workspace's stack.
 
 **develop**: Builds a feature, UI or backend, from its spec, runs migrations, and advances the scope.
-When: after the decision exists. It gates to `/architect` if a design is owed. Monorepo: builds inside the target workspace using its commands.
+When: after the decision exists, or straight away for a change with no spec: it asks once, before building, only if a choice is hard to undo, and records every other choice it makes in the spec. Monorepo: builds inside the target workspace using its commands.
 
 **check**: Confirms a change before merge, in two modes.
 When: `/check verify` after `/develop` to run the real app and prove the feature works against the spec; `/check review` before a PR for a senior review on a different model than wrote the code. Any project type.

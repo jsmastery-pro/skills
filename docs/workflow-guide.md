@@ -160,7 +160,7 @@ Throughout, one standard governs the interface, that every screen must leave as 
 
 The delivery style you chose back in stage 1 decides how these parts come together. Thin thread first means the screen binds to the real backend in the same pass. Look first means the screen stands up on fake data now and gets wired later.
 
-**When the build lands,** `develop` ticks the parts of the plan that truly landed and updates the scope. Unless your tier is `Prototype`, it does not ask about done, it just names the next step. Finally it writes concrete steps to check the feature by hand, derived from the acceptance criteria, and asks whether to save them to a small `verify.md` beside the spec or just show them to you.
+**When the build lands,** `develop` ticks the parts of the plan that truly landed and updates the scope. Unless your tier is `Prototype`, it does not ask about done, it just names the next step. Finally it writes concrete steps to check the feature by hand, derived from the acceptance criteria, and saves them to a small `verify.md` beside the spec when the feature has a `Verify it` step (otherwise it just shows them to you), without asking.
 
 #### Stage 6, prove it runs
 
@@ -168,7 +168,7 @@ You run `check` in its verify mode. It drives the real running app and proves th
 
 #### Stage 7, write the tests
 
-You run `test`. It writes a real test suite for the code you just changed, working out your test framework, and asking and remembering it the first time. It covers the normal path, the edge cases, the error states, and the accessibility of any interface. When the tests pass, it asks you once whether to mark the feature done.
+You run `test`. It writes a real test suite for the code you just changed, working out your test framework, and asking and remembering it the first time. It then runs the suite, unless you told it once during that setup that you run tests yourself. It covers the normal path, the edge cases, the error states, and the accessibility of any interface. When the tests pass, it asks you once whether to mark the feature done.
 
 #### Stage 8, get a second opinion
 
@@ -214,8 +214,9 @@ On a team, before it changes anything, `develop` checks a few things and warns y
 
 The limits matter as much as the features.
 
-- It will not quietly decide a feature is done, and it will not withhold `done` from you either. `done` is always yours to declare. Exactly one skill asks, once, set by your tier: `develop` at `Prototype`, `check` verify at `Alpha`, `test` at `Beta` and up. You can also say "mark it done" in any skill. Once a feature is done, no skill reopens it, checks it again, or asks again. A feature built on an assumed decision stays flagged as owing ratification (`architect`) until you ratify it, but that flag no longer blocks `done`.
+- It will not quietly decide a feature is done, and it will not withhold `done` from you either. `done` is always yours to declare. Exactly one skill asks, once, set by your tier: `develop` at `Prototype`, `check` verify at `Alpha`, `test` at `Beta` and up. You can also say "mark it done" in any skill. Once a feature is done, no skill reopens it, checks it again, or asks again.
 - It never hides a decision. Hard to undo choices get one question with a recommendation; reversible ones are decided, written into the spec under `## Build decisions`, and listed in the report so you can overrule them. What the gate misses shows up later as wrong behavior in `check` verify mode and in `test`.
+- It will not recommend an option because it is easier. A recommendation is the soundest option: correct, then secure, then reliable, then a fit for your project, and only then simple. When the easy option has a flaw, it names the flaw.
 - It will not reach the internet without your go ahead. It asks before searching for an outside connector or looking anything up, and it records what it used.
 - The review does not edit your code. It reads and reports, and you decide what to change.
 - No skill rewrites your prose or reaches into another skill's files. Ownership is fixed, which is what keeps the files trustworthy over time.
@@ -230,7 +231,7 @@ The limits matter as much as the features.
 
 **Is it fine to leave an `Assumed` spec as it is?** Yes. It is a complete record of what was decided and why. Run `architect` on it only if you want the full design conversation.
 
-**Why clear the session between stages?** A long chat costs more and drifts. Because the work is saved in files, a fresh session reads the current state from disk and continues cleanly, so clearing loses nothing.
+**Why clear the session between features?** The skills suggest it between features and after `architect`'s long design conversation, not between every step. A long chat costs more and drifts. Because the work is saved in files, a fresh session reads the current state from disk and continues cleanly, so clearing loses nothing.
 
 **Where do the files go if my `docs/` folder is a published site?** If `docs/` is a live documentation site, the workflow writes its files to a `.workflow/` folder instead, so they do not ship with your site.
 
@@ -244,10 +245,10 @@ Install with `npx skills`. Pick the line for your agent.
 
 ```bash
 # Claude Code, installs into .claude/skills, then restart Claude Code
-npx skills@latest add JavaScript-Mastery-Pro/skills -a claude-code
+npx skills@latest add ElDeepFull/skills -a claude-code
 
 # Generic .agents/skills, read by Codex and other agents
-npx skills@latest add JavaScript-Mastery-Pro/skills
+npx skills@latest add ElDeepFull/skills
 ```
 
-Commit the installed skills folder so your whole team shares the same workflow. For a brand new product start at stage 1 above. For an existing codebase run `audit` first so every skill understands your project, then plan the next slice with `scope` and follow the same loop. For a bug, go straight to `debug`. For a tiny change, run just `develop` and then `check` in verify mode.
+Commit the installed skills folder so your whole team shares the same workflow. Moving a project off the original `jsmastery-pro/skills`? Run the line above in it: the scope and specs carry over as they are (see *Migrating a project* in the README), and never run `npx skills update` against the old source again. For a brand new product start at stage 1 above. For an existing codebase run `audit` first so every skill understands your project, then plan the next slice with `scope` and follow the same loop. For a bug, go straight to `debug`. For a tiny change, run just `develop` and then `check` in verify mode.
