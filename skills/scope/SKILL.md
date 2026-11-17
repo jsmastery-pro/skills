@@ -29,11 +29,11 @@ Turns an idea into an ordered, coarse, living plan and keeps it honest as the pr
 
 Scope shape, coarse and small: a slim At a glance table (`# · Feature · Phase · Status`) + feature sections grouped by phase (see `scope-template.md`). Each section: heading `### N. Name` with short tags only when they matter (`needs a decision`, an approach override, a workflow tier override like `· GA`), a 1 to 2 line intent, one `Done when:` line (acceptance criteria seeds, the WHAT), checkbox steps.
 
-Feature shape lifecycle (one box until designed, then the built ready shape `/architect` fills; atomic tasks stay in the spec's `## Build plan`; status in the table and beside the heading): the lifecycle table in `scope-template.md` is the single definition.
+Feature shape lifecycle (one box until designed, then the built ready shape `/architect` fills; atomic tasks stay in the spec's `## Build plan`): the lifecycle table in `scope-template.md` is the single definition.
 
 One command, inferred intent (`/scope [what]`, never a subcommand):
 - **plan** (default): no scope yet + a product sized idea, or asking for the next slice. Full pass: ask → decompose into coarse feature sections → order + phase → write.
-- **replan**: scope exists + no argument. Opens with a short where things stand readout (git branch and ahead/behind the remote, feature counts by status, and each in-progress feature's resume point) so a bare `/scope` doubles as the "where was I, what is safe to pick up" orientation, then reconciles what shipped, surfaces plan vs reality drift (code or specs with no scope row), enrolls needs surfaced during the build, reorders, and queues the next slice. The normal living rhythm, not rare: run bare `/scope` again.
+- **replan**: scope exists + no argument. Opens with a short where things stand readout (git branch and ahead/behind the remote, feature counts by status, and each in-progress feature's resume point) so a bare `/scope` doubles as the "where was I, what is safe to pick up" orientation, then reconciles per `modes/replan.md`, including plan vs reality drift (code or specs with no scope row).
 - **add**: scope exists + argument names a single feature. Enroll one coarse row (intent + order + tier + Needs spec) without planning again: `/scope <a feature>`.
 
 ## Asks vs acts
@@ -56,29 +56,17 @@ File shape:
 - Promote on demand to the epic split, never early, names semantic: exactly as `scope-template.md` *Large product: epic split* defines.
 - Keep every file coarse and small; a long epic file needs finer features and tighter intent, not a build task dump.
 
-Status lifecycle (`/scope` sets initial status; the pipeline advances it):
-- New features start `planned`. Brownfield: also enroll features that are already there as `existing` (complete) or `in-progress` (partial), the only other statuses `/scope` writes.
-- `/develop` and `/architect` move a feature `planned` → `in-progress`; `/sync` ticks boxes from the diff. **Closing `done` (one owner, one question).** Only the tier's closing skill asks, once, on success: `Prototype` → `/develop`, `Alpha` → `/check verify`, `Beta`/`GA` → `/test`. Every other skill names the next step and never asks. The engineer saying "mark it done" in any skill sets it directly (unticked boxes → `(skipped)`). Once `done`, no skill reopens, checks it again, or asks again; new work on it is a new scope row.
-- `done` ≠ `existing`: `done` = this pipeline built and verified it; `existing` predates the workflow; `/develop` and `/sync` never touch `existing` rows.
-- `replan` may set a feature dropped from scope to `dropped`, never deletes rows; `dropped` keeps history, excluded from active counts and work; `/develop` and `/sync` skip it.
+Status lifecycle: the `scope-template.md` legend defines who moves what. `/scope` writes only `planned`, plus `existing` (complete) or `in-progress` (partial) when enrolling brownfield features. `replan` may set `dropped`, never deletes a row; `dropped` is excluded from active counts and work. **Closing `done` (one owner, one question):** only the tier's closing skill asks, once, on success; every other skill names the next step. "Mark it done" in any skill sets it (unticked boxes → `(skipped)`). Once `done`, no skill reopens it; new work is a new scope row.
 
-Workflow tier (one rigor dial per feature, `Prototype` · `Alpha` · `Beta` · `GA`): how much process a feature warrants. ONE project default (recommended once, plan Step 5b, recorded on the scope header `**Workflow:**` line) and a per feature override (a tag beside the heading, e.g. `· GA`, only when a feature differs from the default; no tag = inherit). What the tier drives:
-- **Design time**: higher tier → more likely `Needs spec: yes`, and `/architect` recommends its cross model spec check more strongly (always asked, never run on its own). `Prototype`/`Alpha` features are often `Needs spec: no`.
-- **After `/develop`**: the verification tail and the closing skill, as the `scope-template.md` legend defines them.
-
-`/scope` recommends the project default from the risk and size of the feature mix (Step 5b), the same signals `/architect` and `/develop` read; `/develop` reads the effective tier (feature override, else project default, else inferred) to scale the next steps it recommends, so a `Prototype` project is not told to run verify and a `Alpha` project is not told to run a full review chain.
+Workflow tier (one rigor dial per feature, `Prototype` · `Alpha` · `Beta` · `GA`): ONE project default (recommended in plan Step 5b, on the `**Workflow:**` header line) plus a per feature tag (e.g. `· GA`) only when a feature differs. A higher tier makes `Needs spec: yes` likelier and `/architect`'s cross model spec check more strongly recommended (always asked, never run on its own). What runs after `/develop` and which skill closes are the legend's **Workflow** line; `/develop` reads the effective tier (tag, else default, else inferred) to scale its next steps.
 
 Artifact base: `docs/` by default; if `docs/` is a published docs site (`docusaurus.config.*`, `.vitepress/`, `mkdocs.yml`, Astro Starlight, or Nextra detected), use `.workflow/` (`.workflow/scope/…`). Always follow whichever base already exists (paths here assume `docs/`).
 
 Concurrency: shared across sessions and teammates. Read again immediately before writing; surgical edits only (append rows in order, reconcile changed cells, never rewrite the file); flag rather than clobber unexpected state; append with the next free numbers so adders don't collide.
 
-## Reference files
-
-- `scope-template.md`: format rules, At a glance table, per feature sections (heading + intent + Done when + checkbox tasks + pointer line), brownfield enrollment and epic split shapes, the `## /scope complete` report block. Read it when writing the scope and the report.
-
 ## Portability (any OS, any agent)
 
-Any Agent Skills client on macOS, Linux, Windows. Detection snippets are POSIX reference; use your agent's cross platform file tools. Planning runs inline; the two subagents below (Step 1 brownfield code scan, Step 6b sourcing) are optional and capability first, degrade to inline. No interactive picker: ask every panel as plain text, same options.
+Any Agent Skills client on macOS, Linux, Windows. Detection snippets are POSIX reference; use your agent's cross platform file tools. Planning runs inline; the two subagents below (Step 1 brownfield code scan, Step 6b sourcing) are optional and capability first, degrade to inline.
 
 ## Execution
 

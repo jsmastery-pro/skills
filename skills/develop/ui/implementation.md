@@ -163,9 +163,9 @@ The build is not done until you have checked it. This step catches a build that 
 Lead with the headline, then Next, then a Heads up only if there is one (per `docs/conventions.md`). Everything else is in the files. Template:
 
 ```
-**Built <name> (<file paths>) Â· <full product surface | component>, WCAG AA, self check passed.**
+**Built <name> (<file paths>) · <full product surface | component>, WCAG AA, self check passed.**
 Next: /check verify <feature>
-Heads up: invented for you to review, swap for the real thing Â· <brand/wordmark · tagline · copy · placeholder assets>.   (omit the whole line if nothing was invented)
+Heads up: invented for you to review, swap for the real thing · <brand/wordmark · tagline · copy · placeholder assets>.   (omit the whole line if nothing was invented)
 ```
 
 Say it plainly if the self check found and fixed a defect, or if a token/asset issue needs a manual look; otherwise do not list the passing checks (semantic HTML, keyboard, screen reader, tokens are the guide's bar, not a report field). The design source, stack, fonts, and token file are recorded in `design.md` and the code, not here. `/test` reads the acceptance criteria and `verify.md`, so it needs no "what to verify" list in this summary.

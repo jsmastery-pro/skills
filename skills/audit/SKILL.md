@@ -43,13 +43,7 @@ Does not create specs (/architect owns those), maintain files after changes (/sy
 
 Durable context lives in the tool agnostic `AGENTS.md` (root and nested); every agent (Codex, Cursor, Claude Code, and others) reads it. `CLAUDE.md` is only a one line pointer whose entire body imports the sibling `AGENTS.md` via Claude Code's `@` import (exact pointer body in `agent-prompt.md`); content is never duplicated across the two.
 
-- Write knowledge into `AGENTS.md`. Create it when missing. Never overwrite an existing `AGENTS.md` (it may be user or tool authored); gap fill conservatively, with permission.
-- Migrate legacy content: a `CLAUDE.md` with content but no `AGENTS.md` → ask permission, move its content into a new `AGENTS.md`, replace `CLAUDE.md` with the pointer. Never silently discard curated content.
-- Root stays short and global; nested `AGENTS.md` only for meaningful areas with real conventions (same root/nested rules as previously applied to `CLAUDE.md`).
-
-## Scope
-
-An area path argument (e.g. `auth`, `src/payments`) triggers Phase 3. With no argument, the `Pre-flight` signals below route to Phase 0 (ambiguous: ask new vs existing), Phase 1 (greenfield: ask standards, seed root), Phase 2 (established, no root AGENTS.md: whole-repo scan), or Phase 4 (root AGENTS.md exists: gap-fill). A legacy `CLAUDE.md` with content but no `AGENTS.md` is migrated, then treated as Phase 4.
+Root stays short and global; nested `AGENTS.md` only for meaningful areas with real conventions. Never silently discard curated content.
 
 ## Acts vs asks
 
@@ -62,8 +56,7 @@ The `AGENTS.md` files hold the content: create root if missing (Phase 1, 2) and 
 ## Portability (any OS, any agent)
 
 - Commands: `git` is the only required CLI, same on every OS. Other shell snippets (file counts, `find`, `[ -f ]`) are POSIX reference, not literal scripts; use your agent's cross platform file tools (search/glob, read, write) to list, count, and check existence.
-- Bundled files live in this skill's folder: `agent-prompt.md`, the phase mode files (`modes/*.md`), and the pattern presets (`patterns/*.md`). Resolve the folder to an absolute path. Read the matching phase mode file when routing, then `agent-prompt.md` plus the SELECTED pattern preset at write time. Its ALL_CAPS placeholders (PHASE, AREA, ADDITIONAL_STANDARDS, MONOREPO_OR_NO, INSTALLED_SKILLS, DECLINED_TOOLS, and so on) are the inputs you gathered in pre-flight and the question rounds; apply each as you read.
-- No interactive question support? Ask any multiple choice question as plain text with the same options.
+- Bundled files live in this skill's folder: `agent-prompt.md`, the phase mode files (`modes/*.md`), and the pattern presets (`patterns/*.md`). Resolve the folder to an absolute path. Read the matching phase mode file when routing, then `agent-prompt.md` plus the SELECTED pattern preset at write time. Its ALL_CAPS placeholders (PHASE, AREA, and so on) are the inputs you gathered in pre-flight and the question rounds; apply each as you read.
 
 ## Execution
 
@@ -90,9 +83,9 @@ Pick the phase. The order of checks matters: the workflow setup signal outranks 
 | `ROOT_MISSING`, no `WORKFLOW_SETUP`, has code (source ≥ 10 or a manifest), ≥ 2 commits and clearly real feature code (not just scaffold) | Phase 2, any language |
 | `ROOT_MISSING`, no `WORKFLOW_SETUP`, has code but it looks like untouched scaffold, or ≤ 1 commit, or you can't tell greenfield from brownfield | Phase 0, ask |
 
-Why this order: a fresh scaffold has a manifest and starter files but is still greenfield, so a raw code count alone would misread it as brownfield and skip the standards questions; the workflow setup signal catches that and routes to greenfield. Truly brownfield (Phase 2) means real feature code, real history, and no workflow setup in progress. Anything ambiguous falls to Phase 0; never default a maybe greenfield project to brownfield.
+Anything ambiguous falls to Phase 0; never default a maybe greenfield project to brownfield.
 
-Monorepo (`MONOREPO=yes`): root plus a light stub per workspace, deepen on demand. Each workspace (`apps/*`, `packages/*`) is a first class area; its primary doc lives at the workspace root (`packages/api/AGENTS.md`), never buried deeper. A whole-repo run does not deep scan every workspace; write the repo root `AGENTS.md` (monorepo wide tooling, shared conventions) plus a light stub per workspace from its manifest, no code scan, with root pointers. The full conventions/gotchas/key files scan happens when the engineer runs `/audit packages/api` (Phase 3) or first builds there. A spot inside a workspace that warrants its own doc (`packages/ui/src/mdx/`) gets one in addition to the workspace root doc, linked from it. A doc already buried in a workspace with no workspace root doc: ask: "`packages/ui` has a context file at `src/mdx/` but none at its root. Move it up to `packages/ui/AGENTS.md`, or keep it as a nested doc under a new `packages/ui/AGENTS.md`?" On move: relocate it to the workspace root. On keep nested: create the workspace root `AGENTS.md` AND keep the deep one, linked from root. Migrate legacy `CLAUDE.md` content per the convention above. Apply `MONOREPO=yes` plus the workspace list as you write.
+Monorepo (`MONOREPO=yes`): root plus a light stub per workspace, deepen on demand. Each workspace (`apps/*`, `packages/*`) is a first class area; its primary doc lives at the workspace root (`packages/api/AGENTS.md`), never buried deeper. A whole-repo run does not deep scan every workspace; write the repo root `AGENTS.md` (monorepo wide tooling, shared conventions) plus a light stub per workspace from its manifest, no code scan, with root pointers. The full conventions/gotchas/key files scan happens when the engineer runs `/audit packages/api` (Phase 3) or first builds there. A spot inside a workspace that warrants its own doc (`packages/ui/src/mdx/`) gets one in addition to the workspace root doc, linked from it. A doc already buried in a workspace with no workspace root doc: ask: "`packages/ui` has a context file at `src/mdx/` but none at its root. Move it up to `packages/ui/AGENTS.md`, or keep it as a nested doc under a new `packages/ui/AGENTS.md`?" On move: relocate it to the workspace root. On keep nested: create the workspace root `AGENTS.md` AND keep the deep one, linked from root. Migrate legacy `CLAUDE.md` content per Legacy migration below. Apply `MONOREPO=yes` plus the workspace list as you write.
 
 Legacy migration (any phase): on `ROOT_LEGACY`, before proceeding ask permission: "I found a `CLAUDE.md` with project context but no `AGENTS.md`. I'll move its content into a new `AGENTS.md` (so all tools read it) and replace `CLAUDE.md` with a pointer. Proceed?" On yes: copy the content verbatim into `AGENTS.md`, then replace `CLAUDE.md` with the pointer; `AGENTS.md` now exists, so continue as Phase 4 (gap-fill). On no: leave both untouched and continue without migrating. Same for any nested `<area>/CLAUDE.md`.
 
@@ -109,7 +102,7 @@ Do not read the other mode files. The greenfield and whole-repo modes additional
 
 ### Phase 0: Classify (only when `pre-flight` is ambiguous)
 
-Don't guess. Ask once via your agent's interactive option picker (`AskUserQuestion` on Claude Code), or plain text with the same options. Mark one option `(recommended)` by whichever signal is stronger (a scaffold like tree with a manifest but little history leans New; real feature code and deep history leans Existing), and the picker adds a free text custom slot last:
+Ask once via your agent's interactive option picker (`AskUserQuestion` on Claude Code), or plain text with the same options. Mark one option `(recommended)` by whichever signal is stronger (a scaffold like tree with a manifest but little history leans New; real feature code and deep history leans Existing):
 - question: "I can't tell if this is a new project or an existing codebase (<state why: e.g. 'a manifest exists but I see no source in a language I recognise', or 'files look like untouched scaffolding'>). Which is it?"
 - header: "Project state"
 - options: 1. `New project`, "I'll ask for your coding standards and seed the context." → Phase 1 (read the manifest/scaffold for the stack; still ask standards). 2. `Existing codebase`, "I'll scan what's here and document it." → Phase 2.
@@ -117,11 +110,3 @@ Don't guess. Ask once via your agent's interactive option picker (`AskUserQuesti
 ### After all phases
 
 If no `AGENTS.md` was written when it should have been (the file is missing/empty), report the failure and do it again; don't relay success it didn't produce. Otherwise relay the report: what was discovered (2 to 4 bullets), what was written (file paths), what was proposed or skipped (if existing files were found).
-
-## Pattern presets
-
-See `patterns/` for the four coding style presets used in Phase 1 (greenfield mode).
-
-## Writing guide
-
-See `agent-prompt.md` (the main thread reads it at write time; its per phase instructions and `AGENTS.md` templates).

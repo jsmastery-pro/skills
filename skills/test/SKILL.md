@@ -40,7 +40,6 @@ Does not write application code. Does not update `AGENTS.md`/`CLAUDE.md` context
 ## Asks vs acts
 
 - Acts without asking when `test-preferences.json` exists, the tool is installed, and uncommitted source files exist: straight to writing.
-- Always asks one thing every run, even with prefs: run the suite after writing, or hand back manual instructions (Step 7.5). Per run choice, never saved.
 - Otherwise asks only when: no `test-preferences.json` (framework; E2E addon only if pages/flows changed); a chosen tool is not installed (confirm first); no uncommitted changes (Step 3); >15 files (Step 1b).
 - No scope question. The git working tree defines the scope.
 
@@ -55,8 +54,6 @@ Does not write application code. Does not update `AGENTS.md`/`CLAUDE.md` context
 
 Any Agent Skills client on macOS, Linux, or Windows:
 - `git` is the only required CLI, identical everywhere; run the `git` lines as shown. Other shell snippets are POSIX reference, not literal scripts: do not assume `find`, `grep`, `sed`, `cat`, `test`/`[ ]`, `xargs`, `mkdir -p`, or `node -e` exist. Use your agent's cross platform file tools (read, search/glob, write) and apply branching logic yourself, not via shell `if`/variables/redirects.
-- Bundled files: referenced relative to this skill's folder. The main thread resolves the folder to an absolute path and reads the bundled files itself at write time (Step 8): `agent-prompt.md` and `writing-guide.md`.
-- No interactive question support? Ask any multiple choice question as plain text with the same options.
 
 In the Ask blocks below, each option is `"label": "description"`; render them through your agent's picker (`AskUserQuestion` on Claude Code) or as plain text.
 
@@ -172,7 +169,7 @@ With file tools:
 - List the 3 most recently modified spec paths under `docs/specs/` (paths only).
 - Identify the governing spec: the feature dir `docs/specs/NNNN-<feature>/` (or single `docs/specs/NNNN-<feature>.md`) these files implement, matched by branch/feature name or touched surfaces (a `docs/scope/` entry, if present, points to it). Note its path and whether a `verify.md` sits beside it (`docs/specs/NNNN-<feature>/verify.md`). This contract is what tests trace to; it may not be among the 3 recent paths. Set `TRACE_TO_CONTRACT = yes` when a governing spec exists, else `no`.
 - Note whether `design.md` exists at the project root; use its path only when a **component** or **page/flow** file is in scope, else `none`.
-- Read `AGENTS.md` (canonical; `CLAUDE.md` if absent) as project context (short and cheap). Also note the build approach as one line: the slice shaping approach the team chose, recorded in the scope header (or root `AGENTS.md`), e.g. thin end to end path, thinnest usable whole core loop, UI first shell on placeholders, full user journey per phase. It doesn't branch the logic; it calibrates your judgment when writing (Step 8, rule a).
+- Read `AGENTS.md` (canonical; `CLAUDE.md` if absent) as project context (short and cheap). Also note the build approach as one line, from the scope header (or root `AGENTS.md`). It doesn't branch the logic; it calibrates your judgment when writing (Step 8, rule a).
 - Read `package.json`, note `scripts.test`. `RUN_COMMAND` = `<pkgmgr> test` when a `test` script exists (`<pkgmgr> run test` for npm); a raw invocation (e.g. `<pkgmgr> exec vitest run`) only when none does.
 
 ---
@@ -197,19 +194,19 @@ Monorepo (multiple package roots from Step 1b): write each root's suite in turn,
 
 If the write failed or produced no report: say so and do it again; never report a passing or failing suite you didn't actually produce. Otherwise relay the format matching `RUN_AFTER`.
 
-Update the scope: if this feature is on the scope (`docs/scope/`) and the suite passes, tick its `Test it` box. At `Beta`/`GA` you close the feature: unless it is already `done`, ask once "Tests are in and passing, mark it `done`?" and on yes set `done` (At a glance table and heading) and mark each still unticked box of the feature `(skipped)`, so the record stays honest. Never touch the spec's `**Status**:` line. If tests fail or coverage is partial, leave `Test it` unticked and report. **Confirm the update as a closing gate** (don't skip it): report exactly what you ticked in each file, e.g. "Scope: ticked `Test it`, status → `done`." No matching scope row → say so, don't finish silently. On `done`, advise `/clear` before the next feature: the scope and spec hold everything, a fresh session keeps the next build cheap. **Git:** if the nearest `AGENTS.md` `## Git` says `integration: on` and `commit` is not `manual`, offer to commit the suite with a one line subject (`test(<scope>): …`) plus the attribution trailer only when attribution is on (the default; root `AGENTS.md` `## Git` saying `attribution: off`, or any written rule there against attribution lines, means none: no `Co-Authored-By`, no session link); never push. (Effective tier = the feature's own tier tag if set, else the project `**Workflow:**` default. `/test` is the closer at `Beta`/`GA`; `Prototype` closes at `/develop`, `Alpha` at `/check verify`, so on those tiers this feature is already `done` or does not use `/test`. Honor an override tag; never default to a fixed chain.)
+Update the scope: if this feature is on the scope (`docs/scope/`) and the suite passes, tick its `Test it` box. At `Beta`/`GA` you close the feature: unless it is already `done`, ask once "Tests are in and passing, mark it `done`?" and on yes set `done` (At a glance table and heading) and mark each still unticked box of the feature `(skipped)`, so the record stays honest. Never touch the spec's `**Status**:` line. If tests fail or coverage is partial, leave `Test it` unticked and report. **Confirm the update as a closing gate** (don't skip it): report exactly what you ticked in each file, e.g. "Scope: ticked `Test it`, status → `done`." No matching scope row → say so, don't finish silently. On `done`, advise `/clear` before the next feature: the scope and spec hold everything, a fresh session keeps the next build cheap. **Git:** if the nearest `AGENTS.md` `## Git` says `integration: on` and `commit` is not `manual`, offer to commit the suite with a one line subject (`test(<scope>): …`) plus the attribution trailer only when attribution is on (the default; root `AGENTS.md` `## Git` saying `attribution: off`, or any written rule there against attribution lines, means none: no `Co-Authored-By`, no session link); never push. (Effective tier = the feature's tier tag, else the project `**Workflow:**` default. At `Prototype`/`Alpha` another skill closes, so don't ask.)
 
 Lead with the result; the per file list and AC traceability are in the test files (per `docs/conventions.md`). Template:
 
 ```
-## /test <feature> Â· <all N passed | Y failed | not run>
+## /test <feature> · <all N passed | Y failed | not run>
 
 **Wrote <N> tests across <M> files (happy path / edges / errors / a11y). <X passed, Y failed via `<RUN_COMMAND>` | not run>.**
 Next (this feature's next unticked box in the scope): all pass → `/check review` if a `Review it` box remains, else `/sync` or the next feature · Y failed → fix them, or `/debug <feature>` if the code is wrong · not run → `<RUN_COMMAND>`
-Heads up: <bugs the tests caught Â· file:line + the failing expectation> · <uncovered AC-N or area, why>   (omit the whole line if none)
+Heads up: <bugs the tests caught · file:line + the failing expectation> · <uncovered AC-N or area, why>   (omit the whole line if none)
 ```
 
-Only when `RUN_AFTER = no`, append the run steps: `<setup if INSTALL=deferred>` then `<RUN_COMMAND>` (watch one file with `<focused command>`). The framework choice is in `test-preferences.json`; the per test detail and AC traceability live in the test files, so don't reprint them.
+Only when `RUN_AFTER = no`, append the run steps: `<setup if INSTALL=deferred>` then `<RUN_COMMAND>` (watch one file with `<focused command>`).
 
 **Not covered** (consider adding):
 - <gap and why>
@@ -219,11 +216,3 @@ Only when `RUN_AFTER = no`, append the run steps: `<setup if INSTALL=deferred>` 
 If `BUGS_FOUND` is not empty, lead with it: a test that correctly fails on real broken code is a genuine finding, not something to silence. /test does not modify application code to make a test pass.
 
 This skill is complete after relaying the report: it does not invoke other skills.
-
----
-
-## Reference files (in this skill's folder; referenced by relative path)
-
-- `modes/setup.md`: first run only steps (stack detection, framework questions, save preferences); read on the main thread only when `NO_PREFS`
-- `agent-prompt.md`: the operating template the main thread reads at write time (Step 8)
-- `writing-guide.md`: strategy, tool rules, iteration loop, report format; the main thread reads it at write time too

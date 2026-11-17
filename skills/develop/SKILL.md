@@ -35,7 +35,7 @@ The builder: turns a spec plus project conventions into working code. Tracks: **
 
 ## Asks vs acts
 
-Builds, then reports. At most one question round per run, in Step 0 before any code: a hard to undo decision, plus the questions only the engineer can answer for this build (track, design source, assets). Never a question once the build has started. Everything else open (local details, reversible choices, a visual direction with no reference) it decides from the spec, `AGENTS.md`, and the codebase, records, and reports under **Decided for you**.
+Builds, then reports. One question round per run, in Step 0 before any code (hard to undo decisions plus what only the engineer can answer: track, design source, assets); mid build it asks only for a hard to undo surprise. Everything else open it decides from the spec, `AGENTS.md`, and the codebase, records, and reports under **Decided for you**.
 
 ## Artifact ownership
 
@@ -124,14 +124,4 @@ No open decision → no decision question.
 
 ### Build flow (Steps 1-4)
 
-Once the gate clears (nothing open, or every open decision recorded), read `flow/build.md` and follow its Steps 1-4: classify the track, load the decision and conventions, explore, optional doc check, build, then update the scope and report. Do not read `flow/build.md` when the gate ends the run (`Design it first`).
-
----
-
-## Reference files
-
-- Build flow after the gate (Steps 1-4): `flow/build.md`
-- UI build track: `ui-guide.md`
-- Logical build track: `logical-guide.md`
-- Accessibility checklist (UI track, Phase 5): `checklist.md`
-- Project design system (UI track): `./design.md`
+Once the gate clears (nothing open, or every open decision recorded), read `flow/build.md` and follow its Steps 1-4. Do not read `flow/build.md` when the gate ends the run (`Design it first`).

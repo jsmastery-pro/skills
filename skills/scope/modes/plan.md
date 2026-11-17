@@ -10,7 +10,7 @@ Read exactly one route file before continuing to Step 2:
 - `modes/plan-brownfield.md` when source files or a manifest show an existing codebase or an existing scope is being extended.
 - `modes/plan-greenfield.md` when there is no source code and no manifest yet.
 
-Do not read the other plan route files unless the classification changes. After the selected route has established the scope/workspace context, continue with Step 2 below.
+Read no other route file unless the classification changes, then continue with Step 2.
 
 ### Step 2: Ask (generated question walk, as decision panels)
 
@@ -37,9 +37,7 @@ Reason out the pick, never hardcode it or its mechanics: default for a proper pr
 
 **Once the approach is chosen, read its persona file and adopt that engineer's role for decomposition** (`approaches/tracer-bullet.md`, `approaches/skateboard.md`, `approaches/facade.md`, or `approaches/journey.md`). Read only the chosen one. Each persona defines how that engineer slices, what the first slice or deliverable is, what is real vs deferred, and the sequencing, with a worked example. All slicing and sequencing in Step 4 and Step 5 follows that persona. A per feature override (Step 5) reads that feature's chosen persona and applies it to that feature only.
 
-Record it (the propagation source) in the scope header: `Build approach: <name> (<one-line principle>)`. A project wide convention: `/audit` and `/sync` persist it into root `AGENTS.md`; `/architect`, `/develop`, `/check verify` read and honor it. It also sets each feature's Phase (its slice / journey), shown in the At a glance table and as section grouping.
-
-Header value = project default; a single feature may override via the optional per feature Approach (Step 5), a tag beside its heading (e.g. `· Facade`). Precedence: own tag if set, else project default; tag only when it differs (no tag = inherit).
+Record it in the scope header: `Build approach: <name> (<one-line principle>)`; later skills read it from there. It also sets each feature's Phase (its slice / journey), shown in the At a glance table and as section grouping. Header value = project default; a feature that differs gets a tag beside its heading (e.g. `· Facade`, Step 5); no tag inherits.
 
 ### Step 4: Foundations first sequencing (a principle every build approach obeys)
 
@@ -55,12 +53,12 @@ From the answers, produce the feature list: foundations first (Step 4), then sli
 - Keep features small: one page or one cohesive unit each (a listing, a product page, and a cart are three features, not one "storefront"); split anything spanning unrelated screens.
 - **Intent (1 to 2 lines)**: what it is and why it matters.
 - **Done when line (acceptance criteria seeds)**: one compact `Done when:` line of observable outcomes (e.g. "user can filter the list and the URL reflects it; empty and error states render"). Seeds, not a spec; `/architect` grows them into the spec's full requirements and acceptance criteria. Load bearing outcomes only.
-- **Workflow tier** (only when it differs from the project default set in Step 5b): `Prototype` / `Alpha` / `Beta` / `GA`, from this feature's risk, scope, and compliance sensitivity. Most features inherit the project default; tag a feature (e.g. `· GA`) only when it warrants more or less rigor than the rest. Higher tier → more likely `Needs spec: yes`.
-- **Approach (optional per feature override)**: defaults to inherit. Only when genuinely best built differently, add a Build approach question for THAT feature to the Step 5b round (not a separate stop): `(recommended) inherit the project default` on top, plus the named approaches (Tracer Bullet · Skateboard · Facade (prototype grade) · Journey) as overrides; same panel and no hardcoded tool conventions as Step 3, tag and precedence rules per Step 3.
+- **Workflow tier** (only when it differs from the project default set in Step 5b): `Prototype` / `Alpha` / `Beta` / `GA`, from this feature's risk, scope, and compliance sensitivity. Most features inherit; tag one (e.g. `· GA`) only when it warrants more or less rigor than the rest.
+- **Approach (optional per feature override)**: defaults to inherit. Only when genuinely best built differently, add a Build approach question for THAT feature to the Step 5b round (not a separate stop): `(recommended) inherit the project default` on top, plus the named approaches (Tracer Bullet · Skateboard · Facade (prototype grade) · Journey) as overrides; same panel rules as Step 3.
 - **Needs spec?**: the invent test: would building it require a decision the engineer hasn't made? Yes for a provider/library choice, a data model, a cross cutting pattern, the design system, a whole page/screen with no spec yet, or behavior that is not trivial (search, filtering, recommendations). No only for genuinely pure implementation an existing `design.md`/spec/convention covers. Unsure → yes; an unflagged decision is the expensive miss. `GA`/`Beta` tier → almost always yes.
 - One decision per spec: multiple distinct decisions in one feature → one `Needs spec: yes` item each, never one lumped "strategy" spec. Several sharing one broad decision that then splits → an umbrella that dependents reference; never mark a dependent `no` when it carries its own decision.
 
-No build task breakdown here. A not yet designed feature gets exactly one checkbox, its entry command: `/architect <feature>` when it `needs a decision`, else `/develop <feature>` (the coding standards and tooling foundation's first box is `/audit`, never `/develop`). Never enumerate UI / data model / API / test sub tasks; `/architect` fills the built ready shape on spec capture (see What this skill does; atomic tasks stay in the spec). The next step is then always the first unticked box, always a command or tracked milestone (no separate `Next:` line). See the lifecycle table in `scope-template.md`.
+No build task breakdown here. A not yet designed feature gets exactly one checkbox, its entry command: `/architect <feature>` when it `needs a decision`, else `/develop <feature>` (the coding standards and tooling foundation's first box is `/audit`, never `/develop`). Never enumerate UI / data model / API / test sub tasks; `/architect` fills the built ready shape on spec capture (lifecycle table in `scope-template.md`). The next step is always the first unticked box (no separate `Next:` line).
 
 Analysis/inventory is not a scope row: cataloguing duplication, listing call sites, auditing current state is decision support research living with the spec (`/architect` puts it in the spec's `rationale.md`). Never plan a row or step that writes a `.md` into `docs/scope/`.
 
@@ -76,13 +74,9 @@ Depth governs only the stages **after** `/develop` (verify, test, review, docume
   - `Prototype`: "Just `/develop`. Nothing after it, you rely on `/develop`'s own build time self check (typecheck, and rendering the screen when it can) and your own eye. No `/check verify`, no test suite, no review. `/develop` can mark the feature `done` itself. Best for throwaway prototypes, experiments, and personal projects."
   - `Alpha`: "After `/develop`, `/check verify` on the real app. No separate test suite or second model review unless a feature needs it. Best for low risk features and internal tools you still want proven."
   - `Beta`: "After `/develop`, `/check verify` then `/test`. No fresh model review by default. Best for most real products."
-  - `GA`: "After `/develop`, `/check verify`, `/test`, a fresh model `/check review`, then `/document`; and most features are treated as needing a spec. Best for high risk, payments, auth, compliance, regulated, or team projects."
+  - `GA`: "After `/develop`, `/check verify`, `/test`, a fresh model `/check review`, then `/document`; and most features are treated as needing a spec. Best for high risk, payments, auth, PII, compliance, regulated, or team projects."
 
-The picker appends a free text Other automatically; in a plain text fallback offer the same four. Recommend by signal: throwaway prototype, experiment, or a personal one off → `Prototype`; a low risk product or internal tool you still want proven → `Alpha`; a normal production product → `Beta`; payments, auth, PII, compliance, regulated, or a team codebase → `GA`.
-
-Each tier also sets which skill asks `done` (see `scope-template.md`).
-
-Record the pick as the project default in the scope header `**Workflow:**` line (see `scope-template.md`). This default is what `/develop` reads (via the effective tier) to scale the next steps it recommends after a build.
+Record the pick as the project default on the scope header `**Workflow:**` line; the tier also sets which skill asks `done` (see `scope-template.md`).
 
 ### Step 6: Write the scope (single file or epic split)
 
