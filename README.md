@@ -147,7 +147,7 @@ When: anytime something is failing, throwing, or behaving wrong. Not tied to pro
 - `npm run fixtures`: the artifact doctor against four small projects, compared with the defects each one declares (`healthy` must produce none).
 - `npm run test:unit`: unit tests for the doctor, the artifact invariants, the prose rules, and the eval CLI.
 - `npm run doctor <project>`: the same doctor on a project that uses the workflow. Report only, it edits nothing.
-- `npm run eval -- --fixture brownfield --scenario verify --cmd "<your agent command>"`: copies the fixture, runs the prompt, and scores the artifacts produced. No model is bundled, so it is only as reproducible as the command you name.
+- `npm run eval -- --fixture brownfield --scenario verify --cmd "<your agent command>"`: copies the fixture, installs this checkout's skills into it (`--skills-dir`, default `.claude/skills`), runs the prompt, and scores the artifacts produced against the fixture's own deliberate defects. No model is bundled, so it is only as reproducible as the command you name.
 
 ## Versions
 

@@ -1,6 +1,6 @@
 {
   "name": "brownfield",
-  "description": "A small app with a scope and three specs, one broken link and one unproven verification.",
+  "description": "A small runnable app (npm start) with a scope and three specs, one broken link and one unproven verification.",
   "expectedFindings": ["D010", "D011", "D012", "D020", "D030", "D050"],
   "scenarios": [
     {

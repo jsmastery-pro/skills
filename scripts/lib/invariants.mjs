@@ -18,18 +18,28 @@ export function hasMarkdown(dir) {
   return false;
 }
 
-export function scoreArtifacts(dir, invariants = INVARIANTS) {
+const key = (f) => `${f.code}|${f.file}|${f.message}`;
+
+// `baseline` is the doctor's findings on the untouched fixture. A fixture carries
+// deliberate defects; an invariant that guards against breakage fails only on a
+// finding the run introduced. evidence_persisted stays absolute: after a verify
+// run every tick needs its evidence, whoever wrote the tick.
+export function scoreArtifacts(dir, invariants = INVARIANTS, baseline = []) {
   const result = diagnose(dir);
-  const codes = new Set(result.findings.map((f) => f.code));
+  const before = new Set(baseline.map(key));
+  const introduced = result.findings.filter((f) => !before.has(key(f)));
+  const added = (...codes) => introduced.some((f) => codes.includes(f.code));
+  const has = (...codes) => result.findings.some((f) => codes.includes(f.code));
   const base = result.base ? join(result.root, result.base) : null;
   const checks = {
     scope_file: base ? hasMarkdown(join(base, 'scope')) : false,
-    specs_linked: !codes.has('D020'),
-    contract_present: base ? hasMarkdown(join(base, 'specs')) && !codes.has('D010') && !codes.has('D011') : false,
-    evidence_persisted: !codes.has('D030') && !codes.has('D031'),
+    specs_linked: !added('D020'),
+    contract_present: base ? hasMarkdown(join(base, 'specs')) && !added('D010', 'D011') : false,
+    evidence_persisted: !has('D030', 'D031'),
   };
   return {
     result,
+    introduced,
     checks,
     scored: Object.fromEntries(invariants.map((name) => [name, Boolean(checks[name])])),
   };

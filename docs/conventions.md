@@ -34,7 +34,7 @@ Only when a piece of content is both **rarely needed and long** (a big migration
 - Run `npm run check` (cross tool portability + hot path size budgets). A path near budget means prune first, not raise the ceiling or add another file.
 - Run `npm run fixtures`. The doctor checks the fixture projects against the defects each one declares, so an edit that stops a check finding a real defect fails here.
 - Run `npm run test:unit`. It covers the scripts themselves, needs no model, and takes under a second.
-- A change to what a skill does needs a run, not an assumption: `npm run eval -- --fixture brownfield --scenario verify --cmd "<your agent command>"` copies the fixture, runs the prompt, and scores the artifacts produced. No model is bundled, so the run is reproducible only as far as the command you name.
+- A change to what a skill does needs a run, not an assumption: `npm run eval -- --fixture brownfield --scenario verify --cmd "<your agent command>"` copies the fixture, installs this checkout's skills into it, runs the prompt, and scores the artifacts produced. No model is bundled, so the run is reproducible only as far as the command you name.
 - Re read the diff for lines that change nothing, and for a rule now stated twice.
 - A prune should not change behavior. If a cut might, say so and confirm it with an eval run.
 

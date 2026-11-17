@@ -9,7 +9,7 @@ _Steps derived from spec 0001 acceptance criteria._
 
 ## Commands
 
-- [ ] `npm test -- auth` → auth suite passes → AC-1
+- [ ] `npm test` → auth suite passes → AC-1
 
 ## Acceptance-criteria coverage
 

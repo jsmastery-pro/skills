@@ -11,6 +11,7 @@
 - Report templates in nine skill files printed `Â·` instead of `·` (a mis encoded character). Fixed everywhere.
 - `/test` no longer says it asks every run whether to run the suite; Step 7.5 already decided that without a question, from `runAfterWrite`.
 - `/develop`'s asks vs acts summary no longer forbids every question mid build; it now matches Step 0, which keeps one exception for a hard to undo surprise.
+- `npm run eval` crashed after scoring (`result.findings is not iterable`). It now installs this checkout's skills into the run's workspace (before, a run used whatever the machine had installed, often nothing), scores against the fixture's own deliberate defects instead of failing on them, and `brownfield` is a runnable app so `/check verify` has something real to prove.
 
 ### Changed
 

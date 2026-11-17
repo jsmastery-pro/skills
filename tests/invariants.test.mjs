@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { fileURLToPath } from 'node:url';
 import { scoreArtifacts } from '../scripts/lib/invariants.mjs';
+import { diagnose } from '../scripts/doctor.mjs';
 
 const fixture = (name) => fileURLToPath(new URL(`../fixtures/${name}/`, import.meta.url));
 
@@ -32,4 +33,12 @@ test('scoring can be limited to the invariants a scenario names', () => {
   const { scored } = scoreArtifacts(fixture('greenfield'), ['scope_file']);
   assert.deepEqual(Object.keys(scored), ['scope_file']);
   assert.equal(scored.scope_file, false);
+});
+
+test('a deliberate fixture defect does not count against a run', () => {
+  const baseline = diagnose(fixture('brownfield')).findings;
+  const { scored, introduced } = scoreArtifacts(fixture('brownfield'), undefined, baseline);
+  assert.equal(scored.specs_linked, true);
+  assert.equal(scored.evidence_persisted, false);
+  assert.deepEqual(introduced, []);
 });
