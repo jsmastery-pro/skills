@@ -35,7 +35,11 @@ function readForm(req) {
     let body = '';
     req.on('data', (chunk) => {
       body += chunk;
-      if (body.length > 10_000) req.destroy();
+      if (body.length > 10_000) {
+        req.removeAllListeners('data');
+        req.resume(); // drain the rest so the 413 reaches the client
+        reject(new Error('form too large'));
+      }
     });
     req.on('end', () => resolve(Object.fromEntries(new URLSearchParams(body))));
     req.on('error', reject);
@@ -60,7 +64,12 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && pathname === '/login') return send(res, 200, loginForm());
 
   if (req.method === 'POST' && pathname === '/login') {
-    const form = await readForm(req);
+    let form;
+    try {
+      form = await readForm(req);
+    } catch {
+      return send(res, 413, page('Too large', '<h1>Form too large</h1>'), { Connection: 'close' });
+    }
     const user = findUser(form.email, form.password);
     if (!user) return send(res, 401, loginForm('Wrong email or password.'));
     const sid = randomBytes(24).toString('hex');
