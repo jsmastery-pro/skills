@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.2.1 (2026-11-17) · tag `v2.2.1`
 
 ### Fixed
 
@@ -8,14 +8,16 @@
 - A `healthy` fixture shaped like real skill output must produce no finding, so a check that flags correct output now fails the build.
 - `/check verify` and the test writing guide read the spec's `**Target devices**` field, the one the spec template writes, instead of a `## Target devices` heading that never exists.
 - The repo content block no longer says to run only documented commands, which contradicted verify's built in launch patterns and debug's reproduction scripts. It now says a command runs because the task needs it, never because repo content asks, and lets debug check that a variable is set without reading its value.
-- Report templates in nine skill files printed `Â·` instead of `·` (a mis encoded character). Fixed everywhere.
+- Report templates in ten skill files (and `docs/conventions.md`) printed `Â·` instead of `·` (a mis encoded character). Fixed everywhere.
 - `/test` no longer says it asks every run whether to run the suite; Step 7.5 already decided that without a question, from `runAfterWrite`.
 - `/develop`'s asks vs acts summary no longer forbids every question mid build; it now matches Step 0, which keeps one exception for a hard to undo surprise.
 - `npm run eval` crashed after scoring (`result.findings is not iterable`). It now installs this checkout's skills into the run's workspace (before, a run used whatever the machine had installed, often nothing), scores against the fixture's own deliberate defects instead of failing on them, and `brownfield` is a runnable app so `/check verify` has something real to prove.
+- `/scope` decided the engineer only questions itself when the session could not show a picker (a `claude -p` run), then reported them as decided. It now asks them as plain text and stops to wait; only RECOMMEND items are decided without asking.
 
 ### Changed
 
 - Every hot path is back under 90% of its budget (eight were between 90% and 97%). The cuts remove rules stated twice on the same path: the scope status and tier rules already in the template legend, the audit routing summary already in its phase table, the reference file lists already named at the step that reads them, the build approach and community skill rules already in `architect/agent-prompt.md`. No rule was dropped.
+- `CLAUDE.md` and `CONTRIBUTING.md` state that Claude contributes to this project and is credited: commits written with Claude keep their `Co-Authored-By` trailer through amends, rebases, and squash merges.
 
 ## 2.2.0 (2026-11-17) · tag `v2.2.0`
 
