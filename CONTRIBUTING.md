@@ -17,6 +17,16 @@ Thanks for helping. This repo is a fork of `jsmastery-pro/skills`. The workflow 
 - No content that loads on every run unless it changes what the agent does. Rare and long material goes in a file the skill reads only when the case arises.
 - Plain words, no dashes, exactly one recommended option per question, and suggestions before gates.
 
+## Contributions made with Claude
+
+Claude contributes to this project, and its work is credited the same way as anyone's. A commit written with Claude ends with its trailer, for example:
+
+```
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+```
+
+Keep that trailer when you amend, rebase, or squash merge (GitHub keeps `Co-Authored-By` lines in the squash message; do not delete them there). A pull request opened by Claude ends with the Claude Code line. The rule is also in [CLAUDE.md](CLAUDE.md) (`## Git`, `attribution: on`), so every Claude session applies it.
+
 ## Releasing
 
 1. Bump `version` in `package.json` and add its section to `CHANGELOG.md`.
